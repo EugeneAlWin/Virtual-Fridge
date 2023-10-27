@@ -1,0 +1,142 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//
+model User {
+  id         Int        @id @default(autoincrement())
+  login      String     @unique @db.VarChar(30)
+  password   String     @db.VarChar(120)
+  role       Roles      @default(DEFAULT)
+  createdAt  DateTime   @default(now()) @db.Timestamp()
+  isArchived Boolean    @default(false)
+  isBanned   Boolean    @default(false)
+  Product    Product[]
+  Store      Store?
+  Recipe     Recipe[]
+  Checklist  Checklist?
+}
+
+enum Roles {
+  ADMIN
+  DEFAULT
+}
+
+//
+model Store {
+  id               Int               @id @default(autoincrement())
+  title            String?           @db.VarChar(50)
+  creatorId        Int               @unique
+  Creator          User              @relation(fields: [creatorId], references: [id])
+  StoreComposition StoreComposition?
+}
+
+model StoreComposition {
+  storeId   Int        @unique
+  productId Int        @unique
+  quantity  Int        @db.SmallInt
+  unit      Units      @default(ITEMS)
+  expires   DateTime?  @db.Timestamp()
+  price     Decimal    @db.Money
+  currency  Currencies @default(BYN)
+  Store     Store      @relation(fields: [storeId], references: [id])
+  Product   Product    @relation(fields: [productId], references: [id])
+}
+
+enum Units {
+  GRAMS
+  KILOGRAMS
+  ITEMS
+  PIECES
+}
+
+enum Currencies {
+  USD
+  BYN
+  RUB
+}
+
+//
+model Product {
+  id                   Int                    @id @default(autoincrement())
+  title                String                 @unique @db.VarChar(50)
+  calories             Int                    @db.SmallInt
+  protein              Int                    @db.SmallInt
+  fats                 Int                    @db.SmallInt
+  carbohydrates        Int                    @db.SmallInt
+  creatorId            Int
+  Creator              User                   @relation(fields: [creatorId], references: [id])
+  StoreComposition     StoreComposition[]
+  RecipeComposition    RecipeComposition[]
+  ChecklistComposition ChecklistComposition[]
+}
+
+//
+model Recipe {
+  id                Int                @id @default(autoincrement())
+  title             String             @db.VarChar(100)
+  type              RecipeTypes
+  descriptiom       String?            @db.Text
+  isVisible         Boolean            @default(false) @db.Boolean
+  isApproved        Boolean            @default(false) @db.Boolean
+  creatorId         Int
+  Creator           User               @relation(fields: [creatorId], references: [id])
+  RecipeComposition RecipeComposition?
+}
+
+model RecipeComposition {
+  recipeId  Int     @unique
+  productId Int
+  quantity  Int     @db.SmallInt
+  Recipe    Recipe  @relation(fields: [recipeId], references: [id])
+  Product   Product @relation(fields: [productId], references: [id])
+}
+
+enum RecipeTypes {
+  VEGETARIAN
+  PASTRIES
+  GARNISHES
+  HOTDISHES
+  HOTAPPETIZERS
+  DESSERTS
+  HOMEMADE
+  BREAKFASTS
+  PRESERVES
+  CHARCOAL
+  BEVERAGES
+  SALADS
+  SAUCESPASTASDRESSINGS
+  SOUPSBROTHS
+  DOUGHS
+  BREAD
+  COLDAPPETIZERS
+  SHASHLIKS
+}
+
+//
+model Checklist {
+  id                   Int                   @id @default(autoincrement())
+  createdAt            DateTime              @default(now()) @db.Timestamp()
+  isConfirmed          Boolean               @default(false) @db.Boolean
+  creatorId            Int                   @unique
+  Creator              User                  @relation(fields: [creatorId], references: [id])
+  ChecklistComposition ChecklistComposition?
+}
+
+model ChecklistComposition {
+  checklistId Int       @unique
+  productId   Int
+  quantity    Int       @db.SmallInt
+  Checklist   Checklist @relation(fields: [checklistId], references: [id])
+  Product     Product   @relation(fields: [productId], references: [id])
+}
+
+//
