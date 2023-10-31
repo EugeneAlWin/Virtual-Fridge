@@ -12,17 +12,29 @@ datasource db {
 
 //
 model User {
-  id         Int        @id @default(autoincrement())
-  login      String     @unique @db.VarChar(30)
-  password   String     @db.VarChar(120)
-  role       Roles      @default(DEFAULT)
-  createdAt  DateTime   @default(now()) @db.Timestamp()
-  isArchived Boolean    @default(false)
-  isBanned   Boolean    @default(false)
-  Product    Product[]
-  Store      Store?
-  Recipe     Recipe[]
-  Checklist  Checklist?
+  id             Int              @id @default(autoincrement())
+  login          String           @unique @db.VarChar(30)
+  password       String           @db.VarChar(120)
+  role           Roles            @default(DEFAULT)
+  createdAt      DateTime         @default(now()) @db.Timestamp()
+  checklistId    Int
+  isArchived     Boolean          @default(false)
+  isBanned       Boolean          @default(false)
+  Product        Product[]
+  Store          Store?
+  Recipe         Recipe[]
+  Checklist      Checklist[]
+  UserToken      UserToken[]
+  ChosenRecipe   ChosenRecipe[]
+  FavoriteRecipe FavoriteRecipe[]
+}
+
+model UserToken {
+  id           Int    @unique @default(autoincrement())
+  deviceId     String
+  refreshToken String
+  userId       Int
+  User         User   @relation(fields: [userId], references: [id])
 }
 
 enum Roles {
@@ -87,9 +99,11 @@ model Recipe {
   descriptiom       String?            @db.Text
   isVisible         Boolean            @default(false) @db.Boolean
   isApproved        Boolean            @default(false) @db.Boolean
+  createdAt         DateTime           @default(now())
   creatorId         Int
   Creator           User               @relation(fields: [creatorId], references: [id])
   RecipeComposition RecipeComposition?
+  FavoriteRecipe    FavoriteRecipe[]
 }
 
 model RecipeComposition {
@@ -98,6 +112,23 @@ model RecipeComposition {
   quantity  Int     @db.SmallInt
   Recipe    Recipe  @relation(fields: [recipeId], references: [id])
   Product   Product @relation(fields: [productId], references: [id])
+}
+
+model ChosenRecipe {
+  id        Int      @unique @default(autoincrement())
+  userId    Int
+  recipeId  Int
+  createdAt DateTime @default(now()) @db.Timestamp()
+  isCooked  Boolean  @default(false)
+  User      User     @relation(fields: [userId], references: [id])
+}
+
+model FavoriteRecipe {
+  id       Int    @unique @default(autoincrement())
+  userId   Int
+  recipeId Int
+  User     User   @relation(fields: [userId], references: [id])
+  Recipe   Recipe @relation(fields: [recipeId], references: [id])
 }
 
 enum RecipeTypes {
@@ -127,8 +158,8 @@ model Checklist {
   createdAt            DateTime              @default(now()) @db.Timestamp()
   isConfirmed          Boolean               @default(false) @db.Boolean
   creatorId            Int                   @unique
-  Creator              User                  @relation(fields: [creatorId], references: [id])
   ChecklistComposition ChecklistComposition?
+  Creator              User                  @relation(fields: [creatorId], references: [id])
 }
 
 model ChecklistComposition {
