@@ -96,7 +96,7 @@ model Recipe {
   id                Int                @id @default(autoincrement())
   title             String             @db.VarChar(100)
   type              RecipeTypes
-  descriptiom       String?            @db.Text
+  description       String?            @db.Text
   isVisible         Boolean            @default(false) @db.Boolean
   isApproved        Boolean            @default(false) @db.Boolean
   createdAt         DateTime           @default(now())
