@@ -11,7 +11,7 @@ datasource db {
 model User {
   id             Int              @id @default(autoincrement())
   login          String           @unique @db.VarChar(30)
-  password       String           @db.VarChar(120)
+  password       String           @db.VarChar(128)
   role           Roles            @default(DEFAULT)
   isArchived     Boolean          @default(false)
   isBanned       Boolean          @default(false)
@@ -64,6 +64,7 @@ model Product {
   protein              Int                    @db.SmallInt
   fats                 Int                    @db.SmallInt
   carbohydrates        Int                    @db.SmallInt
+  isApproved           Boolean                @default(false)
   User                 User                   @relation(fields: [creatorId], references: [id])
   StoreComposition     StoreComposition[]
   RecipeComposition    RecipeComposition[]
