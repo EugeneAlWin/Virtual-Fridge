@@ -1,10 +1,6 @@
-import { NextFunction, RequestHandler } from 'express'
+import { RequestHandler } from 'express'
 import { IErrorResponse } from '../api/errorResponse'
-import {
-	FieldValidationError,
-	ValidationError,
-	validationResult,
-} from 'express-validator'
+import { validationResult } from 'express-validator'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import UserRequestError from '../errors/userRequestError'
 import {
@@ -29,6 +25,7 @@ import {
 	IDeleteProductRequest,
 	IDeleteProductResponse,
 } from '../api/products/dto/deleteProduct'
+import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
 
 export default class ProductController {
 	//get
@@ -39,7 +36,7 @@ export default class ProductController {
 		const validatedData = validationResult(req)
 		if (!validatedData.isEmpty()) {
 			const error = validatedData.array()[0]
-			return ProductController.callUnprocessableEntity(next, error)
+			return callUnprocessableEntity(next, error)
 		}
 		try {
 			const result = await ProductService.getProductById(
@@ -64,7 +61,7 @@ export default class ProductController {
 		const validatedData = validationResult(req)
 		if (!validatedData.isEmpty()) {
 			const error = validatedData.array()[0]
-			return ProductController.callUnprocessableEntity(next, error)
+			return callUnprocessableEntity(next, error)
 		}
 		try {
 			const result = await ProductService.getAllProducts(req.body)
@@ -83,7 +80,7 @@ export default class ProductController {
 		const validatedData = validationResult(req)
 		if (!validatedData.isEmpty()) {
 			const error = validatedData.array()[0]
-			return ProductController.callUnprocessableEntity(next, error)
+			return callUnprocessableEntity(next, error)
 		}
 		try {
 			const result = await ProductService.createProduct(req.body)
@@ -104,7 +101,7 @@ export default class ProductController {
 		const validatedData = validationResult(req)
 		if (!validatedData.isEmpty()) {
 			const error = validatedData.array()[0]
-			return ProductController.callUnprocessableEntity(next, error)
+			return callUnprocessableEntity(next, error)
 		}
 		try {
 			const result = await ProductService.updateProduct(req.body)
@@ -129,7 +126,7 @@ export default class ProductController {
 		const validatedData = validationResult(req)
 		if (!validatedData.isEmpty()) {
 			const error = validatedData.array()[0]
-			return ProductController.callUnprocessableEntity(next, error)
+			return callUnprocessableEntity(next, error)
 		}
 		try {
 			const result = await ProductService.deleteProduct(req.body)
@@ -143,19 +140,5 @@ export default class ProductController {
 		} catch (e) {
 			next(e)
 		}
-	}
-
-	//Helper, passes UnprocessableEntity error to middleware
-	private static callUnprocessableEntity(
-		next: NextFunction,
-		error: ValidationError
-	) {
-		next(
-			UserRequestError.UnprocessableEntity({
-				message: error.msg,
-				location: (error as FieldValidationError).location,
-				field: (error as FieldValidationError).path,
-			})
-		)
 	}
 }

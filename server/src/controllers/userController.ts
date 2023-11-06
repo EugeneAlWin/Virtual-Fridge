@@ -1,4 +1,4 @@
-import { NextFunction, RequestHandler } from 'express'
+import { RequestHandler } from 'express'
 import UserService from '../services/userService'
 import {
 	IGetUserByLoginRequest,
@@ -9,11 +9,7 @@ import {
 	IGetAllUsersRequest,
 	IGetAllUsersResponse,
 } from '../api/users/dto/getAllUsers'
-import {
-	FieldValidationError,
-	ValidationError,
-	validationResult,
-} from 'express-validator'
+import { validationResult } from 'express-validator'
 import {
 	IGetUserTokensRequest,
 	IGetUserTokensResponse,
@@ -40,6 +36,7 @@ import {
 } from '../api/users/dto/deleteUserTokens'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import UserRequestError from '../errors/userRequestError'
+import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
 
 export default class UserController {
 	//get
@@ -50,7 +47,7 @@ export default class UserController {
 		const validatedData = validationResult(req)
 		if (!validatedData.isEmpty()) {
 			const error = validatedData.array()[0]
-			return UserController.callUnprocessableEntity(next, error)
+			return callUnprocessableEntity(next, error)
 		}
 		try {
 			const result = await UserService.getUserByLogin(req.params)
@@ -71,7 +68,7 @@ export default class UserController {
 		const validatedData = validationResult(req)
 		if (!validatedData.isEmpty()) {
 			const error = validatedData.array()[0]
-			return UserController.callUnprocessableEntity(next, error)
+			return callUnprocessableEntity(next, error)
 		}
 		try {
 			const result = await UserService.getAllUsers(req.body)
@@ -89,7 +86,7 @@ export default class UserController {
 		const validatedData = validationResult(req)
 		if (!validatedData.isEmpty()) {
 			const error = validatedData.array()[0]
-			return UserController.callUnprocessableEntity(next, error)
+			return callUnprocessableEntity(next, error)
 		}
 		try {
 			const result = await UserService.getUserTokens(req.body)
@@ -108,7 +105,7 @@ export default class UserController {
 		const validatedData = validationResult(req)
 		if (!validatedData.isEmpty()) {
 			const error = validatedData.array()[0]
-			return UserController.callUnprocessableEntity(next, error)
+			return callUnprocessableEntity(next, error)
 		}
 		try {
 			const result = await UserService.createUser(req.body)
@@ -128,7 +125,7 @@ export default class UserController {
 		const validatedData = validationResult(req)
 		if (!validatedData.isEmpty()) {
 			const error = validatedData.array()[0]
-			return UserController.callUnprocessableEntity(next, error)
+			return callUnprocessableEntity(next, error)
 		}
 		try {
 			const result = await UserService.createUserToken(req.body)
@@ -153,7 +150,7 @@ export default class UserController {
 		const validatedData = validationResult(req)
 		if (!validatedData.isEmpty()) {
 			const error = validatedData.array()[0]
-			return UserController.callUnprocessableEntity(next, error)
+			return callUnprocessableEntity(next, error)
 		}
 		try {
 			const result = await UserService.updateUserData(req.body)
@@ -177,7 +174,7 @@ export default class UserController {
 		const validatedData = validationResult(req)
 		if (!validatedData.isEmpty()) {
 			const error = validatedData.array()[0]
-			return UserController.callUnprocessableEntity(next, error)
+			return callUnprocessableEntity(next, error)
 		}
 		try {
 			const result = await UserService.updateUserToken(req.body)
@@ -201,7 +198,7 @@ export default class UserController {
 		const validatedData = validationResult(req)
 		if (!validatedData.isEmpty()) {
 			const error = validatedData.array()[0]
-			return UserController.callUnprocessableEntity(next, error)
+			return callUnprocessableEntity(next, error)
 		}
 		try {
 			const result = await UserService.deleteUserTokens(req.body)
@@ -215,19 +212,5 @@ export default class UserController {
 		} catch (e) {
 			next(e)
 		}
-	}
-
-	//Helper, passes UnprocessableEntity error to middleware
-	private static callUnprocessableEntity(
-		next: NextFunction,
-		error: ValidationError
-	) {
-		next(
-			UserRequestError.UnprocessableEntity({
-				message: error.msg,
-				location: (error as FieldValidationError).location,
-				field: (error as FieldValidationError).path,
-			})
-		)
 	}
 }
