@@ -19,7 +19,14 @@ const main = () => {
 	} catch (e) {
 		prismaClient.$disconnect()
 		console.log(e)
+		process.exit(1)
 	}
 }
 
 main()
+
+process.on('SIGINT', () => {
+	prismaClient.$disconnect()
+	console.log('Disconnected')
+	process.exit(0)
+})
