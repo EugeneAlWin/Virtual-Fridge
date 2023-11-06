@@ -1,9 +1,25 @@
 import express from 'express'
-import 'dotenv/config'
+import prismaClient from './prismaClient'
+import { CONFIG } from './config'
+import userRouter from './router/userRouter'
+import errorMiddleware from './middlewares/errorMiddleware'
+
 const app = express()
 
-const PORT = process.env.PORT || 3000
+app.use(express.json())
 
-app.listen(PORT, () => {
-	console.log(`Server started on port ${PORT}`)
-})
+app.use('/users', userRouter)
+app.use(errorMiddleware)
+
+const main = () => {
+	try {
+		app.listen(CONFIG.PORT, () =>
+			console.log(`Server started on port ${CONFIG.PORT}`)
+		)
+	} catch (e) {
+		prismaClient.$disconnect()
+		console.log(e)
+	}
+}
+
+main()
