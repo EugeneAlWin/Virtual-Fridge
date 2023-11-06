@@ -3,12 +3,15 @@ import prismaClient from './prismaClient'
 import { CONFIG } from './config'
 import userRouter from './router/userRouter'
 import errorMiddleware from './middlewares/errorMiddleware'
+import productRouter from './router/productRouter'
 
 const app = express()
 
 app.use(express.json())
 
 app.use('/users', userRouter)
+app.use('/products', productRouter)
+
 app.use(errorMiddleware)
 
 const main = () => {
