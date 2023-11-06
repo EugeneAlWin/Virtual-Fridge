@@ -12,8 +12,8 @@
   "semi": false,
   "singleQuote": true,
   "tabWidth": 3,
-  "trailingComma": "all",
-  "useTabs": false,
+  "trailingComma": "es5",
+  "useTabs": true,
   "endOfLine": "crlf",
   "bracketSameLine": true,
   "parser": "typescript"
