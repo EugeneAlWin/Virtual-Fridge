@@ -9,7 +9,6 @@ import {
 	IGetAllUsersRequest,
 	IGetAllUsersResponse,
 } from '../api/users/dto/getAllUsers'
-import { validationResult } from 'express-validator'
 import {
 	IGetUserTokensRequest,
 	IGetUserTokensResponse,
@@ -37,6 +36,7 @@ import {
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import UserRequestError from '../errors/userRequestError'
 import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
+import getValidationResult from '../helpers/getValidationResult'
 
 export default class UserController {
 	//get
@@ -44,11 +44,9 @@ export default class UserController {
 		IGetUserByLoginRequest,
 		IGetUserByLoginResponse | IErrorResponse
 	> = async (req, res, next) => {
-		const validatedData = validationResult(req)
-		if (!validatedData.isEmpty()) {
-			const error = validatedData.array()[0]
-			return callUnprocessableEntity(next, error)
-		}
+		const errorData = getValidationResult(req)
+		if (errorData) return callUnprocessableEntity(next, errorData)
+
 		try {
 			const result = await UserService.getUserByLogin(req.params)
 			res.json(result as IGetUserByLoginResponse)
@@ -65,11 +63,9 @@ export default class UserController {
 		IGetAllUsersResponse[] | IErrorResponse,
 		IGetAllUsersRequest
 	> = async (req, res, next) => {
-		const validatedData = validationResult(req)
-		if (!validatedData.isEmpty()) {
-			const error = validatedData.array()[0]
-			return callUnprocessableEntity(next, error)
-		}
+		const errorData = getValidationResult(req)
+		if (errorData) return callUnprocessableEntity(next, errorData)
+
 		try {
 			const result = await UserService.getAllUsers(req.body)
 			res.json(result as IGetAllUsersResponse[])
@@ -83,11 +79,9 @@ export default class UserController {
 		IGetUserTokensResponse[] | IErrorResponse,
 		IGetUserTokensRequest
 	> = async (req, res, next) => {
-		const validatedData = validationResult(req)
-		if (!validatedData.isEmpty()) {
-			const error = validatedData.array()[0]
-			return callUnprocessableEntity(next, error)
-		}
+		const errorData = getValidationResult(req)
+		if (errorData) return callUnprocessableEntity(next, errorData)
+
 		try {
 			const result = await UserService.getUserTokens(req.body)
 			res.json(result as IGetUserTokensResponse[])
@@ -102,11 +96,9 @@ export default class UserController {
 		ICreateUserResponse | IErrorResponse,
 		ICreateUserRequest
 	> = async (req, res, next) => {
-		const validatedData = validationResult(req)
-		if (!validatedData.isEmpty()) {
-			const error = validatedData.array()[0]
-			return callUnprocessableEntity(next, error)
-		}
+		const errorData = getValidationResult(req)
+		if (errorData) return callUnprocessableEntity(next, errorData)
+
 		try {
 			const result = await UserService.createUser(req.body)
 			res.status(201).json(result as ICreateUserResponse)
@@ -122,11 +114,9 @@ export default class UserController {
 		ICreateUserTokenResponse | IErrorResponse,
 		ICreateUserTokenRequest
 	> = async (req, res, next) => {
-		const validatedData = validationResult(req)
-		if (!validatedData.isEmpty()) {
-			const error = validatedData.array()[0]
-			return callUnprocessableEntity(next, error)
-		}
+		const errorData = getValidationResult(req)
+		if (errorData) return callUnprocessableEntity(next, errorData)
+
 		try {
 			const result = await UserService.createUserToken(req.body)
 			res.status(201).json(result as ICreateUserTokenResponse)
@@ -147,11 +137,9 @@ export default class UserController {
 		IUpdateUserDataResponse | IErrorResponse,
 		IUpdateUserDataRequest
 	> = async (req, res, next) => {
-		const validatedData = validationResult(req)
-		if (!validatedData.isEmpty()) {
-			const error = validatedData.array()[0]
-			return callUnprocessableEntity(next, error)
-		}
+		const errorData = getValidationResult(req)
+		if (errorData) return callUnprocessableEntity(next, errorData)
+
 		try {
 			const result = await UserService.updateUserData(req.body)
 			res.json(result as IUpdateUserDataResponse)
@@ -171,11 +159,9 @@ export default class UserController {
 		IUpdateUserTokenResponse | IErrorResponse,
 		IUpdateUserTokenRequest
 	> = async (req, res, next) => {
-		const validatedData = validationResult(req)
-		if (!validatedData.isEmpty()) {
-			const error = validatedData.array()[0]
-			return callUnprocessableEntity(next, error)
-		}
+		const errorData = getValidationResult(req)
+		if (errorData) return callUnprocessableEntity(next, errorData)
+
 		try {
 			const result = await UserService.updateUserToken(req.body)
 			res.json(result as IUpdateUserTokenResponse)
@@ -195,11 +181,9 @@ export default class UserController {
 		IDeleteUserTokensResponse | IErrorResponse,
 		IDeleteUserTokensRequest
 	> = async (req, res, next) => {
-		const validatedData = validationResult(req)
-		if (!validatedData.isEmpty()) {
-			const error = validatedData.array()[0]
-			return callUnprocessableEntity(next, error)
-		}
+		const errorData = getValidationResult(req)
+		if (errorData) return callUnprocessableEntity(next, errorData)
+
 		try {
 			const result = await UserService.deleteUserTokens(req.body)
 

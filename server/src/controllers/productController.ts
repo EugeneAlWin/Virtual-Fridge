@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express'
 import { IErrorResponse } from '../api/errorResponse'
-import { validationResult } from 'express-validator'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import UserRequestError from '../errors/userRequestError'
 import {
@@ -26,6 +25,7 @@ import {
 	IDeleteProductResponse,
 } from '../api/products/dto/deleteProduct'
 import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
+import getValidationResult from '../helpers/getValidationResult'
 
 export default class ProductController {
 	//get
@@ -33,11 +33,9 @@ export default class ProductController {
 		IGetProductByIdRequest,
 		IGetProductByIdResponse | IErrorResponse
 	> = async (req, res, next) => {
-		const validatedData = validationResult(req)
-		if (!validatedData.isEmpty()) {
-			const error = validatedData.array()[0]
-			return callUnprocessableEntity(next, error)
-		}
+		const errorData = getValidationResult(req)
+		if (errorData) return callUnprocessableEntity(next, errorData)
+
 		try {
 			const result = await ProductService.getProductById(
 				req.params
@@ -58,11 +56,9 @@ export default class ProductController {
 		IGetAllProductsResponse[] | IErrorResponse,
 		IGetAllProductsRequest
 	> = async (req, res, next) => {
-		const validatedData = validationResult(req)
-		if (!validatedData.isEmpty()) {
-			const error = validatedData.array()[0]
-			return callUnprocessableEntity(next, error)
-		}
+		const errorData = getValidationResult(req)
+		if (errorData) return callUnprocessableEntity(next, errorData)
+
 		try {
 			const result = await ProductService.getAllProducts(req.body)
 			res.json(result as IGetAllProductsResponse[])
@@ -77,11 +73,9 @@ export default class ProductController {
 		ICreateProductResponse | IErrorResponse,
 		ICreateProductRequest
 	> = async (req, res, next) => {
-		const validatedData = validationResult(req)
-		if (!validatedData.isEmpty()) {
-			const error = validatedData.array()[0]
-			return callUnprocessableEntity(next, error)
-		}
+		const errorData = getValidationResult(req)
+		if (errorData) return callUnprocessableEntity(next, errorData)
+
 		try {
 			const result = await ProductService.createProduct(req.body)
 			res.status(201).json(result as ICreateProductResponse)
@@ -98,11 +92,9 @@ export default class ProductController {
 		IUpdateProductResponse | IErrorResponse,
 		IUpdateProductRequest
 	> = async (req, res, next) => {
-		const validatedData = validationResult(req)
-		if (!validatedData.isEmpty()) {
-			const error = validatedData.array()[0]
-			return callUnprocessableEntity(next, error)
-		}
+		const errorData = getValidationResult(req)
+		if (errorData) return callUnprocessableEntity(next, errorData)
+
 		try {
 			const result = await ProductService.updateProduct(req.body)
 			res.json(result as IUpdateProductResponse)
@@ -123,11 +115,9 @@ export default class ProductController {
 		IDeleteProductResponse | IErrorResponse,
 		IDeleteProductRequest
 	> = async (req, res, next) => {
-		const validatedData = validationResult(req)
-		if (!validatedData.isEmpty()) {
-			const error = validatedData.array()[0]
-			return callUnprocessableEntity(next, error)
-		}
+		const errorData = getValidationResult(req)
+		if (errorData) return callUnprocessableEntity(next, errorData)
+
 		try {
 			const result = await ProductService.deleteProduct(req.body)
 
