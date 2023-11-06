@@ -7,7 +7,8 @@
   "scripts": {
     "watch": "npx tsc -w",
     "server": "npx nodemon ./dist/index.js",
-    "test": "test"
+    "compile": "npx tsc",
+    "start": "npx node ./dist/index.js"
   },
   "author": "EugeneAlWin",
   "license": "ISC",
