@@ -31,6 +31,8 @@ model UserToken {
   deviceId     String @db.Text
   refreshToken String @db.Text
   User         User   @relation(fields: [userId], references: [id])
+
+  @@unique([userId, deviceId])
 }
 
 //
