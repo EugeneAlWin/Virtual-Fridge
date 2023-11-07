@@ -103,8 +103,6 @@ export default class UserController {
 			const result = await UserService.createUser(req.body)
 			res.status(201).json(result as ICreateUserResponse)
 		} catch (e) {
-			if ((e as PrismaClientKnownRequestError).code === 'P2002')
-				return next(UserRequestError.BadRequest('LOGIN EXISTS'))
 			next(e)
 		}
 	}

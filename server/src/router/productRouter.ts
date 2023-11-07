@@ -2,13 +2,13 @@ import { Router } from 'express'
 import ProductEndpoints from '../api/products/endpoints'
 import ProductController from '../controllers/productController'
 import ProductDataValidator from '../validators/productDataValidator'
-import { body, param } from 'express-validator'
+import { body } from 'express-validator'
 
 const productRouter = Router()
 
 productRouter.get(
 	ProductEndpoints.GET_PRODUCT_BY_ID,
-	ProductDataValidator.id(param),
+	ProductDataValidator.id(body),
 	ProductController.getProductById
 )
 

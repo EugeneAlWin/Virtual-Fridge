@@ -37,9 +37,7 @@ export default class ProductController {
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await ProductService.getProductById(
-				req.params
-			)
+			const result = await ProductService.getProductById(req.body)
 			res.json(result as IGetProductByIdResponse)
 		} catch (e) {
 			if ((e as PrismaClientKnownRequestError)?.code === 'P2025') {
@@ -80,8 +78,12 @@ export default class ProductController {
 			const result = await ProductService.createProduct(req.body)
 			res.status(201).json(result as ICreateProductResponse)
 		} catch (e) {
-			if ((e as PrismaClientKnownRequestError).code === 'P2002')
-				return next(UserRequestError.BadRequest('PRODUCT EXISTS'))
+			if ((e as PrismaClientKnownRequestError).code === 'P2003')
+				return next(
+					UserRequestError.BadRequest(
+						`USER WITH ID ${req.body.creatorId} NOT FOUND`
+					)
+				)
 			next(e)
 		}
 	}

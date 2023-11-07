@@ -7,6 +7,7 @@ import { ICreateUserTokenRequest } from '../api/users/dto/createUserToken'
 import { IUpdateUserDataRequest } from '../api/users/dto/updateUserData'
 import { IUpdateUserTokenRequest } from '../api/users/dto/updateUserToken'
 import { IDeleteUserTokensRequest } from '../api/users/dto/deleteUserTokens'
+import UserRequestError from '../errors/userRequestError'
 
 export default class UserService {
 	//get
@@ -38,8 +39,13 @@ export default class UserService {
 		deviceId,
 		refreshToken,
 		...userProps
-	}: ICreateUserRequest) =>
-		prismaClient.user.create({
+	}: ICreateUserRequest) => {
+		const result = await prismaClient.user.findUnique({
+			where: { login: userProps.login },
+		})
+		if (result)
+			throw UserRequestError.BadRequest('LOGIN ALREADY TAKEN')
+		return prismaClient.user.create({
 			data: {
 				...userProps,
 				UserToken: {
@@ -48,13 +54,23 @@ export default class UserService {
 			},
 			include: { UserToken: true },
 		})
+	}
 
 	static createUserToken = async (
 		tokenData: ICreateUserTokenRequest
-	) =>
-		prismaClient.userToken.create({
+	) => {
+		const result = await prismaClient.userToken.findFirst({
+			where: {
+				userId: tokenData.userId,
+				deviceId: tokenData.deviceId,
+			},
+		})
+		if (result)
+			throw UserRequestError.BadRequest('DEVICE ID ALREADY TAKEN')
+		return prismaClient.userToken.create({
 			data: { ...tokenData },
 		})
+	}
 
 	//update
 	static updateUserData = async ({
