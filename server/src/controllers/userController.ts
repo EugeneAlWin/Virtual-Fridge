@@ -1,19 +1,6 @@
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { RequestHandler } from 'express'
-import UserService from '../services/userService'
-import {
-	IGetUserByLoginRequest,
-	IGetUserByLoginResponse,
-} from '../api/users/dto/getUserByLogin'
 import { IErrorResponse } from '../api/errorResponse'
-import {
-	IGetAllUsersRequest,
-	IGetAllUsersResponse,
-	IUserData,
-} from '../api/users/dto/getAllUsers'
-import {
-	IGetUserTokensRequest,
-	IGetUserTokensResponse,
-} from '../api/users/dto/getUserTokens'
 import {
 	ICreateUserRequest,
 	ICreateUserResponse,
@@ -23,6 +10,22 @@ import {
 	ICreateUserTokenResponse,
 } from '../api/users/dto/createUserToken'
 import {
+	IDeleteUserTokensRequest,
+	IDeleteUserTokensResponse,
+} from '../api/users/dto/deleteUserTokens'
+import {
+	IGetAllUsersRequest,
+	IGetAllUsersResponse,
+} from '../api/users/dto/getAllUsers'
+import {
+	IGetUserByLoginRequest,
+	IGetUserByLoginResponse,
+} from '../api/users/dto/getUserByLogin'
+import {
+	IGetUserTokensRequest,
+	IGetUserTokensResponse,
+} from '../api/users/dto/getUserTokens'
+import {
 	IUpdateUserDataRequest,
 	IUpdateUserDataResponse,
 } from '../api/users/dto/updateUserData'
@@ -30,14 +33,10 @@ import {
 	IUpdateUserTokenRequest,
 	IUpdateUserTokenResponse,
 } from '../api/users/dto/updateUserToken'
-import {
-	IDeleteUserTokensRequest,
-	IDeleteUserTokensResponse,
-} from '../api/users/dto/deleteUserTokens'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import UserRequestError from '../errors/userRequestError'
 import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
 import getValidationResult from '../helpers/getValidationResult'
+import UserService from '../services/userService'
 
 export default class UserController {
 	//get
@@ -50,7 +49,7 @@ export default class UserController {
 
 		try {
 			const result = await UserService.getUserByLogin(req.params)
-			res.json(result as IGetUserByLoginResponse)
+			res.json(result)
 		} catch (e) {
 			if ((e as PrismaClientKnownRequestError)?.code === 'P2025') {
 				return next(UserRequestError.NotFound('USER NOT FOUND'))
@@ -70,7 +69,7 @@ export default class UserController {
 		try {
 			const result = await UserService.getAllUsers(req.body)
 			res.json({
-				usersData: result as IUserData[],
+				usersData: result,
 				cursor: result[result.length - 1]?.id || null,
 			})
 		} catch (e) {
@@ -88,7 +87,7 @@ export default class UserController {
 
 		try {
 			const result = await UserService.getUserTokens(req.body)
-			res.json(result as IGetUserTokensResponse[])
+			res.json(result)
 		} catch (e) {
 			next(e)
 		}
@@ -105,7 +104,7 @@ export default class UserController {
 
 		try {
 			const result = await UserService.createUser(req.body)
-			res.status(201).json(result as ICreateUserResponse)
+			res.status(201).json(result)
 		} catch (e) {
 			next(e)
 		}
@@ -144,7 +143,7 @@ export default class UserController {
 
 		try {
 			const result = await UserService.updateUserData(req.body)
-			res.json(result as IUpdateUserDataResponse)
+			res.json(result)
 		} catch (e) {
 			if ((e as PrismaClientKnownRequestError).code === 'P2025')
 				return next(
@@ -166,7 +165,7 @@ export default class UserController {
 
 		try {
 			const result = await UserService.updateUserToken(req.body)
-			res.json(result as IUpdateUserTokenResponse)
+			res.json(result)
 		} catch (e) {
 			if ((e as PrismaClientKnownRequestError)?.code === 'P2025') {
 				return next(
@@ -194,7 +193,7 @@ export default class UserController {
 					UserRequestError.NotFound('NO DEVICES WERE FOUND')
 				)
 
-			res.json(result as IDeleteUserTokensResponse)
+			res.json(result)
 		} catch (e) {
 			next(e)
 		}
