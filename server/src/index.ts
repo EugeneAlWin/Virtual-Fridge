@@ -1,9 +1,10 @@
 import express from 'express'
-import prismaClient from './prismaClient'
 import { CONFIG } from './config'
-import userRouter from './router/userRouter'
 import errorMiddleware from './middlewares/errorMiddleware'
+import prismaClient from './prismaClient'
+import checklistRouter from './router/checklistRouter'
 import productRouter from './router/productRouter'
+import userRouter from './router/userRouter'
 
 const app = express()
 
@@ -11,7 +12,7 @@ app.use(express.json())
 
 app.use('/users', userRouter)
 app.use('/products', productRouter)
-
+app.use('/checklists', checklistRouter)
 app.use(errorMiddleware)
 
 const main = () => {
