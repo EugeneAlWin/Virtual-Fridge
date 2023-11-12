@@ -1,4 +1,4 @@
-import { Units } from '../../enums'
+import { Currencies, Units } from 'api/enums'
 
 export interface IGetChecklistByIdRequest {
 	id: number
@@ -15,6 +15,8 @@ export interface IGetChecklistByIdResponse {
 		productId: number
 		quantity: number
 		units: keyof typeof Units
+		price: string
+		currency: keyof typeof Currencies
 	}[]
 	ChecklistPrices: {
 		checklistId: number

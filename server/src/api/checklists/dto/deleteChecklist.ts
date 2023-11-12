@@ -1,5 +1,5 @@
 export interface IDeleteChecklistRequest {
-	id: number[]
+	checklistsId: number[]
 	creatorId: number
 }
 

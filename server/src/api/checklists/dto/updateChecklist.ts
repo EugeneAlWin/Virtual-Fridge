@@ -4,17 +4,17 @@ export interface IUpdateChecklistRequest {
 	checklistId: number
 	creatorId: number
 	isConfirmed?: boolean
-	checklistComposition?:
+	ChecklistComposition?:
 		| {
 				id: number
 				productId: number
 				quantity: number
 				units: keyof typeof Units
-				price: number
+				price: string
 				currency: keyof typeof Currencies
 		  }[]
 		| null
-	checklistPrices?: {
+	ChecklistPrices?: {
 		checklistId: number
 		USD: string
 		BYN: string
@@ -32,7 +32,7 @@ export interface IUpdateChecklistResponse {
 		productId: number
 		quantity: number
 		units: keyof typeof Units
-		price: number
+		price: string
 		currency: keyof typeof Currencies
 	}[]
 	ChecklistPrices: {
