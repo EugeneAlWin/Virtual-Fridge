@@ -8,22 +8,25 @@ export interface IGetAllChecklistsRequest {
 }
 
 export interface IGetAllChecklistsResponse {
-	id: number
-	creatorId: number
-	createdAt: Date
-	isConfirmed: boolean
-	checklistComposition: {
-		checklistId: number
-		productId: number
-		quantity: number
-		unit: Units
-		price: number
-		currency: Currencies
+	checklistsData: {
+		id: number
+		creatorId: number
+		createdAt: Date
+		isConfirmed: boolean
+		checklistComposition: {
+			checklistId: number
+			productId: number
+			quantity: number
+			unit: Units
+			price: number
+			currency: Currencies
+		}[]
+		checklistPrices: {
+			checklistId: number
+			USD: number
+			BYN: number
+			RUB: number
+		}
 	}[]
-	checklistPrices: {
-		checklistId: number
-		USD: number
-		BYN: number
-		RUB: number
-	}
+	cursor: number | null
 }

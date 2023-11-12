@@ -6,11 +6,14 @@ export interface IGetAllProductsRequest {
 }
 
 export interface IGetAllProductsResponse {
-	id: number
-	title: string
-	calories: number
-	protein: number
-	fats: number
-	carbohydrates: number
-	creatorId: number
+	productsData: {
+		id: number
+		title: string
+		calories: number
+		protein: number
+		fats: number
+		carbohydrates: number
+		creatorId: number
+	}[]
+	cursor: number | null
 }

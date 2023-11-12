@@ -8,6 +8,11 @@ export interface IGetAllUsersRequest {
 }
 
 export interface IGetAllUsersResponse {
+	usersData: IUserData[]
+	cursor: number | null
+}
+
+export interface IUserData {
 	id: number
 	login: string
 	password: string

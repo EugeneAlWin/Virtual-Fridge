@@ -8,6 +8,7 @@ import { IErrorResponse } from '../api/errorResponse'
 import {
 	IGetAllUsersRequest,
 	IGetAllUsersResponse,
+	IUserData,
 } from '../api/users/dto/getAllUsers'
 import {
 	IGetUserTokensRequest,
@@ -60,7 +61,7 @@ export default class UserController {
 
 	static getAllUsers: RequestHandler<
 		undefined,
-		IGetAllUsersResponse[] | IErrorResponse,
+		IGetAllUsersResponse | IErrorResponse,
 		IGetAllUsersRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
@@ -68,7 +69,10 @@ export default class UserController {
 
 		try {
 			const result = await UserService.getAllUsers(req.body)
-			res.json(result as IGetAllUsersResponse[])
+			res.json({
+				usersData: result as IUserData[],
+				cursor: result[result.length - 1]?.id || null,
+			})
 		} catch (e) {
 			return next(e)
 		}

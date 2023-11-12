@@ -51,7 +51,7 @@ export default class ProductController {
 
 	static getAllProducts: RequestHandler<
 		undefined,
-		IGetAllProductsResponse[] | IErrorResponse,
+		IGetAllProductsResponse | IErrorResponse,
 		IGetAllProductsRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
@@ -59,7 +59,10 @@ export default class ProductController {
 
 		try {
 			const result = await ProductService.getAllProducts(req.body)
-			res.json(result as IGetAllProductsResponse[])
+			res.json({
+				productsData: result,
+				cursor: result[result.length - 1]?.id || null,
+			})
 		} catch (e) {
 			return next(e)
 		}
