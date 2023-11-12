@@ -1,4 +1,4 @@
-import { Currencies, Units } from '../../enums'
+import { Units } from '../../enums'
 
 export interface IGetChecklistByIdRequest {
 	id: number
@@ -10,18 +10,16 @@ export interface IGetChecklistByIdResponse {
 	creatorId: number
 	createdAt: Date
 	isConfirmed: boolean
-	checklistComposition: {
+	ChecklistComposition: {
 		checklistId: number
 		productId: number
 		quantity: number
-		unit: Units
-		price: number
-		currency: Currencies
+		units: keyof typeof Units
 	}[]
-	checklistPrices: {
+	ChecklistPrices: {
 		checklistId: number
-		USD: number
-		BYN: number
-		RUB: number
+		USD: string
+		BYN: string
+		RUB: string
 	}
 }

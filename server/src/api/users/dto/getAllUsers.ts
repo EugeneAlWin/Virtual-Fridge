@@ -1,4 +1,4 @@
-import { Roles } from '../../enums'
+import { Roles } from 'api/enums'
 
 export interface IGetAllUsersRequest {
 	skip: number
@@ -8,22 +8,20 @@ export interface IGetAllUsersRequest {
 }
 
 export interface IGetAllUsersResponse {
-	usersData: IUserData[]
-	cursor: number | null
-}
-
-export interface IUserData {
-	id: number
-	login: string
-	password: string
-	role: Roles
-	isArchived: boolean
-	isBanned: boolean
-	createdAt: Date
-	UserToken: {
+	usersData: {
 		id: number
-		userId: number
-		deviceId: string
-		refreshToken: string
+		login: string
+		password: string
+		role: keyof typeof Roles
+		isArchived: boolean
+		isBanned: boolean
+		createdAt: Date
+		UserToken: {
+			id: number
+			userId: number
+			deviceId: string
+			refreshToken: string
+		}[]
 	}[]
+	cursor: number | null
 }

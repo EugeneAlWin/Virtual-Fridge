@@ -9,7 +9,7 @@ export interface ICreateFavoriteRecipeResponse {
 	id: number
 	creatorId: number
 	title: string
-	type: RecipeTypes
+	type: keyof typeof RecipeTypes
 	description: string
 	createdAt: Date
 	isApproved: boolean

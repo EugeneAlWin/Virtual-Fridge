@@ -12,9 +12,9 @@ export interface IGetStoreByIdResponse {
 		storeId: number
 		productId: number
 		quantity: number
-		unit: Units
+		unit: keyof typeof Units
 		expires: Date
 		price: number
-		currency: Currencies
+		currency: keyof typeof Currencies
 	}[]
 }

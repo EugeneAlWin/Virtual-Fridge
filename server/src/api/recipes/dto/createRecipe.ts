@@ -3,7 +3,7 @@ import { RecipeTypes } from '../../enums'
 export interface ICreateRecipeRequest {
 	creatorId: number
 	title: string
-	type: RecipeTypes
+	type: keyof typeof RecipeTypes
 	description?: string
 	isVisible?: boolean
 	recipeComposition: {
@@ -16,7 +16,7 @@ export interface ICreateRecipeResponse {
 	id: number
 	creatorId: number
 	title: string
-	type: RecipeTypes
+	type: keyof typeof RecipeTypes
 	description: string
 	createdAt: Date
 	isVisible: boolean

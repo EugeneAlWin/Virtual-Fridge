@@ -5,15 +5,15 @@ export interface ICreateChecklistRequest {
 	checklistComposition: {
 		productId: number
 		quantity: number
-		unit: Units
+		units: keyof typeof Units
 		price: number
-		currency: Currencies
+		currency: keyof typeof Currencies
 	}[]
 	checklistPrices: {
 		checklistId: number
-		USD: number
-		BYN: number
-		RUB: number
+		USD: string
+		BYN: string
+		RUB: string
 	}
 }
 
@@ -26,14 +26,14 @@ export interface ICreateChecklistResponse {
 		checklistId: number
 		productId: number
 		quantity: number
-		unit: Units
+		units: keyof typeof Units
 		price: number
-		currency: Currencies
+		currency: keyof typeof Currencies
 	}[]
 	checklistPrices: {
 		checklistId: number
-		USD: number
-		BYN: number
-		RUB: number
+		USD: string
+		BYN: string
+		RUB: string
 	}
 }

@@ -13,7 +13,7 @@ export interface IGetAllRecipesResponse {
 		id: number
 		creatorId: number
 		title: string
-		type: RecipeTypes
+		type: keyof typeof RecipeTypes
 		description: string
 		createdAt: Date
 		isVisible: boolean

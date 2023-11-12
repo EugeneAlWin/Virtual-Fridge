@@ -3,19 +3,23 @@ import { Currencies, Units } from '../../enums'
 export interface IUpdateChecklistRequest {
 	checklistId: number
 	creatorId: number
-	checklistComposition?: {
-		productId: number
-		quantity?: number
-		unit?: Units
-		price?: number
-		currency?: Currencies
-	}[]
+	isConfirmed?: boolean
+	checklistComposition?:
+		| {
+				id: number
+				productId: number
+				quantity: number
+				units: keyof typeof Units
+				price: number
+				currency: keyof typeof Currencies
+		  }[]
+		| null
 	checklistPrices?: {
 		checklistId: number
-		USD?: number
-		BYN?: number
-		RUB?: number
-	}
+		USD: string
+		BYN: string
+		RUB: string
+	} | null
 }
 
 export interface IUpdateChecklistResponse {
@@ -23,18 +27,18 @@ export interface IUpdateChecklistResponse {
 	creatorId: number
 	createdAt: Date
 	isConfirmed: boolean
-	checklistComposition: {
+	ChecklistComposition: {
 		checklistId: number
 		productId: number
 		quantity: number
-		unit: Units
+		units: keyof typeof Units
 		price: number
-		currency: Currencies
+		currency: keyof typeof Currencies
 	}[]
-	checklistPrices: {
+	ChecklistPrices: {
 		checklistId: number
-		USD: number
-		BYN: number
-		RUB: number
+		USD: string
+		BYN: string
+		RUB: string
 	}
 }

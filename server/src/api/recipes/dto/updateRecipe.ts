@@ -4,7 +4,7 @@ export interface IUpdateRecipeRequest {
 	id: number
 	creatorId: number
 	title?: string
-	type?: RecipeTypes
+	type?: keyof typeof RecipeTypes
 	description?: string
 	isVisible?: boolean
 	recipeComposition?: {
@@ -18,7 +18,7 @@ export interface IUpdateRecipeResponse {
 	id: number
 	creatorId: number
 	title: string
-	type: RecipeTypes
+	type: keyof typeof RecipeTypes
 	description: string
 	createdAt: Date
 	isVisible: boolean
