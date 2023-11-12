@@ -22,10 +22,12 @@ export default class UserService {
 	static getAllUsers = async ({
 		cursor,
 		login,
-		...interval
+		skip,
+		take,
 	}: IGetAllUsersRequest) =>
 		prismaClient.user.findMany({
-			...interval,
+			skip,
+			take,
 			cursor: cursor ? { id: cursor } : undefined,
 			where: { login: { contains: login, mode: 'insensitive' } },
 			include: { UserToken: true },
@@ -38,16 +40,20 @@ export default class UserService {
 	static createUser = async ({
 		deviceId,
 		refreshToken,
-		...userProps
+		login,
+		password,
+		role,
 	}: ICreateUserRequest) => {
 		const result = await prismaClient.user.findUnique({
-			where: { login: userProps.login },
+			where: { login },
 		})
 		if (result)
 			throw UserRequestError.BadRequest('LOGIN ALREADY TAKEN')
 		return prismaClient.user.create({
 			data: {
-				...userProps,
+				login,
+				password,
+				role,
 				UserToken: {
 					create: { deviceId, refreshToken },
 				},
@@ -56,30 +62,35 @@ export default class UserService {
 		})
 	}
 
-	static createUserToken = async (
-		tokenData: ICreateUserTokenRequest
-	) => {
+	static createUserToken = async ({
+		deviceId,
+		refreshToken,
+		userId,
+	}: ICreateUserTokenRequest) => {
 		const result = await prismaClient.userToken.findFirst({
 			where: {
-				userId: tokenData.userId,
-				deviceId: tokenData.deviceId,
+				userId: userId,
+				deviceId: deviceId,
 			},
 		})
 		if (result)
 			throw UserRequestError.BadRequest('DEVICE ID ALREADY TAKEN')
 		return prismaClient.userToken.create({
-			data: { ...tokenData },
+			data: { refreshToken, deviceId, userId },
 		})
 	}
 
 	//update
 	static updateUserData = async ({
 		userId,
-		...userData
+		isArchived,
+		isBanned,
+		login,
+		password,
 	}: IUpdateUserDataRequest) =>
 		prismaClient.user.update({
 			where: { id: userId },
-			data: { ...userData },
+			data: { isArchived, isBanned, login, password },
 		})
 
 	static updateUserToken = async ({

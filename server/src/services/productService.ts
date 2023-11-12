@@ -16,10 +16,12 @@ export default class ProductService {
 	static getAllProducts = async ({
 		title,
 		cursor,
-		...interval
+		skip,
+		take,
 	}: IGetAllProductsRequest) =>
 		prismaClient.product.findMany({
-			...interval,
+			skip,
+			take,
 			cursor: cursor ? { id: cursor } : undefined,
 			where: {
 				title: { contains: title, mode: 'insensitive' },
@@ -27,29 +29,45 @@ export default class ProductService {
 		})
 
 	//create
-	static createProduct = async (
-		productData: ICreateProductRequest
-	) => {
+	static createProduct = async ({
+		calories,
+		carbohydrates,
+		fats,
+		protein,
+		title,
+		creatorId,
+	}: ICreateProductRequest) => {
 		const result = await prismaClient.product.findUnique({
-			where: { title: productData.title },
+			where: { title },
 		})
 		if (result)
 			throw UserRequestError.BadRequest(
 				'PRODUCT TITLE ALREADY TAKEN'
 			)
 		return prismaClient.product.create({
-			data: { ...productData },
+			data: {
+				calories,
+				carbohydrates,
+				fats,
+				protein,
+				title,
+				creatorId,
+			},
 		})
 	}
 
 	//update
 	static updateProduct = async ({
 		id,
-		...productData
+		calories,
+		carbohydrates,
+		fats,
+		protein,
+		title,
 	}: IUpdateProductRequest) =>
 		prismaClient.product.update({
 			where: { id },
-			data: { ...productData },
+			data: { calories, carbohydrates, fats, protein, title },
 		})
 
 	//delete
