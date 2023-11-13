@@ -90,22 +90,10 @@ export default class UserDataValidator extends BasicValidator {
 	}
 
 	static isArchived(location: TLocation) {
-		return location('isArchived')
-			.optional({ values: 'undefined' })
-			.not()
-			.isString()
-			.withMessage('SHOULD BE BOOLEAN')
-			.isBoolean()
-			.withMessage('SHOULD BE BOOLEAN')
+		return BasicValidator.booleanOptional(location, 'isArchived')
 	}
 
 	static isBanned(location: TLocation) {
-		return location('isBanned')
-			.optional({ values: 'undefined' })
-			.not()
-			.isString()
-			.withMessage('SHOULD BE BOOLEAN')
-			.isBoolean()
-			.withMessage('SHOULD BE BOOLEAN')
+		return BasicValidator.booleanOptional(location, 'isBanned')
 	}
 }
