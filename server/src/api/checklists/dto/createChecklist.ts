@@ -10,7 +10,6 @@ export interface ICreateChecklistRequest {
 		currency: keyof typeof Currencies
 	}[]
 	ChecklistPrices: {
-		checklistId: number
 		USD: string
 		BYN: string
 		RUB: string
