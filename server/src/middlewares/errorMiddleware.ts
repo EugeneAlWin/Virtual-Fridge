@@ -15,6 +15,7 @@ export default function (
 			message: err.message,
 			field: err.field,
 			location: err.location,
+			value: err.value,
 		} satisfies IErrorResponse)
 	}
 

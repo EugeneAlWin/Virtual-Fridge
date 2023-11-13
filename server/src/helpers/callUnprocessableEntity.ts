@@ -15,6 +15,7 @@ export default function callUnprocessableEntity(
 			message: error.msg,
 			location: (error as FieldValidationError).location,
 			field: (error as FieldValidationError).path,
+			value: (error as FieldValidationError)?.value,
 		})
 	)
 }

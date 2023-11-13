@@ -4,12 +4,19 @@ export default class UserRequestError extends Error {
 	code
 	location
 	field
-
-	constructor({ code, message, field, location }: IErrorResponse) {
+	value
+	constructor({
+		code,
+		message,
+		field,
+		location,
+		value,
+	}: IErrorResponse) {
 		super(message)
 		this.code = code
 		this.field = field
 		this.location = location
+		this.value = value
 	}
 
 	static NotFound(message: string) {
