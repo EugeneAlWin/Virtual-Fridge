@@ -62,4 +62,32 @@ export default class BasicValidator {
 			.isInt({ min: 0 })
 			.withMessage('SHOULD BE AN INTEGER >= 0')
 	}
+
+	static isArray(location: TLocation, field: string) {
+		return location(field)
+			.isArray()
+			.withMessage('SHOULD BE AN ARRAY')
+	}
+
+	static decimal(location: TLocation, field: string) {
+		return location(field)
+			.isString()
+			.withMessage('SHOULD BE STRING')
+			.isDecimal()
+			.withMessage('SHOULD BE DECIMAL STRING')
+	}
+
+	static date(location: TLocation, field: string) {
+		return location(field).isDate().withMessage('INVALID DATE')
+	}
+
+	static booleanOptional(location: TLocation, field: string) {
+		return location(field)
+			.optional({ values: 'undefined' })
+			.not()
+			.isString()
+			.withMessage('SHOULD BE BOOLEAN')
+			.isBoolean()
+			.withMessage('SHOULD BE BOOLEAN')
+	}
 }
