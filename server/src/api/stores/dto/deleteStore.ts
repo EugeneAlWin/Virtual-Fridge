@@ -1,5 +1,5 @@
 export interface IDeleteStoreRequest {
-	id: number
+	storeId: number
 	creatorId: number
 }
 

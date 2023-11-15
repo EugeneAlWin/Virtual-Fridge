@@ -1,20 +1,20 @@
 import { Currencies, Units } from '../../enums'
 
-export interface IGetStoreByIdRequest {
-	id: number
+export interface IGetStoreByUserIdRequest {
+	creatorId: number
 }
 
-export interface IGetStoreByIdResponse {
+export interface IGetStoreByUserIdResponse {
 	id: number
 	creatorId: number
-	title: string
-	storeComposition: {
+	title: string | null
+	StoreComposition: {
 		storeId: number
 		productId: number
 		quantity: number
 		unit: keyof typeof Units
-		expires: Date
-		price: number
+		expires: Date | null
+		price: string
 		currency: keyof typeof Currencies
 	}[]
 }

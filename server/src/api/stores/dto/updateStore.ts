@@ -4,13 +4,13 @@ export interface IUpdateStoreRequest {
 	id: number
 	creatorId: number
 	title?: string
-	storeComposition?: {
+	StoreComposition: {
 		storeId: number
 		productId: number
 		quantity: number
 		unit: keyof typeof Units
 		expires?: Date
-		price: number
+		price: string
 		currency: keyof typeof Currencies
 	}[]
 }
@@ -18,14 +18,14 @@ export interface IUpdateStoreRequest {
 export interface IUpdateStoreResponse {
 	id: number
 	creatorId: number
-	title: string
-	storeComposition: {
+	title: string | null
+	StoreComposition: {
 		storeId: number
 		productId: number
 		quantity: number
 		unit: keyof typeof Units
-		expires: Date
-		price: number
+		expires: Date | null
+		price: string
 		currency: keyof typeof Currencies
 	}[]
 }

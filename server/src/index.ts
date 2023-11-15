@@ -5,6 +5,7 @@ import prismaClient from './prismaClient'
 import checklistRouter from './router/checklistRouter'
 import productRouter from './router/productRouter'
 import userRouter from './router/userRouter'
+import storeRouter from './router/storeRouter'
 
 const app = express()
 
@@ -13,6 +14,7 @@ app.use(express.json())
 app.use('/users', userRouter)
 app.use('/products', productRouter)
 app.use('/checklists', checklistRouter)
+app.use('/stores', storeRouter)
 app.use(errorMiddleware)
 
 const main = () => {
