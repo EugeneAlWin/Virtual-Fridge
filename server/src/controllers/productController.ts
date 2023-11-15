@@ -19,7 +19,6 @@ import {
 	IUpdateProductRequest,
 	IUpdateProductResponse,
 } from '../api/products/dto/updateProduct'
-import { IDeleteUserTokensResponse } from '../api/users/dto/deleteUserTokens'
 import {
 	IDeleteProductRequest,
 	IDeleteProductResponse,
@@ -38,7 +37,7 @@ export default class ProductController {
 
 		try {
 			const result = await ProductService.getProductById(req.body)
-			res.json(result as IGetProductByIdResponse)
+			res.json(result)
 		} catch (e) {
 			if ((e as PrismaClientKnownRequestError)?.code === 'P2025') {
 				return next(
@@ -79,7 +78,7 @@ export default class ProductController {
 
 		try {
 			const result = await ProductService.createProduct(req.body)
-			res.status(201).json(result as ICreateProductResponse)
+			res.status(201).json(result)
 		} catch (e) {
 			if ((e as PrismaClientKnownRequestError).code === 'P2003')
 				return next(
@@ -102,7 +101,7 @@ export default class ProductController {
 
 		try {
 			const result = await ProductService.updateProduct(req.body)
-			res.json(result as IUpdateProductResponse)
+			res.json(result)
 		} catch (e) {
 			if ((e as PrismaClientKnownRequestError).code === 'P2025')
 				return next(
@@ -131,7 +130,7 @@ export default class ProductController {
 					UserRequestError.NotFound('NO PRODUCTS WERE FOUND')
 				)
 
-			res.json(result as IDeleteUserTokensResponse)
+			res.json(result)
 		} catch (e) {
 			next(e)
 		}

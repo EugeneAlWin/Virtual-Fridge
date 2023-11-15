@@ -120,7 +120,7 @@ export default class UserController {
 
 		try {
 			const result = await UserService.createUserToken(req.body)
-			res.status(201).json(result as ICreateUserTokenResponse)
+			res.status(201).json(result)
 		} catch (e) {
 			if ((e as PrismaClientKnownRequestError).code === 'P2003')
 				return next(
