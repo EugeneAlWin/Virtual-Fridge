@@ -6,6 +6,8 @@ import checklistRouter from './router/checklistRouter'
 import productRouter from './router/productRouter'
 import userRouter from './router/userRouter'
 import storeRouter from './router/storeRouter'
+import recipeRouter from './router/recipeRouter'
+import { exit } from 'node:process'
 
 const app = express()
 
@@ -15,24 +17,26 @@ app.use('/users', userRouter)
 app.use('/products', productRouter)
 app.use('/checklists', checklistRouter)
 app.use('/stores', storeRouter)
+app.use('/recipes', recipeRouter)
 app.use(errorMiddleware)
 
-const main = () => {
+const main = async () => {
 	try {
+		await prismaClient.$connect()
 		app.listen(CONFIG.PORT, () =>
 			console.log(`Server started on port ${CONFIG.PORT}`)
 		)
 	} catch (e) {
-		prismaClient.$disconnect()
-		console.log(e)
-		process.exit(1)
+		console.error('Connection error. Stopping process...')
+		await prismaClient.$disconnect()
+		console.error(e)
 	}
 }
 
-main()
+main().catch(() => console.log('Process stopped'))
 
-process.on('SIGINT', () => {
-	prismaClient.$disconnect()
-	console.log('Disconnected')
-	process.exit(0)
+process.on('SIGINT', async () => {
+	await prismaClient.$disconnect()
+	console.log('Disconnected with SIGINT')
+	exit(0)
 })
