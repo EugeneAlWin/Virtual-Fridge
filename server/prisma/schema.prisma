@@ -15,31 +15,30 @@ model User {
   createdAt      DateTime         @default(now()) @db.Timestamp(6)
   isArchived     Boolean          @default(false)
   isBanned       Boolean          @default(false)
-  ChosenRecipe   ChosenRecipe[]
-  FavoriteRecipe FavoriteRecipe[]
-  Product        Product[]
-  Recipe         Recipe[]
-  Store          Store?
-  UserChecklists UserChecklists[]
-  UserToken      UserToken[]
+  chosenRecipe   ChosenRecipe[]
+  favoriteRecipe FavoriteRecipe[]
+  product        Product[]
+  recipe         Recipe[]
+  store          Store?
+  userChecklists UserChecklists[]
+  userToken      UserToken[]
 }
 
 model UserToken {
-  id           Int    @unique @default(autoincrement())
   deviceId     String
   refreshToken String
   userId       Int
-  User         User   @relation(fields: [userId], references: [id])
+  user         User   @relation(fields: [userId], references: [id])
 
-  @@unique([userId, deviceId])
+  @@id([userId, deviceId])
 }
 
 model Store {
   id               Int                @id @default(autoincrement())
   title            String?            @db.VarChar(50)
   creatorId        Int                @unique
-  User             User               @relation(fields: [creatorId], references: [id])
-  StoreComposition StoreComposition[]
+  user             User               @relation(fields: [creatorId], references: [id])
+  storeComposition StoreComposition[]
 }
 
 model StoreComposition {
@@ -50,9 +49,10 @@ model StoreComposition {
   expires   DateTime?  @db.Timestamp(6)
   price     Decimal    @db.Money
   currency  Currencies @default(BYN)
-  id        Int        @id @default(autoincrement())
-  Product   Product    @relation(fields: [productId], references: [id])
-  Store     Store      @relation(fields: [storeId], references: [id])
+  product   Product    @relation(fields: [productId], references: [id])
+  store     Store      @relation(fields: [storeId], references: [id])
+
+  @@id([storeId, productId])
 }
 
 model Product {
@@ -64,10 +64,10 @@ model Product {
   carbohydrates        Int                    @db.SmallInt
   creatorId            Int
   isApproved           Boolean                @default(false)
-  ChecklistComposition ChecklistComposition[]
-  User                 User                   @relation(fields: [creatorId], references: [id])
-  RecipeComposition    RecipeComposition[]
-  StoreComposition     StoreComposition[]
+  checklistComposition ChecklistComposition[]
+  user                 User                   @relation(fields: [creatorId], references: [id])
+  recipeComposition    RecipeComposition[]
+  storeComposition     StoreComposition[]
 }
 
 model Recipe {
@@ -79,18 +79,20 @@ model Recipe {
   isApproved        Boolean             @default(false)
   createdAt         DateTime            @default(now())
   creatorId         Int
-  FavoriteRecipe    FavoriteRecipe[]
-  User              User                @relation(fields: [creatorId], references: [id])
-  RecipeComposition RecipeComposition[]
+  favoriteRecipe    FavoriteRecipe[]
+  user              User                @relation(fields: [creatorId], references: [id])
+  recipeComposition RecipeComposition[]
+  chosenRecipe      ChosenRecipe[]
 }
 
 model RecipeComposition {
   recipeId  Int
   productId Int
   quantity  Int     @db.SmallInt
-  id        Int     @id @default(autoincrement())
-  Product   Product @relation(fields: [productId], references: [id])
-  Recipe    Recipe  @relation(fields: [recipeId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+  recipe    Recipe  @relation(fields: [recipeId], references: [id])
+
+  @@id([productId, recipeId])
 }
 
 model ChosenRecipe {
@@ -99,15 +101,16 @@ model ChosenRecipe {
   recipeId  Int
   createdAt DateTime @default(now()) @db.Timestamp(6)
   isCooked  Boolean  @default(false)
-  User      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  recipe    Recipe   @relation(fields: [recipeId], references: [id])
 }
 
 model FavoriteRecipe {
   id       Int    @id @default(autoincrement())
   userId   Int
   recipeId Int
-  Recipe   Recipe @relation(fields: [recipeId], references: [id])
-  User     User   @relation(fields: [userId], references: [id])
+  recipe   Recipe @relation(fields: [recipeId], references: [id])
+  user     User   @relation(fields: [userId], references: [id])
 }
 
 model Checklist {
@@ -115,28 +118,31 @@ model Checklist {
   createdAt            DateTime               @default(now()) @db.Timestamp(6)
   isConfirmed          Boolean                @default(false)
   creatorId            Int
-  ChecklistComposition ChecklistComposition[]
-  ChecklistPrices      ChecklistPrices?
-  UserChecklists       UserChecklists?
+  checklistComposition ChecklistComposition[]
+  checklistPrices      ChecklistPrices?
+  userChecklists       UserChecklists?
 }
 
 model ChecklistComposition {
   checklistId Int
   productId   Int
   quantity    Int        @db.SmallInt
-  id          Int        @id @default(autoincrement())
   units       Units      @default(PIECES)
   currency    Currencies @default(BYN)
   price       Decimal?   @default(0) @db.Money
-  Checklist   Checklist  @relation(fields: [checklistId], references: [id], onDelete: Cascade)
-  Product     Product    @relation(fields: [productId], references: [id])
+  checklist   Checklist  @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+  product     Product    @relation(fields: [productId], references: [id])
+
+  @@id([checklistId, productId])
 }
 
 model UserChecklists {
   creatorId   Int
   checklistId Int       @unique
-  Checklist   Checklist @relation(fields: [checklistId], references: [id])
-  User        User      @relation(fields: [creatorId], references: [id])
+  checklist   Checklist @relation(fields: [checklistId], references: [id])
+  user        User      @relation(fields: [creatorId], references: [id])
+
+  @@id([creatorId, checklistId])
 }
 
 model ChecklistPrices {
@@ -144,7 +150,7 @@ model ChecklistPrices {
   USD         Decimal   @default(0) @db.Money
   BYN         Decimal   @default(0) @db.Money
   RUB         Decimal   @default(0) @db.Money
-  Checklist   Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+  checklist   Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
 }
 
 enum RecipeTypes {
