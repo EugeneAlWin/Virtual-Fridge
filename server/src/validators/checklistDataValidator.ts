@@ -24,10 +24,7 @@ export default class ChecklistDataValidator extends BasicValidator {
 	static ChecklistCompositionArrayEntries(location: TLocation) {
 		return [
 			BasicValidator.isArray(location, 'checklistComposition'),
-			BasicValidator.id(
-				location,
-				'checklistComposition[*].productId'
-			),
+			BasicValidator.id(location, 'checklistComposition[*].productId'),
 			location('checklistComposition[*].quantity')
 				.not()
 				.isString()
@@ -36,21 +33,14 @@ export default class ChecklistDataValidator extends BasicValidator {
 				.isString()
 				.withMessage('SHOULD BE STRING')
 				.isIn(Object.values(Units))
-				.withMessage(
-					`ALLOWED VALUES: ${Object.values(Units).join(' | ')}`
-				),
-			BasicValidator.decimal(
-				location,
-				'checklistComposition[*].price'
-			),
+				.withMessage(`ALLOWED VALUES: ${Object.values(Units).join(' | ')}`),
+			BasicValidator.decimal(location, 'checklistComposition[*].price'),
 			location('checklistComposition[*].currency')
 				.isString()
 				.withMessage('SHOULD BE STRING')
 				.isIn(Object.values(Currencies))
 				.withMessage(
-					`ALLOWED VALUES: ${Object.values(Currencies).join(
-						' | '
-					)}`
+					`ALLOWED VALUES: ${Object.values(Currencies).join(' | ')}`
 				),
 		]
 	}

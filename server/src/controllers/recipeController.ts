@@ -107,9 +107,7 @@ export default class RecipeController {
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await RecipeService.getAllChosenRecipes(
-				req.body
-			)
+			const result = await RecipeService.getAllChosenRecipes(req.body)
 			res.json({
 				chosenRecipesData: result.map(record => ({
 					info: {
@@ -137,9 +135,7 @@ export default class RecipeController {
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await RecipeService.getAllFavoriteRecipes(
-				req.body
-			)
+			const result = await RecipeService.getAllFavoriteRecipes(req.body)
 			res.json({
 				favoriteRecipesData: result.map(record => ({
 					info: {
@@ -182,9 +178,7 @@ export default class RecipeController {
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await RecipeService.createChosenRecipe(
-				req.body
-			)
+			const result = await RecipeService.createChosenRecipe(req.body)
 			res.status(201).json(result)
 		} catch (e) {
 			return next(e)
@@ -200,9 +194,7 @@ export default class RecipeController {
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await RecipeService.createFavoriteRecipe(
-				req.body
-			)
+			const result = await RecipeService.createFavoriteRecipe(req.body)
 			res.status(201).json(result)
 		} catch (e) {
 			return next(e)
@@ -235,9 +227,7 @@ export default class RecipeController {
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await RecipeService.updateChosenRecipe(
-				req.body
-			)
+			const result = await RecipeService.updateChosenRecipe(req.body)
 			res.json(result)
 		} catch (e) {
 			return next(e)
@@ -257,9 +247,7 @@ export default class RecipeController {
 			const result = await RecipeService.deleteRecipes(req.body)
 
 			if (result.count === 0)
-				return next(
-					UserRequestError.NotFound('NO RECIPES WERE FOUND')
-				)
+				return next(UserRequestError.NotFound('NO RECIPES WERE FOUND'))
 
 			res.json(result)
 		} catch (e) {
@@ -276,14 +264,10 @@ export default class RecipeController {
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await RecipeService.deleteChosenRecipes(
-				req.body
-			)
+			const result = await RecipeService.deleteChosenRecipes(req.body)
 
 			if (result.count === 0)
-				return next(
-					UserRequestError.NotFound('NO RECIPES WERE FOUND')
-				)
+				return next(UserRequestError.NotFound('NO RECIPES WERE FOUND'))
 
 			res.json(result)
 		} catch (e) {
@@ -300,14 +284,10 @@ export default class RecipeController {
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await RecipeService.deleteFavoriteRecipes(
-				req.body
-			)
+			const result = await RecipeService.deleteFavoriteRecipes(req.body)
 
 			if (result.count === 0)
-				return next(
-					UserRequestError.NotFound('NO RECIPES WERE FOUND')
-				)
+				return next(UserRequestError.NotFound('NO RECIPES WERE FOUND'))
 
 			res.json(result)
 		} catch (e) {

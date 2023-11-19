@@ -30,12 +30,7 @@ export default class RecipeDataValidator extends BasicValidator {
 		isOptional: boolean = true,
 		length: { min?: number; max: number } | undefined = undefined
 	) {
-		return BasicValidator.title(
-			location,
-			isOptional,
-			length,
-			'title'
-		)
+		return BasicValidator.title(location, isOptional, length, 'title')
 	}
 
 	static type(location: TLocation, isOptional: boolean) {
@@ -46,9 +41,7 @@ export default class RecipeDataValidator extends BasicValidator {
 			.withMessage(
 				'ALLOWED TYPES: ' + Object.values(RecipeTypes).join(' | ')
 			)
-		return isOptional
-			? result.optional({ values: 'undefined' })
-			: result
+		return isOptional ? result.optional({ values: 'undefined' }) : result
 	}
 
 	static description(location: TLocation) {
@@ -58,10 +51,7 @@ export default class RecipeDataValidator extends BasicValidator {
 			.withMessage('SHOULD BE STRING')
 	}
 
-	static recipeComposition(
-		location: TLocation,
-		isOptional: boolean = false
-	) {
+	static recipeComposition(location: TLocation, isOptional: boolean = false) {
 		return [
 			(isOptional
 				? location('recipeComposition').optional({

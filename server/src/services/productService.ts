@@ -24,9 +24,7 @@ export default class ProductService {
 			take,
 			cursor: cursor ? { id: cursor } : undefined,
 			where: {
-				title: title
-					? { contains: title, mode: 'insensitive' }
-					: undefined,
+				title: title ? { contains: title, mode: 'insensitive' } : undefined,
 			},
 		})
 
@@ -44,18 +42,14 @@ export default class ProductService {
 			select: { id: true },
 		})
 		if (!user)
-			throw UserRequestError.NotFound(
-				`USER WITH ID ${creatorId} NOT FOUND`
-			)
+			throw UserRequestError.NotFound(`USER WITH ID ${creatorId} NOT FOUND`)
 
 		const productTitle = await prismaClient.product.findUnique({
 			where: { title },
 			select: { title: true },
 		})
 		if (productTitle)
-			throw UserRequestError.BadRequest(
-				'PRODUCT TITLE ALREADY TAKEN'
-			)
+			throw UserRequestError.BadRequest('PRODUCT TITLE ALREADY TAKEN')
 
 		return prismaClient.product.create({
 			data: {
@@ -83,9 +77,7 @@ export default class ProductService {
 			select: { id: true },
 		})
 		if (!product)
-			throw UserRequestError.NotFound(
-				`PRODUCT WITH ID ${id} NOT FOUND`
-			)
+			throw UserRequestError.NotFound(`PRODUCT WITH ID ${id} NOT FOUND`)
 
 		return prismaClient.product.update({
 			where: { id },

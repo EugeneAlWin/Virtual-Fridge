@@ -18,9 +18,7 @@ export default class BasicValidator {
 	) {
 		const result = isOptional
 			? location(field).optional({ values: 'undefined' })
-			: location(field)
-					.isString()
-					.withMessage('SHOULD BE A STRING')
+			: location(field).isString().withMessage('SHOULD BE A STRING')
 
 		return length
 			? result
@@ -28,9 +26,7 @@ export default class BasicValidator {
 						min: length.min || 0,
 						max: length.max,
 					})
-					.withMessage(
-						`${length?.min || 0} >= LENGTH <= ${length?.max}`
-					)
+					.withMessage(`${length?.min || 0} >= LENGTH <= ${length?.max}`)
 			: result
 	}
 
@@ -64,9 +60,7 @@ export default class BasicValidator {
 	}
 
 	static isArray(location: TLocation, field: string) {
-		return location(field)
-			.isArray()
-			.withMessage('SHOULD BE AN ARRAY')
+		return location(field).isArray().withMessage('SHOULD BE AN ARRAY')
 	}
 
 	static decimal(location: TLocation, field: string) {

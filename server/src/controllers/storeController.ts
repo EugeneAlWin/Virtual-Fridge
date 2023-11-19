@@ -85,18 +85,14 @@ export default class StoreController {
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const transactionResult = await StoreService.updateStore(
-				req.body
-			)
+			const transactionResult = await StoreService.updateStore(req.body)
 			const updateResult = transactionResult[1]
 			res.json({
 				...updateResult,
-				storeComposition: updateResult.storeComposition.map(
-					record => ({
-						...record,
-						price: record.price.toString(),
-					})
-				),
+				storeComposition: updateResult.storeComposition.map(record => ({
+					...record,
+					price: record.price.toString(),
+				})),
 			})
 		} catch (e) {
 			return next(e)

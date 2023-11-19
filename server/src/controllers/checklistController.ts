@@ -36,9 +36,7 @@ export default class ChecklistController {
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await ChecklistService.getChecklistById(
-				req.body
-			)
+			const result = await ChecklistService.getChecklistById(req.body)
 			if (!result)
 				return next(
 					UserRequestError.NotFound(
@@ -48,15 +46,12 @@ export default class ChecklistController {
 
 			res.json({
 				...result,
-				checklistComposition: result.checklistComposition.map(
-					record => ({
-						...record,
-						price: record.price?.toString() || '0',
-					})
-				),
+				checklistComposition: result.checklistComposition.map(record => ({
+					...record,
+					price: record.price?.toString() || '0',
+				})),
 				checklistPrices: {
-					checklistId:
-						result.checklistPrices?.checklistId || result.id,
+					checklistId: result.checklistPrices?.checklistId || result.id,
 					BYN: result.checklistPrices?.BYN.toString() || '0',
 					USD: result.checklistPrices?.USD.toString() || '0',
 					RUB: result.checklistPrices?.RUB.toString() || '0',
@@ -76,26 +71,21 @@ export default class ChecklistController {
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await ChecklistService.getAllChecklists(
-				req.body
-			)
+			const result = await ChecklistService.getAllChecklists(req.body)
 			res.json({
 				checklistsData: result.map(record => ({
 					...record,
 					checklistPrices: {
-						checklistId:
-							record.checklistPrices?.checklistId || record.id,
+						checklistId: record.checklistPrices?.checklistId || record.id,
 						BYN: record.checklistPrices?.BYN.toString() || '0',
 						USD: record.checklistPrices?.USD.toString() || '0',
 						RUB: record.checklistPrices?.RUB.toString() || '0',
 					},
-					checklistComposition: record.checklistComposition.map(
-						item => ({
-							...item,
-							checklistId: item.checklistId,
-							price: item.price?.toString() || '0',
-						})
-					),
+					checklistComposition: record.checklistComposition.map(item => ({
+						...item,
+						checklistId: item.checklistId,
+						price: item.price?.toString() || '0',
+					})),
 				})),
 				cursor: result[result.length - 1]?.id || null,
 			})
@@ -114,20 +104,15 @@ export default class ChecklistController {
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await ChecklistService.createChecklist(
-				req.body
-			)
+			const result = await ChecklistService.createChecklist(req.body)
 			res.status(201).json({
 				...result,
-				checklistComposition: result.checklistComposition.map(
-					record => ({
-						...record,
-						price: record.price?.toString() || '0',
-					})
-				),
+				checklistComposition: result.checklistComposition.map(record => ({
+					...record,
+					price: record.price?.toString() || '0',
+				})),
 				checklistPrices: {
-					checklistId:
-						result.checklistPrices?.checklistId || result.id,
+					checklistId: result.checklistPrices?.checklistId || result.id,
 					BYN: result.checklistPrices?.BYN.toString() || '0',
 					USD: result.checklistPrices?.USD.toString() || '0',
 					RUB: result.checklistPrices?.RUB.toString() || '0',
@@ -148,9 +133,7 @@ export default class ChecklistController {
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await ChecklistService.updateChecklist(
-				req.body
-			)
+			const result = await ChecklistService.updateChecklist(req.body)
 			if (!result)
 				return next(
 					UserRequestError.NotFound(
@@ -160,15 +143,12 @@ export default class ChecklistController {
 
 			res.json({
 				...result,
-				checklistComposition: result.checklistComposition.map(
-					record => ({
-						...record,
-						price: record.price?.toString() || '0',
-					})
-				),
+				checklistComposition: result.checklistComposition.map(record => ({
+					...record,
+					price: record.price?.toString() || '0',
+				})),
 				checklistPrices: {
-					checklistId:
-						result.checklistPrices?.checklistId || result.id,
+					checklistId: result.checklistPrices?.checklistId || result.id,
 					BYN: result.checklistPrices?.BYN.toString() || '0',
 					USD: result.checklistPrices?.USD.toString() || '0',
 					RUB: result.checklistPrices?.RUB.toString() || '0',
@@ -189,14 +169,10 @@ export default class ChecklistController {
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await ChecklistService.deleteChecklist(
-				req.body
-			)
+			const result = await ChecklistService.deleteChecklist(req.body)
 
 			if (result[3].count === 0)
-				return next(
-					UserRequestError.NotFound('NO CHECKLISTS WERE FOUND')
-				)
+				return next(UserRequestError.NotFound('NO CHECKLISTS WERE FOUND'))
 
 			res.json(result[3])
 		} catch (e) {

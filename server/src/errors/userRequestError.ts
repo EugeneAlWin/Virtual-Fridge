@@ -5,13 +5,8 @@ export default class UserRequestError extends Error {
 	location
 	field
 	value
-	constructor({
-		code,
-		message,
-		field,
-		location,
-		value,
-	}: IErrorResponse) {
+
+	constructor({ code, message, field, location, value }: IErrorResponse) {
 		super(message)
 		this.code = code
 		this.field = field

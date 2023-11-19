@@ -116,9 +116,7 @@ export default class ProductController {
 			const result = await ProductService.deleteProduct(req.body)
 
 			if (result.count === 0)
-				return next(
-					UserRequestError.NotFound('NO PRODUCTS WERE FOUND')
-				)
+				return next(UserRequestError.NotFound('NO PRODUCTS WERE FOUND'))
 
 			res.json(result)
 		} catch (e) {

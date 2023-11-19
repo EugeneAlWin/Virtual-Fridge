@@ -7,9 +7,7 @@ import { IDeleteStoreRequest } from '../api/stores/dto/deleteStore'
 
 export default class StoreService {
 	//get
-	static getStoreById = async ({
-		creatorId,
-	}: IGetStoreByUserIdRequest) =>
+	static getStoreById = async ({ creatorId }: IGetStoreByUserIdRequest) =>
 		prismaClient.store.findUnique({
 			where: { creatorId },
 			include: { storeComposition: true },
@@ -27,9 +25,7 @@ export default class StoreService {
 		})
 
 		if (!user)
-			throw UserRequestError.NotFound(
-				`USER WITH ID ${creatorId} NOT FOUND`
-			)
+			throw UserRequestError.NotFound(`USER WITH ID ${creatorId} NOT FOUND`)
 
 		const store = await prismaClient.store.findUnique({
 			where: { creatorId },
@@ -83,18 +79,14 @@ export default class StoreService {
 			select: { id: true },
 		})
 		if (!user)
-			throw UserRequestError.NotFound(
-				`USER WITH ID ${creatorId} NOT FOUND`
-			)
+			throw UserRequestError.NotFound(`USER WITH ID ${creatorId} NOT FOUND`)
 
 		const store = await prismaClient.store.findUnique({
 			where: { id },
 			select: { id: true },
 		})
 		if (!store)
-			throw UserRequestError.NotFound(
-				`STORE WITH ID ${id} NOT FOUND`
-			)
+			throw UserRequestError.NotFound(`STORE WITH ID ${id} NOT FOUND`)
 
 		const productsCount = await prismaClient.product.count({
 			where: {
@@ -132,10 +124,7 @@ export default class StoreService {
 	}
 
 	//delete
-	static deleteStore = async ({
-		creatorId,
-		storeId,
-	}: IDeleteStoreRequest) => {
+	static deleteStore = async ({ creatorId, storeId }: IDeleteStoreRequest) => {
 		const store = await prismaClient.store.findUnique({
 			where: { creatorId, id: storeId },
 			select: { id: true },

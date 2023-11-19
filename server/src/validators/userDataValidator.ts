@@ -8,12 +8,7 @@ export default class UserDataValidator extends BasicValidator {
 		isOptional: boolean = true,
 		length: { min?: number; max: number } | undefined = undefined
 	) {
-		return BasicValidator.title(
-			location,
-			isOptional,
-			length,
-			'login'
-		)
+		return BasicValidator.title(location, isOptional, length, 'login')
 	}
 
 	static password(
@@ -23,9 +18,7 @@ export default class UserDataValidator extends BasicValidator {
 	) {
 		const result = isOptional
 			? location('password').optional({ values: 'undefined' })
-			: location('password')
-					.isString()
-					.withMessage('SHOULD BE A STRING')
+			: location('password').isString().withMessage('SHOULD BE A STRING')
 
 		return length
 			? result
@@ -33,9 +26,7 @@ export default class UserDataValidator extends BasicValidator {
 						min: length.min || 0,
 						max: length.max,
 					})
-					.withMessage(
-						`${length?.min || 0} >= LENGTH <= ${length?.max}`
-					)
+					.withMessage(`${length?.min || 0} >= LENGTH <= ${length?.max}`)
 			: result
 	}
 

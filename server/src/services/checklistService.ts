@@ -8,9 +8,7 @@ import prismaClient from '../prismaClient'
 
 export default class ChecklistService {
 	//get
-	static getChecklistById = async ({
-		id,
-	}: IGetChecklistByIdRequest) =>
+	static getChecklistById = async ({ id }: IGetChecklistByIdRequest) =>
 		prismaClient.checklist.findUnique({
 			where: { id },
 			include: {
@@ -60,17 +58,13 @@ export default class ChecklistService {
 		const products = await prismaClient.product.findMany({
 			where: {
 				id: {
-					in: checklistComposition.map(
-						record => record.productId
-					),
+					in: checklistComposition.map(record => record.productId),
 				},
 			},
 		})
 
 		if (checklistComposition.length !== products.length)
-			throw UserRequestError.NotFound(
-				'SOME PRODUCT DOES NOT EXISTS'
-			)
+			throw UserRequestError.NotFound('SOME PRODUCT DOES NOT EXISTS')
 
 		return prismaClient.checklist.create({
 			data: {
@@ -158,8 +152,7 @@ export default class ChecklistService {
 					data: { isConfirmed },
 				})
 			)
-		if (transactions.length > 0)
-			await prismaClient.$transaction(transactions)
+		if (transactions.length > 0) await prismaClient.$transaction(transactions)
 
 		return prismaClient.checklist.findUnique({
 			where: { id: checklistId },

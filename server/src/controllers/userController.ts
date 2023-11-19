@@ -175,9 +175,7 @@ export default class UserController {
 			const result = await UserService.deleteUserTokens(req.body)
 
 			if (result.count === 0)
-				return next(
-					UserRequestError.NotFound('NO DEVICES WERE FOUND')
-				)
+				return next(UserRequestError.NotFound('NO DEVICES WERE FOUND'))
 
 			res.json(result)
 		} catch (e) {

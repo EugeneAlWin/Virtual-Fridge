@@ -33,12 +33,7 @@ export default class ProductDataValidator extends BasicValidator {
 		isOptional: boolean = true,
 		length: { min?: number; max: number } | undefined = undefined
 	) {
-		return BasicValidator.title(
-			location,
-			isOptional,
-			length,
-			'title'
-		)
+		return BasicValidator.title(location, isOptional, length, 'title')
 	}
 
 	static calories(location: TLocation, isOptional = false) {

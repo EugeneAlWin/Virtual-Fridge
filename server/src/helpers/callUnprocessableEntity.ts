@@ -1,8 +1,5 @@
 import { NextFunction } from 'express'
-import {
-	FieldValidationError,
-	ValidationError,
-} from 'express-validator'
+import { FieldValidationError, ValidationError } from 'express-validator'
 import UserRequestError from '../errors/userRequestError'
 
 //Helper, passes UnprocessableEntity error to middleware

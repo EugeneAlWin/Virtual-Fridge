@@ -16,12 +16,7 @@ export default class StoreDataValidator extends BasicValidator {
 		isOptional: boolean = true,
 		length: { min?: number; max: number } | undefined = undefined
 	) {
-		return BasicValidator.title(
-			location,
-			isOptional,
-			length,
-			'title'
-		)
+		return BasicValidator.title(location, isOptional, length, 'title')
 	}
 
 	static StoreCompositionArrayEntries(
@@ -44,21 +39,14 @@ export default class StoreDataValidator extends BasicValidator {
 				.isString()
 				.withMessage('SHOULD BE STRING')
 				.isIn(Object.values(Units))
-				.withMessage(
-					`ALLOWED VALUES: ${Object.values(Units).join(' | ')}`
-				),
-			BasicValidator.decimal(
-				location,
-				'storeComposition[*].price'
-			),
+				.withMessage(`ALLOWED VALUES: ${Object.values(Units).join(' | ')}`),
+			BasicValidator.decimal(location, 'storeComposition[*].price'),
 			location('storeComposition[*].currency')
 				.isString()
 				.withMessage('SHOULD BE STRING')
 				.isIn(Object.values(Currencies))
 				.withMessage(
-					`ALLOWED VALUES: ${Object.values(Currencies).join(
-						' | '
-					)}`
+					`ALLOWED VALUES: ${Object.values(Currencies).join(' | ')}`
 				),
 			location('storeComposition[*].expires')
 				.optional({ values: 'undefined' })

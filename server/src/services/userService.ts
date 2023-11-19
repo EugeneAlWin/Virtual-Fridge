@@ -11,9 +11,7 @@ import { IDeleteUserTokensRequest } from '../api/users/dto/deleteUserTokens'
 
 export default class UserService {
 	//get
-	static getUserByLogin = async ({
-		login,
-	}: IGetUserByLoginRequest) =>
+	static getUserByLogin = async ({ login }: IGetUserByLoginRequest) =>
 		prismaClient.user.findUnique({
 			where: { login },
 			include: { userToken: true },
@@ -48,8 +46,7 @@ export default class UserService {
 			where: { login },
 			select: { id: true },
 		})
-		if (user)
-			throw UserRequestError.BadRequest('LOGIN ALREADY TAKEN')
+		if (user) throw UserRequestError.BadRequest('LOGIN ALREADY TAKEN')
 		return prismaClient.user.create({
 			data: {
 				login,
@@ -73,9 +70,7 @@ export default class UserService {
 			select: { id: true },
 		})
 		if (!user)
-			throw UserRequestError.NotFound(
-				`USER WITH ID ${userId} NOT FOUND`
-			)
+			throw UserRequestError.NotFound(`USER WITH ID ${userId} NOT FOUND`)
 
 		const device = await prismaClient.userToken.findUnique({
 			where: {
@@ -109,9 +104,7 @@ export default class UserService {
 			select: { id: true },
 		})
 		if (!user)
-			throw UserRequestError.NotFound(
-				`USER WITH ID ${userId} NOT FOUND`
-			)
+			throw UserRequestError.NotFound(`USER WITH ID ${userId} NOT FOUND`)
 
 		return prismaClient.user.update({
 			where: { id: userId },
@@ -129,18 +122,14 @@ export default class UserService {
 			select: { id: true },
 		})
 		if (!user)
-			throw UserRequestError.NotFound(
-				`USER WITH ID ${userId} NOT FOUND`
-			)
+			throw UserRequestError.NotFound(`USER WITH ID ${userId} NOT FOUND`)
 
 		const device = await prismaClient.userToken.findUnique({
 			where: { userId_deviceId: { userId, deviceId } },
 			select: { deviceId: true },
 		})
 		if (!device)
-			throw UserRequestError.NotFound(
-				`DEVICE WITH ID ${deviceId} NOT FOUND`
-			)
+			throw UserRequestError.NotFound(`DEVICE WITH ID ${deviceId} NOT FOUND`)
 
 		return prismaClient.userToken.update({
 			where: { userId_deviceId: { userId, deviceId } },
