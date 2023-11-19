@@ -4,7 +4,7 @@ export interface IUpdateStoreRequest {
 	id: number
 	creatorId: number
 	title?: string
-	StoreComposition: {
+	storeComposition: {
 		storeId: number
 		productId: number
 		quantity: number
@@ -19,7 +19,7 @@ export interface IUpdateStoreResponse {
 	id: number
 	creatorId: number
 	title: string | null
-	StoreComposition: {
+	storeComposition: {
 		storeId: number
 		productId: number
 		quantity: number

@@ -1,9 +1,9 @@
-import prismaClient from '../prismaClient'
 import { IGetStoreByUserIdRequest } from '../api/stores/dto/getStoreById'
-import { IUpdateStoreRequest } from '../api/stores/dto/updateStore'
-import { IDeleteStoreRequest } from '../api/stores/dto/deleteStore'
+import prismaClient from '../prismaClient'
 import { ICreateStoreRequest } from '../api/stores/dto/createStore'
 import UserRequestError from '../errors/userRequestError'
+import { IUpdateStoreRequest } from '../api/stores/dto/updateStore'
+import { IDeleteStoreRequest } from '../api/stores/dto/deleteStore'
 
 export default class StoreService {
 	//get
@@ -12,14 +12,14 @@ export default class StoreService {
 	}: IGetStoreByUserIdRequest) =>
 		prismaClient.store.findFirstOrThrow({
 			where: { creatorId },
-			include: { StoreComposition: true },
+			include: { storeComposition: true },
 		})
 
 	//create
 	static createStore = async ({
 		title,
 		creatorId,
-		StoreComposition,
+		storeComposition,
 	}: ICreateStoreRequest) => {
 		const user = await prismaClient.user.findUnique({
 			where: { id: creatorId },
@@ -35,14 +35,14 @@ export default class StoreService {
 			throw UserRequestError.BadRequest(
 				`STORE FOR USER WITH ID ${creatorId} ALREADY EXISTS`
 			)
-		console.log(store)
+
 		return prismaClient.store.create({
 			data: {
 				title,
 				creatorId,
-				StoreComposition: {
+				storeComposition: {
 					createMany: {
-						data: StoreComposition.map(record => ({
+						data: storeComposition.map(record => ({
 							productId: record.productId,
 							quantity: record.quantity,
 							expires: record.expires,
@@ -53,7 +53,7 @@ export default class StoreService {
 					},
 				},
 			},
-			include: { StoreComposition: true },
+			include: { storeComposition: true },
 		})
 	}
 
@@ -62,7 +62,7 @@ export default class StoreService {
 		id,
 		creatorId,
 		title,
-		StoreComposition,
+		storeComposition,
 	}: IUpdateStoreRequest) => {
 		const user = await prismaClient.user.findUnique({
 			where: { id: creatorId },
@@ -82,9 +82,9 @@ export default class StoreService {
 				where: { id },
 				data: {
 					title,
-					StoreComposition: {
+					storeComposition: {
 						createMany: {
-							data: StoreComposition.map(record => ({
+							data: storeComposition.map(record => ({
 								productId: record.productId,
 								quantity: record.quantity,
 								expires: record.expires,
@@ -95,7 +95,7 @@ export default class StoreService {
 						},
 					},
 				},
-				include: { StoreComposition: true },
+				include: { storeComposition: true },
 			}),
 		])
 	}

@@ -16,7 +16,7 @@ import { IDeleteChosenRecipesRequest } from '../api/recipes/dto/deleteChosenReci
 export default class RecipeService {
 	//get
 	static getRecipeById = async ({ id }: IGetRecipeByIdRequest) =>
-		prismaClient.recipe.findFirstOrThrow({
+		prismaClient.recipe.findUnique({
 			where: { id },
 			include: { recipeComposition: true },
 		})
@@ -96,13 +96,13 @@ export default class RecipeService {
 			cursor: cursor ? { id: cursor } : undefined,
 			where: {
 				userId,
-				Recipe: {
+				recipe: {
 					title: title
 						? { contains: title, mode: 'insensitive' }
 						: undefined,
 				},
 			},
-			include: { Recipe: true },
+			include: { recipe: true },
 		})
 	}
 
@@ -277,7 +277,10 @@ export default class RecipeService {
 		userId,
 	}: IDeleteRecipesRequest) =>
 		prismaClient.recipe.deleteMany({
-			where: { id: { in: recipesId }, creatorId: userId },
+			where: {
+				id: { in: recipesId },
+				creatorId: userId,
+			},
 		})
 
 	static deleteChosenRecipes = async ({

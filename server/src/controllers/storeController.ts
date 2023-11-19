@@ -35,7 +35,7 @@ export default class StoreController {
 			const result = await StoreService.getStoreById(req.body)
 			res.json({
 				...result,
-				StoreComposition: result.StoreComposition.map(record => ({
+				storeComposition: result.storeComposition.map(record => ({
 					...record,
 					price: record.price.toString(),
 				})),
@@ -61,7 +61,7 @@ export default class StoreController {
 			const result = await StoreService.createStore(req.body)
 			res.status(201).json({
 				...result,
-				StoreComposition: result.StoreComposition.map(record => ({
+				storeComposition: result.storeComposition.map(record => ({
 					...record,
 					price: record.price.toString(),
 				})),
@@ -93,7 +93,7 @@ export default class StoreController {
 			const updateResult = transactionResult[1]
 			res.json({
 				...updateResult,
-				StoreComposition: updateResult.StoreComposition.map(
+				storeComposition: updateResult.storeComposition.map(
 					record => ({
 						...record,
 						price: record.price.toString(),

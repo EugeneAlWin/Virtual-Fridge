@@ -8,7 +8,7 @@ export interface IGetStoreByUserIdResponse {
 	id: number
 	creatorId: number
 	title: string | null
-	StoreComposition: {
+	storeComposition: {
 		storeId: number
 		productId: number
 		quantity: number

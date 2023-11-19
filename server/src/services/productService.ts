@@ -24,7 +24,9 @@ export default class ProductService {
 			take,
 			cursor: cursor ? { id: cursor } : undefined,
 			where: {
-				title: { contains: title, mode: 'insensitive' },
+				title: title
+					? { contains: title, mode: 'insensitive' }
+					: undefined,
 			},
 		})
 

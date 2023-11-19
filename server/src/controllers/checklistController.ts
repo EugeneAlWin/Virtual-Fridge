@@ -1,36 +1,37 @@
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
-import {
-	ICreateChecklistRequest,
-	ICreateChecklistResponse,
-} from 'api/checklists/dto/createChecklist'
-import {
-	IDeleteChecklistRequest,
-	IDeleteChecklistResponse,
-} from 'api/checklists/dto/deleteChecklist'
-import {
-	IGetAllChecklistsRequest,
-	IGetAllChecklistsResponse,
-} from 'api/checklists/dto/getAllChecklists'
+import { RequestHandler } from 'express'
 import {
 	IGetChecklistByIdRequest,
 	IGetChecklistByIdResponse,
-} from 'api/checklists/dto/getChecklistById'
+} from '../api/checklists/dto/getChecklistById'
+import getValidationResult from '../helpers/getValidationResult'
+import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
+import ChecklistService from '../services/checklistService'
+import UserRequestError from '../errors/userRequestError'
+import {
+	IGetAllChecklistsRequest,
+	IGetAllChecklistsResponse,
+} from '../api/checklists/dto/getAllChecklists'
+import {
+	ICreateChecklistRequest,
+	ICreateChecklistResponse,
+} from '../api/checklists/dto/createChecklist'
 import {
 	IUpdateChecklistRequest,
 	IUpdateChecklistResponse,
-} from 'api/checklists/dto/updateChecklist'
-import { RequestHandler } from 'express'
+} from '../api/checklists/dto/updateChecklist'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+import {
+	IDeleteChecklistRequest,
+	IDeleteChecklistResponse,
+} from '../api/checklists/dto/deleteChecklist'
 import { IErrorResponse } from '../api/errorResponse'
-import UserRequestError from '../errors/userRequestError'
-import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
-import getValidationResult from '../helpers/getValidationResult'
-import ChecklistService from '../services/checklistService'
 
 export default class ChecklistController {
 	//get
 	static getChecklistById: RequestHandler<
-		IGetChecklistByIdRequest,
-		IGetChecklistByIdResponse | IErrorResponse
+		undefined,
+		IGetChecklistByIdResponse | IErrorResponse,
+		IGetChecklistByIdRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)
@@ -39,28 +40,30 @@ export default class ChecklistController {
 			const result = await ChecklistService.getChecklistById(
 				req.body
 			)
+			if (!result)
+				return next(
+					UserRequestError.NotFound(
+						`CHECKLIST WITH ID ${req.body.id} NOT FOUND`
+					)
+				)
+
 			res.json({
 				...result,
-				ChecklistComposition: result.ChecklistComposition.map(
+				checklistComposition: result.checklistComposition.map(
 					record => ({
 						...record,
 						price: record.price?.toString() || '0',
 					})
 				),
-				ChecklistPrices: {
+				checklistPrices: {
 					checklistId:
-						result.ChecklistPrices?.checklistId || result.id,
-					BYN: result.ChecklistPrices?.BYN.toString() || '0',
-					USD: result.ChecklistPrices?.USD.toString() || '0',
-					RUB: result.ChecklistPrices?.RUB.toString() || '0',
+						result.checklistPrices?.checklistId || result.id,
+					BYN: result.checklistPrices?.BYN.toString() || '0',
+					USD: result.checklistPrices?.USD.toString() || '0',
+					RUB: result.checklistPrices?.RUB.toString() || '0',
 				},
 			})
 		} catch (e) {
-			if ((e as PrismaClientKnownRequestError)?.code === 'P2025') {
-				return next(
-					UserRequestError.NotFound('CHECKLIST NOT FOUND')
-				)
-			}
 			return next(e)
 		}
 	}
@@ -80,14 +83,14 @@ export default class ChecklistController {
 			res.json({
 				checklistsData: result.map(record => ({
 					...record,
-					ChecklistPrices: {
+					checklistPrices: {
 						checklistId:
-							record.ChecklistPrices?.checklistId || record.id,
-						BYN: record.ChecklistPrices?.BYN.toString() || '0',
-						USD: record.ChecklistPrices?.USD.toString() || '0',
-						RUB: record.ChecklistPrices?.RUB.toString() || '0',
+							record.checklistPrices?.checklistId || record.id,
+						BYN: record.checklistPrices?.BYN.toString() || '0',
+						USD: record.checklistPrices?.USD.toString() || '0',
+						RUB: record.checklistPrices?.RUB.toString() || '0',
 					},
-					ChecklistComposition: record.ChecklistComposition.map(
+					checklistComposition: record.checklistComposition.map(
 						item => ({
 							...item,
 							checklistId: item.checklistId,
@@ -117,27 +120,21 @@ export default class ChecklistController {
 			)
 			res.status(201).json({
 				...result,
-				ChecklistComposition: result.ChecklistComposition.map(
+				checklistComposition: result.checklistComposition.map(
 					record => ({
 						...record,
 						price: record.price?.toString() || '0',
 					})
 				),
-				ChecklistPrices: {
+				checklistPrices: {
 					checklistId:
-						result.ChecklistPrices?.checklistId || result.id,
-					BYN: result.ChecklistPrices?.BYN.toString() || '0',
-					USD: result.ChecklistPrices?.USD.toString() || '0',
-					RUB: result.ChecklistPrices?.RUB.toString() || '0',
+						result.checklistPrices?.checklistId || result.id,
+					BYN: result.checklistPrices?.BYN.toString() || '0',
+					USD: result.checklistPrices?.USD.toString() || '0',
+					RUB: result.checklistPrices?.RUB.toString() || '0',
 				},
 			})
 		} catch (e) {
-			if ((e as PrismaClientKnownRequestError).code === 'P2003')
-				return next(
-					UserRequestError.BadRequest(
-						`USER WITH ID ${req.body.creatorId} NOT FOUND`
-					)
-				)
 			next(e)
 		}
 	}
@@ -157,18 +154,18 @@ export default class ChecklistController {
 			)
 			res.json({
 				...result,
-				ChecklistComposition: result.ChecklistComposition.map(
+				checklistComposition: result.checklistComposition.map(
 					record => ({
 						...record,
 						price: record.price?.toString() || '0',
 					})
 				),
-				ChecklistPrices: {
+				checklistPrices: {
 					checklistId:
-						result.ChecklistPrices?.checklistId || result.id,
-					BYN: result.ChecklistPrices?.BYN.toString() || '0',
-					USD: result.ChecklistPrices?.USD.toString() || '0',
-					RUB: result.ChecklistPrices?.RUB.toString() || '0',
+						result.checklistPrices?.checklistId || result.id,
+					BYN: result.checklistPrices?.BYN.toString() || '0',
+					USD: result.checklistPrices?.USD.toString() || '0',
+					RUB: result.checklistPrices?.RUB.toString() || '0',
 				},
 			})
 		} catch (e) {

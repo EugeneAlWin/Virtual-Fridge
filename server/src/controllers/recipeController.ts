@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express'
 import { IErrorResponse } from '../api/errorResponse'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import UserRequestError from '../errors/userRequestError'
 
 import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
@@ -58,19 +57,24 @@ import {
 export default class RecipeController {
 	//get
 	static getRecipeById: RequestHandler<
-		IGetRecipeByIdRequest,
-		IGetRecipeByIdResponse | IErrorResponse
+		undefined,
+		IGetRecipeByIdResponse | IErrorResponse,
+		IGetRecipeByIdRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
 			const result = await RecipeService.getRecipeById(req.body)
+			if (!result)
+				return next(
+					UserRequestError.NotFound(
+						`RECIPE WITH ID ${req.body.id} NOT FOUND`
+					)
+				)
+
 			res.json(result)
 		} catch (e) {
-			if ((e as PrismaClientKnownRequestError)?.code === 'P2025') {
-				return next(UserRequestError.NotFound('RECIPE NOT FOUND'))
-			}
 			return next(e)
 		}
 	}
@@ -143,7 +147,7 @@ export default class RecipeController {
 						recipeId: record.recipeId,
 						userId: record.userId,
 					},
-					recipeDataPreview: record.Recipe,
+					recipeDataPreview: record.recipe,
 				})),
 				cursor: result[result.length - 1]?.id || null,
 			})

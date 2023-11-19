@@ -1,6 +1,7 @@
 import { Currencies, Units } from '../api/enums'
 import BasicValidator from './basicValidator'
 import { TLocation } from './types'
+
 export default class ChecklistDataValidator extends BasicValidator {
 	static creatorId(location: TLocation) {
 		return BasicValidator.id(location, 'creatorId')
@@ -22,16 +23,16 @@ export default class ChecklistDataValidator extends BasicValidator {
 
 	static ChecklistCompositionArrayEntries(location: TLocation) {
 		return [
-			BasicValidator.isArray(location, 'ChecklistComposition'),
+			BasicValidator.isArray(location, 'checklistComposition'),
 			BasicValidator.id(
 				location,
-				'ChecklistComposition[*].productId'
+				'checklistComposition[*].productId'
 			),
-			location('ChecklistComposition[*].quantity')
+			location('checklistComposition[*].quantity')
 				.not()
 				.isString()
 				.withMessage('SHOULD BE NUMERIC > 0'),
-			location('ChecklistComposition[*].units')
+			location('checklistComposition[*].units')
 				.isString()
 				.withMessage('SHOULD BE STRING')
 				.isIn(Object.values(Units))
@@ -40,9 +41,9 @@ export default class ChecklistDataValidator extends BasicValidator {
 				),
 			BasicValidator.decimal(
 				location,
-				'ChecklistComposition[*].price'
+				'checklistComposition[*].price'
 			),
-			location('ChecklistComposition[*].currency')
+			location('checklistComposition[*].currency')
 				.isString()
 				.withMessage('SHOULD BE STRING')
 				.isIn(Object.values(Currencies))
@@ -56,9 +57,9 @@ export default class ChecklistDataValidator extends BasicValidator {
 
 	static ChecklistPricesEntries(location: TLocation) {
 		return [
-			BasicValidator.decimal(location, 'ChecklistPrices.BYN'),
-			BasicValidator.decimal(location, 'ChecklistPrices.USD'),
-			BasicValidator.decimal(location, 'ChecklistPrices.RUB'),
+			BasicValidator.decimal(location, 'checklistPrices.BYN'),
+			BasicValidator.decimal(location, 'checklistPrices.USD'),
+			BasicValidator.decimal(location, 'checklistPrices.RUB'),
 		]
 	}
 

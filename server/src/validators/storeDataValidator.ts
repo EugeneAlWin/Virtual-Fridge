@@ -29,18 +29,18 @@ export default class StoreDataValidator extends BasicValidator {
 		isUpdate: boolean = false
 	) {
 		return [
-			BasicValidator.isArray(location, 'StoreComposition'),
-			BasicValidator.id(location, 'StoreComposition[*].productId'),
+			BasicValidator.isArray(location, 'storeComposition'),
+			BasicValidator.id(location, 'storeComposition[*].productId'),
 			isUpdate
 				? StoreDataValidator.storeId(location)
 				: StoreDataValidator.storeId(location).optional({
 						values: 'undefined',
 				  }),
-			location('StoreComposition[*].quantity')
+			location('storeComposition[*].quantity')
 				.not()
 				.isString()
 				.withMessage('SHOULD BE NUMERIC > 0'),
-			location('StoreComposition[*].unit')
+			location('storeComposition[*].unit')
 				.isString()
 				.withMessage('SHOULD BE STRING')
 				.isIn(Object.values(Units))
@@ -49,9 +49,9 @@ export default class StoreDataValidator extends BasicValidator {
 				),
 			BasicValidator.decimal(
 				location,
-				'StoreComposition[*].price'
+				'storeComposition[*].price'
 			),
-			location('StoreComposition[*].currency')
+			location('storeComposition[*].currency')
 				.isString()
 				.withMessage('SHOULD BE STRING')
 				.isIn(Object.values(Currencies))
@@ -60,7 +60,7 @@ export default class StoreDataValidator extends BasicValidator {
 						' | '
 					)}`
 				),
-			location('StoreComposition[*].expires')
+			location('storeComposition[*].expires')
 				.optional({ values: 'undefined' })
 				.isDate()
 				.withMessage('MUST BE DATE FORMAT'),

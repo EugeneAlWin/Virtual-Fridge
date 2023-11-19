@@ -11,11 +11,11 @@ export default class ChecklistService {
 	static getChecklistById = async ({
 		id,
 	}: IGetChecklistByIdRequest) =>
-		prismaClient.checklist.findFirstOrThrow({
+		prismaClient.checklist.findUnique({
 			where: { id },
 			include: {
-				ChecklistComposition: true,
-				ChecklistPrices: true,
+				checklistComposition: true,
+				checklistPrices: true,
 			},
 		})
 
@@ -35,8 +35,8 @@ export default class ChecklistService {
 				createdAt: createdAt ? { lte: createdAt } : undefined,
 			},
 			include: {
-				ChecklistComposition: true,
-				ChecklistPrices: true,
+				checklistComposition: true,
+				checklistPrices: true,
 			},
 			orderBy: { createdAt: 'desc' },
 		})
@@ -44,8 +44,8 @@ export default class ChecklistService {
 	//create
 	static createChecklist = async ({
 		creatorId,
-		ChecklistComposition,
-		ChecklistPrices,
+		checklistComposition,
+		checklistPrices,
 	}: ICreateChecklistRequest) => {
 		const user = await prismaClient.user.findUnique({
 			where: { id: creatorId },
@@ -56,7 +56,7 @@ export default class ChecklistService {
 				`USER WITH ID ${creatorId} DOES NOT EXISTS`
 			)
 
-		const productsId = ChecklistComposition.map(
+		const productsId = checklistComposition.map(
 			record => record.productId
 		)
 		const products = await prismaClient.product.findMany({
@@ -70,9 +70,9 @@ export default class ChecklistService {
 		return prismaClient.checklist.create({
 			data: {
 				creatorId,
-				ChecklistComposition: {
+				checklistComposition: {
 					createMany: {
-						data: ChecklistComposition.map(record => ({
+						data: checklistComposition.map(record => ({
 							productId: record.productId,
 							quantity: record.quantity,
 							currency: record.currency,
@@ -81,18 +81,18 @@ export default class ChecklistService {
 						})),
 					},
 				},
-				ChecklistPrices: {
+				checklistPrices: {
 					create: {
-						BYN: ChecklistPrices.BYN,
-						RUB: ChecklistPrices.RUB,
-						USD: ChecklistPrices.USD,
+						BYN: checklistPrices.BYN,
+						RUB: checklistPrices.RUB,
+						USD: checklistPrices.USD,
 					},
 				},
-				UserChecklists: { create: { creatorId } },
+				userChecklists: { create: { creatorId } },
 			},
 			include: {
-				ChecklistComposition: true,
-				ChecklistPrices: true,
+				checklistComposition: true,
+				checklistPrices: true,
 			},
 		})
 	}
@@ -101,8 +101,8 @@ export default class ChecklistService {
 	static updateChecklist = async ({
 		checklistId,
 		isConfirmed,
-		ChecklistComposition,
-		ChecklistPrices,
+		checklistComposition,
+		checklistPrices,
 	}: IUpdateChecklistRequest) => {
 		const checklist = await prismaClient.checklist.findUnique({
 			where: { id: checklistId },
@@ -113,18 +113,18 @@ export default class ChecklistService {
 				`CHECKLIST WITH ID ${checklistId} DOES NOT EXISTS`
 			)
 
-		if (!!ChecklistComposition !== !!ChecklistPrices)
+		if (!!checklistComposition !== !!checklistPrices)
 			throw UserRequestError.BadRequest(
 				'CHECKLIST COMPOSITION AND CHECKLIST PRICES MUST GO TOGETHER'
 			)
 		const transactions = []
-		if (ChecklistComposition && ChecklistPrices)
+		if (checklistComposition && checklistPrices)
 			transactions.push(
 				prismaClient.checklistComposition.deleteMany({
 					where: { checklistId },
 				}),
 				prismaClient.checklistComposition.createMany({
-					data: ChecklistComposition.map(record => ({
+					data: checklistComposition.map(record => ({
 						productId: record.productId,
 						quantity: record.quantity,
 						currency: record.currency,
@@ -138,9 +138,9 @@ export default class ChecklistService {
 				}),
 				prismaClient.checklistPrices.create({
 					data: {
-						BYN: ChecklistPrices.BYN,
-						RUB: ChecklistPrices.RUB,
-						USD: ChecklistPrices.USD,
+						BYN: checklistPrices.BYN,
+						RUB: checklistPrices.RUB,
+						USD: checklistPrices.USD,
 						checklistId,
 					},
 				})
@@ -158,8 +158,8 @@ export default class ChecklistService {
 		return prismaClient.checklist.findFirstOrThrow({
 			where: { id: checklistId },
 			include: {
-				ChecklistComposition: true,
-				ChecklistPrices: true,
+				checklistComposition: true,
+				checklistPrices: true,
 			},
 		})
 	}

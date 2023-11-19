@@ -3,7 +3,7 @@ import { Currencies, Units } from '../../enums'
 export interface ICreateStoreRequest {
 	creatorId: number
 	title?: string
-	StoreComposition: {
+	storeComposition: {
 		productId: number
 		quantity: number
 		unit: keyof typeof Units
@@ -17,7 +17,7 @@ export interface ICreateStoreResponse {
 	id: number
 	creatorId: number
 	title: string | null
-	StoreComposition: {
+	storeComposition: {
 		storeId: number
 		productId: number
 		quantity: number

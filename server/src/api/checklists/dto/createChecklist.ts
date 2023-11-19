@@ -2,14 +2,14 @@ import { Currencies, Units } from '../../enums'
 
 export interface ICreateChecklistRequest {
 	creatorId: number
-	ChecklistComposition: {
+	checklistComposition: {
 		productId: number
 		quantity: number
 		units: keyof typeof Units
 		price: string
 		currency: keyof typeof Currencies
 	}[]
-	ChecklistPrices: {
+	checklistPrices: {
 		USD: string
 		BYN: string
 		RUB: string
@@ -21,7 +21,7 @@ export interface ICreateChecklistResponse {
 	creatorId: number
 	createdAt: Date
 	isConfirmed: boolean
-	ChecklistComposition: {
+	checklistComposition: {
 		checklistId: number
 		productId: number
 		quantity: number
@@ -29,7 +29,7 @@ export interface ICreateChecklistResponse {
 		price: string
 		currency: keyof typeof Currencies
 	}[]
-	ChecklistPrices: {
+	checklistPrices: {
 		checklistId: number
 		USD: string
 		BYN: string
