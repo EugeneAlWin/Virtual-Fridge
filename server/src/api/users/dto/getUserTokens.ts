@@ -3,7 +3,6 @@ export interface IGetUserTokensRequest {
 }
 
 export interface IGetUserTokensResponse {
-	id: number
 	userId: number
 	deviceId: string
 	refreshToken: string

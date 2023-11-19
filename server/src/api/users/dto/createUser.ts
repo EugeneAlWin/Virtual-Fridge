@@ -17,7 +17,6 @@ export interface ICreateUserResponse {
 	isBanned: boolean
 	createdAt: Date
 	UserToken: {
-		id: number
 		userId: number
 		deviceId: string
 		refreshToken: string

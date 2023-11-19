@@ -13,7 +13,6 @@ export interface IGetUserByLoginResponse {
 	isBanned: boolean
 	createdAt: Date
 	UserToken: {
-		id: number
 		userId: number
 		deviceId: string
 		refreshToken: string

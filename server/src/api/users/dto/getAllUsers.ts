@@ -17,7 +17,6 @@ export interface IGetAllUsersResponse {
 		isBanned: boolean
 		createdAt: Date
 		UserToken: {
-			id: number
 			userId: number
 			deviceId: string
 			refreshToken: string

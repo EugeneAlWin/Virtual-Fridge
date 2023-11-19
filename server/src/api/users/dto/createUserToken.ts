@@ -5,7 +5,6 @@ export interface ICreateUserTokenRequest {
 }
 
 export interface ICreateUserTokenResponse {
-	id: number
 	userId: number
 	deviceId: string
 	refreshToken: string
