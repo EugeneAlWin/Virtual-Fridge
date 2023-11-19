@@ -49,24 +49,29 @@ export default class ChecklistService {
 	}: ICreateChecklistRequest) => {
 		const user = await prismaClient.user.findUnique({
 			where: { id: creatorId },
+			select: { id: true },
 		})
 
 		if (!user)
-			throw UserRequestError.BadRequest(
+			throw UserRequestError.NotFound(
 				`USER WITH ID ${creatorId} DOES NOT EXISTS`
 			)
 
-		const productsId = checklistComposition.map(
-			record => record.productId
-		)
 		const products = await prismaClient.product.findMany({
-			where: { id: { in: productsId } },
+			where: {
+				id: {
+					in: checklistComposition.map(
+						record => record.productId
+					),
+				},
+			},
 		})
 
-		if (productsId.length !== products.length)
-			throw UserRequestError.BadRequest(
+		if (checklistComposition.length !== products.length)
+			throw UserRequestError.NotFound(
 				'SOME PRODUCT DOES NOT EXISTS'
 			)
+
 		return prismaClient.checklist.create({
 			data: {
 				creatorId,
@@ -106,10 +111,11 @@ export default class ChecklistService {
 	}: IUpdateChecklistRequest) => {
 		const checklist = await prismaClient.checklist.findUnique({
 			where: { id: checklistId },
+			select: { id: true },
 		})
 
 		if (!checklist)
-			throw UserRequestError.BadRequest(
+			throw UserRequestError.NotFound(
 				`CHECKLIST WITH ID ${checklistId} DOES NOT EXISTS`
 			)
 
@@ -155,7 +161,7 @@ export default class ChecklistService {
 		if (transactions.length > 0)
 			await prismaClient.$transaction(transactions)
 
-		return prismaClient.checklist.findFirstOrThrow({
+		return prismaClient.checklist.findUnique({
 			where: { id: checklistId },
 			include: {
 				checklistComposition: true,

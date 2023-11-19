@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express'
 import { IErrorResponse } from '../api/errorResponse'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import UserRequestError from '../errors/userRequestError'
 import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
 import getValidationResult from '../helpers/getValidationResult'
@@ -25,14 +24,22 @@ import {
 export default class StoreController {
 	//get
 	static getStoreById: RequestHandler<
-		IGetStoreByUserIdRequest,
-		IGetStoreByUserIdResponse | IErrorResponse
+		undefined,
+		IGetStoreByUserIdResponse | IErrorResponse,
+		IGetStoreByUserIdRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
 			const result = await StoreService.getStoreById(req.body)
+			if (!result)
+				return next(
+					UserRequestError.NotFound(
+						`STORE WITH CREATOR_ID ${req.body.creatorId} NOT FOUND`
+					)
+				)
+
 			res.json({
 				...result,
 				storeComposition: result.storeComposition.map(record => ({
@@ -41,9 +48,6 @@ export default class StoreController {
 				})),
 			})
 		} catch (e) {
-			if ((e as PrismaClientKnownRequestError)?.code === 'P2025') {
-				return next(UserRequestError.NotFound('STORE NOT FOUND'))
-			}
 			return next(e)
 		}
 	}
@@ -67,13 +71,7 @@ export default class StoreController {
 				})),
 			})
 		} catch (e) {
-			if ((e as PrismaClientKnownRequestError).code === 'P2003')
-				return next(
-					UserRequestError.BadRequest(
-						`USER WITH ID ${req.body.creatorId} NOT FOUND`
-					)
-				)
-			next(e)
+			return next(e)
 		}
 	}
 
@@ -101,13 +99,7 @@ export default class StoreController {
 				),
 			})
 		} catch (e) {
-			if ((e as PrismaClientKnownRequestError).code === 'P2025')
-				return next(
-					UserRequestError.NotFound(
-						`PRODUCT WITH ID ${req.body.id} NOT FOUND`
-					)
-				)
-			next(e)
+			return next(e)
 		}
 	}
 
@@ -125,7 +117,7 @@ export default class StoreController {
 
 			res.json({ count: 1 })
 		} catch (e) {
-			next(e)
+			return next(e)
 		}
 	}
 }

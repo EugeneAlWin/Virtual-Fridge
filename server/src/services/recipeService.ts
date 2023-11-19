@@ -52,6 +52,7 @@ export default class RecipeService {
 	}: IGetAllChosenRecipesRequest) => {
 		const user = await prismaClient.user.findUnique({
 			where: { id: userId },
+			select: { id: true },
 		})
 
 		if (!user)
@@ -84,6 +85,7 @@ export default class RecipeService {
 	}: IGetAllFavoriteRecipesRequest) => {
 		const user = await prismaClient.user.findUnique({
 			where: { id: userId },
+			select: { id: true },
 		})
 		if (!user)
 			throw UserRequestError.NotFound(
@@ -117,6 +119,7 @@ export default class RecipeService {
 	}: ICreateRecipeRequest) => {
 		const user = await prismaClient.user.findUnique({
 			where: { id: creatorId },
+			select: { id: true },
 		})
 		if (!user)
 			throw UserRequestError.NotFound(
@@ -149,6 +152,7 @@ export default class RecipeService {
 	}: ICreateChosenRecipeRequest) => {
 		const user = await prismaClient.user.findUnique({
 			where: { id: userId },
+			select: { id: true },
 		})
 		if (!user)
 			throw UserRequestError.NotFound(
@@ -157,6 +161,7 @@ export default class RecipeService {
 
 		const recipe = await prismaClient.recipe.findUnique({
 			where: { id: recipeId },
+			select: { id: true },
 		})
 		if (!recipe)
 			throw UserRequestError.NotFound(
@@ -174,6 +179,7 @@ export default class RecipeService {
 	}: ICreateFavoriteRecipeRequest) => {
 		const user = await prismaClient.user.findUnique({
 			where: { id: userId },
+			select: { id: true },
 		})
 		if (!user)
 			throw UserRequestError.NotFound(
@@ -182,6 +188,7 @@ export default class RecipeService {
 
 		const recipe = await prismaClient.recipe.findUnique({
 			where: { id: recipeId },
+			select: { id: true },
 		})
 		if (!recipe)
 			throw UserRequestError.NotFound(
@@ -206,6 +213,7 @@ export default class RecipeService {
 	}: IUpdateRecipeRequest) => {
 		const user = await prismaClient.user.findUnique({
 			where: { id: creatorId },
+			select: { id: true },
 		})
 		if (!user)
 			throw UserRequestError.NotFound(
@@ -214,6 +222,7 @@ export default class RecipeService {
 
 		const recipe = await prismaClient.recipe.findUnique({
 			where: { id },
+			select: { id: true },
 		})
 		if (!recipe)
 			throw UserRequestError.NotFound(
@@ -251,6 +260,7 @@ export default class RecipeService {
 	}: IUpdateChosenRecipeRequest) => {
 		const user = await prismaClient.user.findUnique({
 			where: { id: userId },
+			select: { id: true },
 		})
 		if (!user)
 			throw UserRequestError.NotFound(
@@ -259,6 +269,7 @@ export default class RecipeService {
 
 		const recipe = await prismaClient.chosenRecipe.findUnique({
 			where: { id: chosenRecipeId },
+			select: { id: true },
 		})
 		if (!recipe)
 			throw UserRequestError.NotFound(

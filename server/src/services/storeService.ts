@@ -10,7 +10,7 @@ export default class StoreService {
 	static getStoreById = async ({
 		creatorId,
 	}: IGetStoreByUserIdRequest) =>
-		prismaClient.store.findFirstOrThrow({
+		prismaClient.store.findUnique({
 			where: { creatorId },
 			include: { storeComposition: true },
 		})
@@ -23,18 +23,32 @@ export default class StoreService {
 	}: ICreateStoreRequest) => {
 		const user = await prismaClient.user.findUnique({
 			where: { id: creatorId },
+			select: { id: true },
 		})
 
-		if (!user) throw UserRequestError.NotFound('USER NOT FOUND')
+		if (!user)
+			throw UserRequestError.NotFound(
+				`USER WITH ID ${creatorId} NOT FOUND`
+			)
 
 		const store = await prismaClient.store.findUnique({
 			where: { creatorId },
+			select: { id: true },
 		})
 
 		if (store)
 			throw UserRequestError.BadRequest(
 				`STORE FOR USER WITH ID ${creatorId} ALREADY EXISTS`
 			)
+
+		const productsCount = await prismaClient.product.count({
+			where: {
+				id: { in: storeComposition.map(rec => rec.productId) },
+			},
+		})
+
+		if (productsCount !== storeComposition.length)
+			throw UserRequestError.NotFound('UNKNOWN PRODUCT ID GIVEN')
 
 		return prismaClient.store.create({
 			data: {
@@ -66,13 +80,30 @@ export default class StoreService {
 	}: IUpdateStoreRequest) => {
 		const user = await prismaClient.user.findUnique({
 			where: { id: creatorId },
+			select: { id: true },
 		})
-		if (!user) throw UserRequestError.NotFound('USER NOT FOUND')
+		if (!user)
+			throw UserRequestError.NotFound(
+				`USER WITH ID ${creatorId} NOT FOUND`
+			)
 
 		const store = await prismaClient.store.findUnique({
 			where: { id },
+			select: { id: true },
 		})
-		if (!store) throw UserRequestError.NotFound('STORE NOT FOUND')
+		if (!store)
+			throw UserRequestError.NotFound(
+				`STORE WITH ID ${id} NOT FOUND`
+			)
+
+		const productsCount = await prismaClient.product.count({
+			where: {
+				id: { in: storeComposition.map(rec => rec.productId) },
+			},
+		})
+
+		if (productsCount !== storeComposition.length)
+			throw UserRequestError.NotFound('UNKNOWN PRODUCT ID')
 
 		return prismaClient.$transaction([
 			prismaClient.storeComposition.deleteMany({
@@ -107,6 +138,7 @@ export default class StoreService {
 	}: IDeleteStoreRequest) => {
 		const store = await prismaClient.store.findUnique({
 			where: { creatorId, id: storeId },
+			select: { id: true },
 		})
 
 		if (!store)
@@ -116,7 +148,7 @@ export default class StoreService {
 
 		return prismaClient.$transaction([
 			prismaClient.storeComposition.deleteMany({
-				where: { storeId: storeId },
+				where: { storeId },
 			}),
 			prismaClient.store.delete({
 				where: { id: storeId, creatorId },

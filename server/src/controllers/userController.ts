@@ -1,4 +1,3 @@
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { RequestHandler } from 'express'
 import { IErrorResponse } from '../api/errorResponse'
 import {
@@ -49,11 +48,15 @@ export default class UserController {
 
 		try {
 			const result = await UserService.getUserByLogin(req.params)
+			if (!result)
+				return next(
+					UserRequestError.NotFound(
+						`USER WITH LOGIN ${req.params.login} NOT FOUND`
+					)
+				)
+
 			res.json(result)
 		} catch (e) {
-			if ((e as PrismaClientKnownRequestError)?.code === 'P2025') {
-				return next(UserRequestError.NotFound('USER NOT FOUND'))
-			}
 			return next(e)
 		}
 	}
@@ -89,7 +92,7 @@ export default class UserController {
 			const result = await UserService.getUserTokens(req.body)
 			res.json(result)
 		} catch (e) {
-			next(e)
+			return next(e)
 		}
 	}
 
@@ -106,7 +109,7 @@ export default class UserController {
 			const result = await UserService.createUser(req.body)
 			res.status(201).json(result)
 		} catch (e) {
-			next(e)
+			return next(e)
 		}
 	}
 
@@ -122,13 +125,7 @@ export default class UserController {
 			const result = await UserService.createUserToken(req.body)
 			res.status(201).json(result)
 		} catch (e) {
-			if ((e as PrismaClientKnownRequestError).code === 'P2003')
-				return next(
-					UserRequestError.NotFound(
-						`USER WITH ID ${req.body.userId} NOT FOUND`
-					)
-				)
-			next(e)
+			return next(e)
 		}
 	}
 
@@ -145,13 +142,7 @@ export default class UserController {
 			const result = await UserService.updateUserData(req.body)
 			res.json(result)
 		} catch (e) {
-			if ((e as PrismaClientKnownRequestError).code === 'P2025')
-				return next(
-					UserRequestError.NotFound(
-						`USER WITH ID ${req.body.userId} NOT FOUND`
-					)
-				)
-			next(e)
+			return next(e)
 		}
 	}
 
@@ -167,12 +158,7 @@ export default class UserController {
 			const result = await UserService.updateUserToken(req.body)
 			res.json(result)
 		} catch (e) {
-			if ((e as PrismaClientKnownRequestError)?.code === 'P2025') {
-				return next(
-					UserRequestError.NotFound('DEVICE OR USER NOT FOUND')
-				)
-			}
-			next(e)
+			return next(e)
 		}
 	}
 
@@ -195,7 +181,7 @@ export default class UserController {
 
 			res.json(result)
 		} catch (e) {
-			next(e)
+			return next(e)
 		}
 	}
 }

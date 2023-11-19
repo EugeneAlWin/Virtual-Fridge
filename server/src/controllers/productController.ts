@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express'
 import { IErrorResponse } from '../api/errorResponse'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import UserRequestError from '../errors/userRequestError'
 import {
 	IGetProductByIdRequest,
@@ -29,21 +28,24 @@ import getValidationResult from '../helpers/getValidationResult'
 export default class ProductController {
 	//get
 	static getProductById: RequestHandler<
-		IGetProductByIdRequest,
-		IGetProductByIdResponse | IErrorResponse
+		undefined,
+		IGetProductByIdResponse | IErrorResponse,
+		IGetProductByIdRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
 			const result = await ProductService.getProductById(req.body)
+			if (!result)
+				return next(
+					UserRequestError.NotFound(
+						`PRODUCT WITH ID ${req.body.id} NOT FOUND`
+					)
+				)
+
 			res.json(result)
 		} catch (e) {
-			if ((e as PrismaClientKnownRequestError)?.code === 'P2025') {
-				return next(
-					UserRequestError.NotFound('PRODUCT NOT FOUND')
-				)
-			}
 			return next(e)
 		}
 	}
@@ -80,13 +82,7 @@ export default class ProductController {
 			const result = await ProductService.createProduct(req.body)
 			res.status(201).json(result)
 		} catch (e) {
-			if ((e as PrismaClientKnownRequestError).code === 'P2003')
-				return next(
-					UserRequestError.BadRequest(
-						`USER WITH ID ${req.body.creatorId} NOT FOUND`
-					)
-				)
-			next(e)
+			return next(e)
 		}
 	}
 
@@ -103,13 +99,7 @@ export default class ProductController {
 			const result = await ProductService.updateProduct(req.body)
 			res.json(result)
 		} catch (e) {
-			if ((e as PrismaClientKnownRequestError).code === 'P2025')
-				return next(
-					UserRequestError.NotFound(
-						`PRODUCT WITH ID ${req.body.id} NOT FOUND`
-					)
-				)
-			next(e)
+			return next(e)
 		}
 	}
 
@@ -132,7 +122,7 @@ export default class ProductController {
 
 			res.json(result)
 		} catch (e) {
-			next(e)
+			return next(e)
 		}
 	}
 }

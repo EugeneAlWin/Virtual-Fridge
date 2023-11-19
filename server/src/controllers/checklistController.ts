@@ -19,7 +19,6 @@ import {
 	IUpdateChecklistRequest,
 	IUpdateChecklistResponse,
 } from '../api/checklists/dto/updateChecklist'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import {
 	IDeleteChecklistRequest,
 	IDeleteChecklistResponse,
@@ -135,7 +134,7 @@ export default class ChecklistController {
 				},
 			})
 		} catch (e) {
-			next(e)
+			return next(e)
 		}
 	}
 
@@ -152,6 +151,13 @@ export default class ChecklistController {
 			const result = await ChecklistService.updateChecklist(
 				req.body
 			)
+			if (!result)
+				return next(
+					UserRequestError.NotFound(
+						`CHECKLIST WITH ID ${req.body.checklistId} NOT FOUND`
+					)
+				)
+
 			res.json({
 				...result,
 				checklistComposition: result.checklistComposition.map(
@@ -169,13 +175,7 @@ export default class ChecklistController {
 				},
 			})
 		} catch (e) {
-			if ((e as PrismaClientKnownRequestError).code === 'P2025')
-				return next(
-					UserRequestError.NotFound(
-						`CHECKLIST WITH ID ${req.body.checklistId} NOT FOUND`
-					)
-				)
-			next(e)
+			return next(e)
 		}
 	}
 
@@ -200,7 +200,7 @@ export default class ChecklistController {
 
 			res.json(result[3])
 		} catch (e) {
-			next(e)
+			return next(e)
 		}
 	}
 }

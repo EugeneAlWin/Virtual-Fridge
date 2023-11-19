@@ -9,7 +9,7 @@ import UserRequestError from '../errors/userRequestError'
 export default class ProductService {
 	//get
 	static getProductById = async ({ id }: IGetProductByIdRequest) =>
-		prismaClient.product.findFirstOrThrow({
+		prismaClient.product.findUnique({
 			where: { id },
 		})
 
@@ -39,13 +39,24 @@ export default class ProductService {
 		title,
 		creatorId,
 	}: ICreateProductRequest) => {
-		const result = await prismaClient.product.findUnique({
-			where: { title },
+		const user = await prismaClient.user.findUnique({
+			where: { id: creatorId },
+			select: { id: true },
 		})
-		if (result)
+		if (!user)
+			throw UserRequestError.NotFound(
+				`USER WITH ID ${creatorId} NOT FOUND`
+			)
+
+		const productTitle = await prismaClient.product.findUnique({
+			where: { title },
+			select: { title: true },
+		})
+		if (productTitle)
 			throw UserRequestError.BadRequest(
 				'PRODUCT TITLE ALREADY TAKEN'
 			)
+
 		return prismaClient.product.create({
 			data: {
 				calories,
@@ -66,11 +77,21 @@ export default class ProductService {
 		fats,
 		protein,
 		title,
-	}: IUpdateProductRequest) =>
-		prismaClient.product.update({
+	}: IUpdateProductRequest) => {
+		const product = await prismaClient.product.findUnique({
+			where: { id },
+			select: { id: true },
+		})
+		if (!product)
+			throw UserRequestError.NotFound(
+				`PRODUCT WITH ID ${id} NOT FOUND`
+			)
+
+		return prismaClient.product.update({
 			where: { id },
 			data: { calories, carbohydrates, fats, protein, title },
 		})
+	}
 
 	//delete
 	static deleteProduct = async ({

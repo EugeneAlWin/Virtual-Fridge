@@ -169,7 +169,7 @@ export default class RecipeController {
 			const result = await RecipeService.createRecipe(req.body)
 			res.status(201).json(result)
 		} catch (e) {
-			next(e)
+			return next(e)
 		}
 	}
 
@@ -187,7 +187,7 @@ export default class RecipeController {
 			)
 			res.status(201).json(result)
 		} catch (e) {
-			next(e)
+			return next(e)
 		}
 	}
 
@@ -205,7 +205,7 @@ export default class RecipeController {
 			)
 			res.status(201).json(result)
 		} catch (e) {
-			next(e)
+			return next(e)
 		}
 	}
 
@@ -222,7 +222,7 @@ export default class RecipeController {
 			const result = await RecipeService.updateRecipe(req.body)
 			res.json(result)
 		} catch (e) {
-			next(e)
+			return next(e)
 		}
 	}
 
@@ -240,7 +240,7 @@ export default class RecipeController {
 			)
 			res.json(result)
 		} catch (e) {
-			next(e)
+			return next(e)
 		}
 	}
 
@@ -263,7 +263,7 @@ export default class RecipeController {
 
 			res.json(result)
 		} catch (e) {
-			next(e)
+			return next(e)
 		}
 	}
 
@@ -287,7 +287,7 @@ export default class RecipeController {
 
 			res.json(result)
 		} catch (e) {
-			next(e)
+			return next(e)
 		}
 	}
 
@@ -311,7 +311,7 @@ export default class RecipeController {
 
 			res.json(result)
 		} catch (e) {
-			next(e)
+			return next(e)
 		}
 	}
 }
