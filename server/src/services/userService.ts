@@ -8,6 +8,7 @@ import { ICreateUserTokenRequest } from '../api/users/dto/createUserToken'
 import { IUpdateUserDataRequest } from '../api/users/dto/updateUserData'
 import { IUpdateUserTokenRequest } from '../api/users/dto/updateUserToken'
 import { IDeleteUserTokensRequest } from '../api/users/dto/deleteUserTokens'
+import { createHash } from 'node:crypto'
 
 export default class UserService {
 	//get
@@ -47,11 +48,12 @@ export default class UserService {
 			select: { id: true },
 		})
 		if (user) throw UserRequestError.BadRequest('LOGIN ALREADY TAKEN')
+
 		return prismaClient.user.create({
 			data: {
 				login,
-				password,
 				role,
+				password: createHash('sha512').update(password).digest('hex'),
 				userToken: {
 					create: { deviceId, refreshToken },
 				},
@@ -108,7 +110,14 @@ export default class UserService {
 
 		return prismaClient.user.update({
 			where: { id: userId },
-			data: { isArchived, isBanned, login, password },
+			data: {
+				isArchived,
+				isBanned,
+				login,
+				password: password
+					? createHash('sha512').update(password).digest('hex')
+					: undefined,
+			},
 		})
 	}
 
