@@ -1,7 +1,8 @@
-export interface IDeleteRecipeRequest {
-	id: number[]
+export interface IDeleteRecipesRequest {
+	userId: number
+	recipesId: number[]
 }
 
-export interface IDeleteRecipeResponse {
+export interface IDeleteRecipesResponse {
 	count: number
 }

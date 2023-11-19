@@ -9,20 +9,23 @@ export interface IGetAllChosenRecipesRequest {
 }
 
 export interface IGetAllChosenRecipesResponse {
-	chosenRecipesData: {
-		id: number
-		creatorId: number
-		title: string
-		type: keyof typeof RecipeTypes
-		description: string
-		createdAt: Date
-		isVisible: boolean
-		isApproved: boolean
-		recipeComposition: {
-			productId: number
-			recipeId: number
-			quantity: number
-		}[]
-	}[]
 	cursor: number | null
+	chosenRecipesData: {
+		info: {
+			chosenRecipeId: number
+			userId: number
+			recipeId: number
+			createdAt: Date
+			isCooked: boolean
+		}
+		recipeDataPreview: {
+			id: number
+			creatorId: number
+			title: string
+			type: keyof typeof RecipeTypes
+			description: string | null
+			createdAt: Date
+			isApproved: boolean
+		}
+	}[]
 }

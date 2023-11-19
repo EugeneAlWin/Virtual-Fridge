@@ -7,6 +7,7 @@ export interface IUpdateRecipeRequest {
 	type?: keyof typeof RecipeTypes
 	description?: string
 	isVisible?: boolean
+	isApproved?: boolean
 	recipeComposition?: {
 		productId: number
 		recipeId: number
@@ -19,7 +20,7 @@ export interface IUpdateRecipeResponse {
 	creatorId: number
 	title: string
 	type: keyof typeof RecipeTypes
-	description: string
+	description: string | null
 	createdAt: Date
 	isVisible: boolean
 	isApproved: boolean

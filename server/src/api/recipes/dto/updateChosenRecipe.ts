@@ -1,10 +1,11 @@
 export interface IUpdateChosenRecipeRequest {
 	userId: number
-	recipeId: number
-	isCooked: boolean
+	chosenRecipeId: number
+	isCooked?: boolean
 }
 
 export interface IUpdateChosenRecipeResponse {
+	id: number
 	userId: number
 	recipeId: number
 	createdAt: Date

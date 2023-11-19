@@ -17,7 +17,7 @@ export interface ICreateRecipeResponse {
 	creatorId: number
 	title: string
 	type: keyof typeof RecipeTypes
-	description: string
+	description: string | null
 	createdAt: Date
 	isVisible: boolean
 	isApproved: boolean

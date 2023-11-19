@@ -9,20 +9,22 @@ export interface IGetAllFavoriteRecipesRequest {
 }
 
 export interface IGetAllFavoriteRecipesResponse {
-	favoriteRecipesData: {
-		id: number
-		creatorId: number
-		title: string
-		type: keyof typeof RecipeTypes
-		description: string
-		createdAt: Date
-		isVisible: boolean
-		isApproved: boolean
-		recipeComposition: {
-			productId: number
-			recipeId: number
-			quantity: number
-		}[]
-	}[]
 	cursor: number | null
+	favoriteRecipesData: {
+		info: {
+			favoriteRecipeId: number
+			userId: number
+			recipeId: number
+		}
+		recipeDataPreview: {
+			id: number
+			creatorId: number
+			title: string
+			type: keyof typeof RecipeTypes
+			description: string | null
+			createdAt: Date
+			isVisible: boolean
+			isApproved: boolean
+		}
+	}[]
 }

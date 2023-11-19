@@ -6,15 +6,17 @@ export interface IGetAllRecipesRequest {
 	take: number
 	cursor?: number
 	isVisible?: boolean
+	isApproved?: boolean
 }
 
 export interface IGetAllRecipesResponse {
+	cursor: number | null
 	recipesData: {
 		id: number
 		creatorId: number
 		title: string
 		type: keyof typeof RecipeTypes
-		description: string
+		description: string | null
 		createdAt: Date
 		isVisible: boolean
 		isApproved: boolean
@@ -24,5 +26,4 @@ export interface IGetAllRecipesResponse {
 			quantity: number
 		}[]
 	}[]
-	cursor: number | null
 }

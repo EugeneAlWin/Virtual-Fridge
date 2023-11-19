@@ -1,8 +1,8 @@
-export interface IDeleteFavoriteRecipeRequest {
+export interface IDeleteFavoriteRecipesRequest {
 	userId: number
-	recipeId: number[]
+	recipesId: number[]
 }
 
-export interface IDeleteFavoriteRecipeResponse {
+export interface IDeleteFavoriteRecipesResponse {
 	count: number
 }
