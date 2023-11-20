@@ -20,7 +20,7 @@ export interface IGetAllChosenRecipesResponse {
 		}
 		recipeDataPreview: {
 			id: number
-			creatorId: number
+			creatorId: number | null
 			title: string
 			type: keyof typeof RecipeTypes
 			description: string | null

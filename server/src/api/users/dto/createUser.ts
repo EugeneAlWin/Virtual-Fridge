@@ -5,7 +5,6 @@ export interface ICreateUserRequest {
 	password: string
 	role: keyof typeof Roles
 	deviceId: string
-	refreshToken: string
 }
 
 export interface ICreateUserResponse {

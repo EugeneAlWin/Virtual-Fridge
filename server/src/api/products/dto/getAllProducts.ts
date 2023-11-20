@@ -13,7 +13,7 @@ export interface IGetAllProductsResponse {
 		protein: number
 		fats: number
 		carbohydrates: number
-		creatorId: number
+		creatorId: number | null
 	}[]
 	cursor: number | null
 }

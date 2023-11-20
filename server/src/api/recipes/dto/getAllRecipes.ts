@@ -13,7 +13,7 @@ export interface IGetAllRecipesResponse {
 	cursor: number | null
 	recipesData: {
 		id: number
-		creatorId: number
+		creatorId: number | null
 		title: string
 		type: keyof typeof RecipeTypes
 		description: string | null

@@ -36,7 +36,7 @@ export interface IUpdateChecklistResponse {
 	checklistPrices: {
 		checklistId: number
 		USD: string
-		BYN: string
+		BYN: number | null
 		RUB: string
 	}
 }

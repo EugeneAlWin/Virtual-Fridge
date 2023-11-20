@@ -1,6 +1,6 @@
 export interface IDeleteFavoriteRecipesRequest {
 	userId: number
-	recipesId: number[]
+	favoriteRecipesId: number[]
 }
 
 export interface IDeleteFavoriteRecipesResponse {

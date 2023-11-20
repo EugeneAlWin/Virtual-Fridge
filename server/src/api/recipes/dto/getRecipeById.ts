@@ -6,7 +6,7 @@ export interface IGetRecipeByIdRequest {
 
 export interface IGetRecipeByIdResponse {
 	id: number
-	creatorId: number
+	creatorId: number | null
 	title: string
 	type: keyof typeof RecipeTypes
 	description: string | null

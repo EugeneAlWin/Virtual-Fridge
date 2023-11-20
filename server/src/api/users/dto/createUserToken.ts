@@ -1,7 +1,11 @@
+import { Roles } from '../../enums'
+
 export interface ICreateUserTokenRequest {
 	userId: number
-	refreshToken: string
 	deviceId: string
+	login: string
+	password: string
+	role: keyof typeof Roles
 }
 
 export interface ICreateUserTokenResponse {

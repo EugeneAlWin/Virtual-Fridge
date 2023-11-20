@@ -14,5 +14,5 @@ export interface IUpdateProductResponse {
 	protein: number
 	fats: number
 	carbohydrates: number
-	creatorId: number
+	creatorId: number | null
 }
