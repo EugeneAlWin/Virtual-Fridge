@@ -11,20 +11,20 @@ jobs:
 
     runs-on: ubuntu-latest
     defaults:
-          run:
-            working-directory: server
+      run:
+        working-directory: server
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 21.x]
+        node-version: [ 15.x, 16.x, 21.x ]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        cache-dependency-path: server
-    - run: sudo npm i
-    - run: sudo npm run compile
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: server
+      - run: sudo npm i
+      - run: sudo npm run compile
