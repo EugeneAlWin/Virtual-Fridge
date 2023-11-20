@@ -10,14 +10,13 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: testUrl
+
     defaults:
       run:
         working-directory: server
     strategy:
       matrix:
-        node-version: [ 15.x, 16.x, 21.x ]
+        node-version: [ 21.x ]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -28,6 +27,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
           cache-dependency-path: server
+      - run: sudo touch .env
+      - run: echo "DATABASE_URL=TEST1234" > .env
       - run: sudo npm i
       - run: sudo npm run compile
       - run: sudo npm start
