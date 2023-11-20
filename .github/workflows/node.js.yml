@@ -29,7 +29,7 @@ jobs:
           cache-dependency-path: server
       - name: 'Create env file'
         run: |
-          sudo echo "${{ secrets.ENV_FILE }}" > .env
+          sudo echo "DATABASE_URL=test" > .env
       - run: sudo npm i
       - run: sudo npm run compile
       - run: sudo npm start
