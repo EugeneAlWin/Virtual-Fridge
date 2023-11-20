@@ -27,4 +27,4 @@ jobs:
         cache: 'npm'
         cache-dependency-path: server
     - run: sudo npm i
-    - run: sudo npm compile
+    - run: sudo npm run compile
