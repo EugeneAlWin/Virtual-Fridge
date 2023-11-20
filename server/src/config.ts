@@ -1,5 +1,4 @@
 import 'dotenv/config'
-import * as process from 'process'
 
 export const CONFIG = {
 	PORT: process.env.PORT || 3000,
