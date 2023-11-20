@@ -28,7 +28,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: server
       - run: sudo touch .env
-      - run: echo "DATABASE_URL=TEST1234" > .env
+      - run: sudo echo "DATABASE_URL=TEST1234" > .env
       - run: sudo npm i
       - run: sudo npm run compile
       - run: sudo npm start
