@@ -36,6 +36,7 @@ import UserRequestError from '../errors/userRequestError'
 import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
 import getValidationResult from '../helpers/getValidationResult'
 import UserService from '../services/userService'
+import Tokenizator from '../helpers/tokenizator'
 
 export default class UserController {
 	//get
@@ -106,7 +107,18 @@ export default class UserController {
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await UserService.createUser(req.body)
+			const { refreshToken, accessToken } = Tokenizator.generateTokens(
+				req.body
+			)
+			const result = await UserService.createUser({
+				...req.body,
+				refreshToken,
+			})
+
+			res.cookie('accessToken', accessToken, {
+				maxAge: 30 * 24 * 60 * 60 * 1000,
+				httpOnly: true,
+			})
 			res.status(201).json(result)
 		} catch (e) {
 			return next(e)
@@ -122,7 +134,18 @@ export default class UserController {
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await UserService.createUserToken(req.body)
+			const { refreshToken, accessToken } = Tokenizator.generateTokens(
+				req.body
+			)
+			const result = await UserService.createUserToken({
+				...req.body,
+				refreshToken,
+			})
+
+			res.cookie('accessToken', accessToken, {
+				maxAge: 30 * 24 * 60 * 60 * 1000,
+				httpOnly: true,
+			})
 			res.status(201).json(result)
 		} catch (e) {
 			return next(e)
@@ -155,7 +178,19 @@ export default class UserController {
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await UserService.updateUserToken(req.body)
+			const { refreshToken, accessToken } = Tokenizator.generateTokens(
+				req.body
+			)
+
+			const result = await UserService.updateUserToken({
+				...req.body,
+				refreshToken,
+			})
+			res.cookie('accessToken', accessToken, {
+				maxAge: 30 * 24 * 60 * 60 * 1000,
+				httpOnly: true,
+			})
+
 			res.json(result)
 		} catch (e) {
 			return next(e)
@@ -173,9 +208,6 @@ export default class UserController {
 
 		try {
 			const result = await UserService.deleteUserTokens(req.body)
-
-			if (result.count === 0)
-				return next(UserRequestError.NotFound('NO DEVICES WERE FOUND'))
 
 			res.json(result)
 		} catch (e) {

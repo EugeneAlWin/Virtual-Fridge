@@ -42,7 +42,7 @@ export default class UserService {
 		login,
 		password,
 		role,
-	}: ICreateUserRequest) => {
+	}: ICreateUserRequest & { refreshToken: string }) => {
 		const user = await prismaClient.user.findUnique({
 			where: { login },
 			select: { id: true },
@@ -66,7 +66,7 @@ export default class UserService {
 		deviceId,
 		refreshToken,
 		userId,
-	}: ICreateUserTokenRequest) => {
+	}: ICreateUserTokenRequest & { refreshToken: string }) => {
 		const user = await prismaClient.user.findUnique({
 			where: { id: userId },
 			select: { id: true },
@@ -125,7 +125,7 @@ export default class UserService {
 		userId,
 		deviceId,
 		refreshToken,
-	}: IUpdateUserTokenRequest) => {
+	}: IUpdateUserTokenRequest & { refreshToken: string }) => {
 		const user = await prismaClient.user.findUnique({
 			where: { id: userId },
 			select: { id: true },
@@ -157,4 +157,6 @@ export default class UserService {
 				userId,
 			},
 		})
+
+	//TODO: delete user
 }
