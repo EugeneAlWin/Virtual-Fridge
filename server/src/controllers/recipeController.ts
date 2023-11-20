@@ -286,9 +286,6 @@ export default class RecipeController {
 		try {
 			const result = await RecipeService.deleteFavoriteRecipes(req.body)
 
-			if (result.count === 0)
-				return next(UserRequestError.NotFound('NO RECIPES WERE FOUND'))
-
 			res.json(result)
 		} catch (e) {
 			return next(e)

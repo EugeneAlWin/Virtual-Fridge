@@ -87,7 +87,6 @@ export default class ChecklistService {
 						USD: checklistPrices.USD,
 					},
 				},
-				userChecklists: { create: { creatorId } },
 			},
 			include: {
 				checklistComposition: true,
@@ -168,28 +167,10 @@ export default class ChecklistService {
 		creatorId,
 		checklistsId,
 	}: IDeleteChecklistRequest) =>
-		prismaClient.$transaction([
-			prismaClient.userChecklists.deleteMany({
-				where: {
-					creatorId,
-					checklistId: { in: checklistsId },
-				},
-			}),
-			prismaClient.checklistComposition.deleteMany({
-				where: {
-					checklistId: { in: checklistsId },
-				},
-			}),
-			prismaClient.checklistPrices.deleteMany({
-				where: {
-					checklistId: { in: checklistsId },
-				},
-			}),
-			prismaClient.checklist.deleteMany({
-				where: {
-					creatorId,
-					id: { in: checklistsId },
-				},
-			}),
-		])
+		prismaClient.checklist.deleteMany({
+			where: {
+				creatorId,
+				id: { in: checklistsId },
+			},
+		})
 }

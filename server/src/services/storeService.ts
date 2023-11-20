@@ -126,7 +126,7 @@ export default class StoreService {
 	//delete
 	static deleteStore = async ({ creatorId, storeId }: IDeleteStoreRequest) => {
 		const store = await prismaClient.store.findUnique({
-			where: { creatorId, id: storeId },
+			where: { id: storeId },
 			select: { id: true },
 		})
 
@@ -135,13 +135,8 @@ export default class StoreService {
 				`STORE WITH ID ${storeId} AND USER ID ${creatorId} NOT FOUND`
 			)
 
-		return prismaClient.$transaction([
-			prismaClient.storeComposition.deleteMany({
-				where: { storeId },
-			}),
-			prismaClient.store.delete({
-				where: { id: storeId, creatorId },
-			}),
-		])
+		return prismaClient.store.delete({
+			where: { id: storeId },
+		})
 	}
 }

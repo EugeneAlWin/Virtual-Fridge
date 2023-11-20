@@ -149,7 +149,7 @@ export default class ChecklistController {
 				})),
 				checklistPrices: {
 					checklistId: result.checklistPrices?.checklistId || result.id,
-					BYN: result.checklistPrices?.BYN.toString() || '0',
+					BYN: result.checklistPrices?.BYN.toNumber() || null,
 					USD: result.checklistPrices?.USD.toString() || '0',
 					RUB: result.checklistPrices?.RUB.toString() || '0',
 				},
@@ -171,10 +171,7 @@ export default class ChecklistController {
 		try {
 			const result = await ChecklistService.deleteChecklist(req.body)
 
-			if (result[3].count === 0)
-				return next(UserRequestError.NotFound('NO CHECKLISTS WERE FOUND'))
-
-			res.json(result[3])
+			res.json(result)
 		} catch (e) {
 			return next(e)
 		}

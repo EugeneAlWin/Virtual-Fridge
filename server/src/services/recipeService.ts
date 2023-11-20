@@ -217,17 +217,14 @@ export default class RecipeService {
 				isApproved,
 				description,
 				type,
-				recipeComposition: !recipeComposition
-					? undefined
-					: {
+				recipeComposition: recipeComposition
+					? {
 							deleteMany: { recipeId: { equals: id } },
 							createMany: {
-								data: recipeComposition.map(record => ({
-									productId: record.productId,
-									quantity: record.quantity,
-								})),
+								data: recipeComposition,
 							},
-					  },
+					  }
+					: undefined,
 			},
 			include: { recipeComposition: true },
 		})
@@ -273,18 +270,18 @@ export default class RecipeService {
 		})
 
 	static deleteChosenRecipes = async ({
-		recipesId,
+		chosenRecipesId,
 		userId,
 	}: IDeleteChosenRecipesRequest) =>
 		prismaClient.chosenRecipe.deleteMany({
-			where: { id: { in: recipesId }, userId },
+			where: { id: { in: chosenRecipesId }, userId },
 		})
 
 	static deleteFavoriteRecipes = async ({
-		recipesId,
+		favoriteRecipesId,
 		userId,
 	}: IDeleteFavoriteRecipesRequest) =>
 		prismaClient.favoriteRecipe.deleteMany({
-			where: { id: { in: recipesId }, userId },
+			where: { id: { in: favoriteRecipesId }, userId },
 		})
 }
