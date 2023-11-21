@@ -127,7 +127,7 @@ model ChecklistComposition {
   quantity    Int        @db.SmallInt
   units       Units      @default(PIECES)
   currency    Currencies @default(BYN)
-  price       Decimal?   @default(0) @db.Money
+  price       Decimal    @default(0) @db.Money
   checklist   Checklist  @relation(fields: [checklistId], references: [id], onDelete: Cascade)
   product     Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
 
