@@ -1,4 +1,4 @@
-import { IGetStoreByUserIdRequest } from '../api/stores/dto/getStoreById'
+import { IGetStoreByUserIdRequest } from '../api/stores/dto/getStoreByUserId'
 import prismaClient from '../prismaClient'
 import { ICreateStoreRequest } from '../api/stores/dto/createStore'
 import UserRequestError from '../errors/userRequestError'

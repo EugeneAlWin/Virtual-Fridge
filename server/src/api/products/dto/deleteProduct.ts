@@ -1,8 +1,8 @@
-export interface IDeleteProductRequest {
+export interface IDeleteProductsRequest {
 	creatorId: number
-	productId: number[]
+	productsId: number[]
 }
 
-export interface IDeleteProductResponse {
+export interface IDeleteProductsResponse {
 	count: number
 }

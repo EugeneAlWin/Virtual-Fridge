@@ -1,8 +1,8 @@
-export interface IDeleteChecklistRequest {
+export interface IDeleteChecklistsRequest {
 	checklistsId: number[]
 	creatorId: number
 }
 
-export interface IDeleteChecklistResponse {
+export interface IDeleteChecklistsResponse {
 	count: number
 }

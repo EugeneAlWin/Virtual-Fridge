@@ -1,5 +1,5 @@
 import { ICreateChecklistRequest } from '../api/checklists/dto/createChecklist'
-import { IDeleteChecklistRequest } from '../api/checklists/dto/deleteChecklist'
+import { IDeleteChecklistsRequest } from '../api/checklists/dto/deleteChecklist'
 import { IGetAllChecklistsRequest } from '../api/checklists/dto/getAllChecklists'
 import { IGetChecklistByIdRequest } from '../api/checklists/dto/getChecklistById'
 import { IUpdateChecklistRequest } from '../api/checklists/dto/updateChecklist'
@@ -166,7 +166,7 @@ export default class ChecklistService {
 	static deleteChecklist = async ({
 		creatorId,
 		checklistsId,
-	}: IDeleteChecklistRequest) =>
+	}: IDeleteChecklistsRequest) =>
 		prismaClient.checklist.deleteMany({
 			where: {
 				creatorId,

@@ -6,7 +6,7 @@ import getValidationResult from '../helpers/getValidationResult'
 import {
 	IGetStoreByUserIdRequest,
 	IGetStoreByUserIdResponse,
-} from '../api/stores/dto/getStoreById'
+} from '../api/stores/dto/getStoreByUserId'
 import {
 	ICreateStoreRequest,
 	ICreateStoreResponse,

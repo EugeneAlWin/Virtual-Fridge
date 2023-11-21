@@ -2,7 +2,7 @@ import prismaClient from '../prismaClient'
 import { IGetAllProductsRequest } from '../api/products/dto/getAllProducts'
 import { ICreateProductRequest } from '../api/products/dto/createProduct'
 import { IUpdateProductRequest } from '../api/products/dto/updateProduct'
-import { IDeleteProductRequest } from '../api/products/dto/deleteProduct'
+import { IDeleteProductsRequest } from '../api/products/dto/deleteProduct'
 import { IGetProductByIdRequest } from '../api/products/dto/getProductById'
 import UserRequestError from '../errors/userRequestError'
 
@@ -88,9 +88,9 @@ export default class ProductService {
 	//delete
 	static deleteProduct = async ({
 		creatorId,
-		productId,
-	}: IDeleteProductRequest) =>
+		productsId,
+	}: IDeleteProductsRequest) =>
 		prismaClient.product.deleteMany({
-			where: { id: { in: productId }, creatorId },
+			where: { id: { in: productsId }, creatorId },
 		})
 }

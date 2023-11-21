@@ -20,8 +20,8 @@ import {
 	IUpdateChecklistResponse,
 } from '../api/checklists/dto/updateChecklist'
 import {
-	IDeleteChecklistRequest,
-	IDeleteChecklistResponse,
+	IDeleteChecklistsRequest,
+	IDeleteChecklistsResponse,
 } from '../api/checklists/dto/deleteChecklist'
 import { IErrorResponse } from '../api/errorResponse'
 
@@ -162,8 +162,8 @@ export default class ChecklistController {
 	//delete
 	static deleteChecklists: RequestHandler<
 		undefined,
-		IDeleteChecklistResponse | IErrorResponse,
-		IDeleteChecklistRequest
+		IDeleteChecklistsResponse | IErrorResponse,
+		IDeleteChecklistsRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)

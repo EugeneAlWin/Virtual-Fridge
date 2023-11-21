@@ -19,8 +19,8 @@ import {
 	IUpdateProductResponse,
 } from '../api/products/dto/updateProduct'
 import {
-	IDeleteProductRequest,
-	IDeleteProductResponse,
+	IDeleteProductsRequest,
+	IDeleteProductsResponse,
 } from '../api/products/dto/deleteProduct'
 import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
 import getValidationResult from '../helpers/getValidationResult'
@@ -106,8 +106,8 @@ export default class ProductController {
 	//delete
 	static deleteProducts: RequestHandler<
 		undefined,
-		IDeleteProductResponse | IErrorResponse,
-		IDeleteProductRequest
+		IDeleteProductsResponse | IErrorResponse,
+		IDeleteProductsRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)
