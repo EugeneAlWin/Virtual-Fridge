@@ -19,14 +19,14 @@ export interface IGetAllChecklistsResponse {
 			productId: number
 			quantity: number
 			units: keyof typeof Units
-			price: string
+			price: number
 			currency: keyof typeof Currencies
 		}[]
 		checklistPrices: {
 			checklistId: number
-			USD: string
-			BYN: string
-			RUB: string
+			USD: number | null
+			BYN: number | null
+			RUB: number | null
 		}
 	}[]
 	cursor: number | null

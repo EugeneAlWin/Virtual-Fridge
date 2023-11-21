@@ -23,7 +23,7 @@ export interface ICreateStoreResponse {
 		quantity: number
 		unit: keyof typeof Units
 		expires: Date | null
-		price: string
+		price: number
 		currency: keyof typeof Currencies
 	}[]
 }

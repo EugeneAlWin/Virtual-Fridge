@@ -30,13 +30,13 @@ export interface IUpdateChecklistResponse {
 		productId: number
 		quantity: number
 		units: keyof typeof Units
-		price: string | null
+		price: number
 		currency: keyof typeof Currencies
 	}[]
 	checklistPrices: {
 		checklistId: number
-		USD: string
+		USD: number | null
 		BYN: number | null
-		RUB: string
+		RUB: number | null
 	}
 }
