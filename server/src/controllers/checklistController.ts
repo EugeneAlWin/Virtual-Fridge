@@ -48,13 +48,13 @@ export default class ChecklistController {
 				...result,
 				checklistComposition: result.checklistComposition.map(record => ({
 					...record,
-					price: record.price?.toString() || '0',
+					price: record.price.toNumber(),
 				})),
 				checklistPrices: {
 					checklistId: result.checklistPrices?.checklistId || result.id,
-					BYN: result.checklistPrices?.BYN.toString() || '0',
-					USD: result.checklistPrices?.USD.toString() || '0',
-					RUB: result.checklistPrices?.RUB.toString() || '0',
+					BYN: result.checklistPrices?.BYN.toNumber() || null,
+					USD: result.checklistPrices?.USD.toNumber() || null,
+					RUB: result.checklistPrices?.RUB.toNumber() || null,
 				},
 			})
 		} catch (e) {
@@ -77,14 +77,14 @@ export default class ChecklistController {
 					...record,
 					checklistPrices: {
 						checklistId: record.checklistPrices?.checklistId || record.id,
-						BYN: record.checklistPrices?.BYN.toString() || '0',
-						USD: record.checklistPrices?.USD.toString() || '0',
-						RUB: record.checklistPrices?.RUB.toString() || '0',
+						BYN: record.checklistPrices?.BYN.toNumber() || null,
+						USD: record.checklistPrices?.USD.toNumber() || null,
+						RUB: record.checklistPrices?.RUB.toNumber() || null,
 					},
 					checklistComposition: record.checklistComposition.map(item => ({
 						...item,
 						checklistId: item.checklistId,
-						price: item.price?.toString() || '0',
+						price: item.price?.toNumber() || 0,
 					})),
 				})),
 				cursor: result[result.length - 1]?.id || null,
@@ -109,13 +109,13 @@ export default class ChecklistController {
 				...result,
 				checklistComposition: result.checklistComposition.map(record => ({
 					...record,
-					price: record.price?.toString() || '0',
+					price: record.price.toNumber(),
 				})),
 				checklistPrices: {
 					checklistId: result.checklistPrices?.checklistId || result.id,
-					BYN: result.checklistPrices?.BYN.toString() || '0',
-					USD: result.checklistPrices?.USD.toString() || '0',
-					RUB: result.checklistPrices?.RUB.toString() || '0',
+					BYN: result.checklistPrices?.BYN.toNumber() || null,
+					USD: result.checklistPrices?.USD.toNumber() || null,
+					RUB: result.checklistPrices?.RUB.toNumber() || null,
 				},
 			})
 		} catch (e) {
@@ -145,13 +145,13 @@ export default class ChecklistController {
 				...result,
 				checklistComposition: result.checklistComposition.map(record => ({
 					...record,
-					price: record.price?.toString() || '0',
+					price: record.price.toNumber(),
 				})),
 				checklistPrices: {
 					checklistId: result.checklistPrices?.checklistId || result.id,
 					BYN: result.checklistPrices?.BYN.toNumber() || null,
-					USD: result.checklistPrices?.USD.toString() || '0',
-					RUB: result.checklistPrices?.RUB.toString() || '0',
+					USD: result.checklistPrices?.USD.toNumber() || null,
+					RUB: result.checklistPrices?.RUB.toNumber() || null,
 				},
 			})
 		} catch (e) {

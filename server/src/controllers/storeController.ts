@@ -44,7 +44,7 @@ export default class StoreController {
 				...result,
 				storeComposition: result.storeComposition.map(record => ({
 					...record,
-					price: record.price.toString(),
+					price: record.price.toNumber(),
 				})),
 			})
 		} catch (e) {
@@ -67,7 +67,7 @@ export default class StoreController {
 				...result,
 				storeComposition: result.storeComposition.map(record => ({
 					...record,
-					price: record.price.toString(),
+					price: record.price.toNumber(),
 				})),
 			})
 		} catch (e) {
@@ -91,7 +91,7 @@ export default class StoreController {
 				...updateResult,
 				storeComposition: updateResult.storeComposition.map(record => ({
 					...record,
-					price: record.price.toString(),
+					price: record.price.toNumber(),
 				})),
 			})
 		} catch (e) {
