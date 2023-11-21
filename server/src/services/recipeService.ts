@@ -1,17 +1,17 @@
-import prismaClient from '../prismaClient'
-import UserRequestError from '../errors/userRequestError'
-import { IGetRecipeByIdRequest } from '../api/recipes/dto/getRecipeById'
-import { IGetAllRecipesRequest } from '../api/recipes/dto/getAllRecipes'
-import { ICreateRecipeRequest } from '../api/recipes/dto/createRecipe'
-import { IUpdateRecipeRequest } from '../api/recipes/dto/updateRecipe'
-import { IDeleteRecipesRequest } from '../api/recipes/dto/deleteRecipe'
-import { IGetAllFavoriteRecipesRequest } from '../api/recipes/dto/getAllFavoriteRecipes'
-import { IGetAllChosenRecipesRequest } from '../api/recipes/dto/getAllChosenRecipes'
 import { ICreateChosenRecipeRequest } from '../api/recipes/dto/createChosenRecipe'
 import { ICreateFavoriteRecipeRequest } from '../api/recipes/dto/createFavoriteRecipe'
-import { IUpdateChosenRecipeRequest } from '../api/recipes/dto/updateChosenRecipe'
-import { IDeleteFavoriteRecipesRequest } from '../api/recipes/dto/deleteFavoriteRecipe'
+import { ICreateRecipeRequest } from '../api/recipes/dto/createRecipe'
 import { IDeleteChosenRecipesRequest } from '../api/recipes/dto/deleteChosenRecipe'
+import { IDeleteFavoriteRecipesRequest } from '../api/recipes/dto/deleteFavoriteRecipe'
+import { IDeleteRecipesRequest } from '../api/recipes/dto/deleteRecipe'
+import { IGetAllChosenRecipesRequest } from '../api/recipes/dto/getAllChosenRecipes'
+import { IGetAllFavoriteRecipesRequest } from '../api/recipes/dto/getAllFavoriteRecipes'
+import { IGetAllRecipesRequest } from '../api/recipes/dto/getAllRecipes'
+import { IGetRecipeByIdRequest } from '../api/recipes/dto/getRecipeById'
+import { IUpdateChosenRecipeRequest } from '../api/recipes/dto/updateChosenRecipe'
+import { IUpdateRecipeRequest } from '../api/recipes/dto/updateRecipe'
+import UserRequestError from '../errors/userRequestError'
+import prismaClient from '../prismaClient'
 
 export default class RecipeService {
 	//get
@@ -111,12 +111,25 @@ export default class RecipeService {
 		title,
 		creatorId,
 	}: ICreateRecipeRequest) => {
+		if (
+			new Set(recipeComposition?.map(rec => `productId${rec.productId}`))
+				.size !== recipeComposition?.length
+		)
+			throw UserRequestError.BadRequest('PRODUCT DUPLICATES')
+
 		const user = await prismaClient.user.findUnique({
 			where: { id: creatorId },
 			select: { id: true },
 		})
 		if (!user)
 			throw UserRequestError.NotFound(`USER WITH ID ${creatorId} NOT FOUND`)
+
+		const productsCount = await prismaClient.product.count({
+			where: { id: { in: recipeComposition.map(rec => rec.productId) } },
+		})
+
+		if (productsCount !== recipeComposition.length)
+			throw UserRequestError.NotFound('SOME PRODUCT DOES NOT EXISTS')
 
 		return prismaClient.recipe.create({
 			data: {
@@ -179,6 +192,13 @@ export default class RecipeService {
 		if (!recipe)
 			throw UserRequestError.NotFound(`RECIPE WITH ID ${recipeId} NOT FOUND`)
 
+		const favoriteRecipe = await prismaClient.favoriteRecipe.findUnique({
+			where: { recipeId_userId: { recipeId, userId } },
+		})
+
+		if (favoriteRecipe)
+			throw UserRequestError.BadRequest('RECIPE ALREADY IN FAVORITES')
+
 		return prismaClient.favoriteRecipe.create({
 			data: { userId, recipeId },
 		})
@@ -195,6 +215,12 @@ export default class RecipeService {
 		description,
 		type,
 	}: IUpdateRecipeRequest) => {
+		if (
+			new Set(recipeComposition?.map(rec => `productId${rec.productId}`))
+				.size !== recipeComposition?.length
+		)
+			throw UserRequestError.BadRequest('PRODUCT DUPLICATES')
+
 		const user = await prismaClient.user.findUnique({
 			where: { id: creatorId },
 			select: { id: true },
@@ -208,6 +234,13 @@ export default class RecipeService {
 		})
 		if (!recipe)
 			throw UserRequestError.NotFound(`RECIPE WITH ID ${id} NOT FOUND`)
+
+		const productsCount = await prismaClient.product.count({
+			where: { id: { in: recipeComposition?.map(rec => rec.productId) } },
+		})
+
+		if (productsCount !== recipeComposition?.length)
+			throw UserRequestError.NotFound('SOME PRODUCT DOES NOT EXISTS')
 
 		return prismaClient.recipe.update({
 			where: { id },

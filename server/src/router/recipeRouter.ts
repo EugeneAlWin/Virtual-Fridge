@@ -1,8 +1,8 @@
 import { Router } from 'express'
+import { body } from 'express-validator/src/middlewares/validation-chain-builders'
 import RecipeEndpoints from '../api/recipes/endpoints'
 import RecipeController from '../controllers/recipeController'
 import RecipeDataValidator from '../validators/recipeDataValidator'
-import { body } from 'express-validator/src/middlewares/validation-chain-builders'
 
 const recipeRouter = Router()
 
@@ -92,21 +92,21 @@ recipeRouter.patch(
 recipeRouter.delete(
 	RecipeEndpoints.DELETE,
 	RecipeDataValidator.userId(body),
-	RecipeDataValidator.recipesId(body),
+	RecipeDataValidator.ids(body, 'recipesId'),
 	RecipeController.deleteRecipes
 )
 
 recipeRouter.delete(
 	RecipeEndpoints.DELETE_CHOSEN,
 	RecipeDataValidator.userId(body),
-	RecipeDataValidator.recipesId(body),
+	RecipeDataValidator.ids(body, 'chosenRecipesId'),
 	RecipeController.deleteChosenRecipes
 )
 
 recipeRouter.delete(
 	RecipeEndpoints.DELETE_FAVORITE,
 	RecipeDataValidator.userId(body),
-	RecipeDataValidator.recipesId(body),
+	RecipeDataValidator.ids(body, 'favoriteRecipesId'),
 	RecipeController.deleteFavoriteRecipes
 )
 

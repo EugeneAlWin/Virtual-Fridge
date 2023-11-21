@@ -1,6 +1,6 @@
-import { TLocation } from './types'
-import BasicValidator from './basicValidator'
 import { RecipeTypes } from '../api/enums'
+import BasicValidator from './basicValidator'
+import { TLocation } from './types'
 
 export default class RecipeDataValidator extends BasicValidator {
 	static userId(location: TLocation) {
@@ -9,20 +9,6 @@ export default class RecipeDataValidator extends BasicValidator {
 
 	static recipeId(location: TLocation) {
 		return BasicValidator.id(location, 'recipeId')
-	}
-
-	static recipesId(location: TLocation) {
-		return [
-			location('recipesId')
-				.isArray()
-				.withMessage('SHOULD BE AN ARRAY OF INTEGERS'),
-			location('recipesId.*')
-				.not()
-				.isString()
-				.withMessage('SHOULD BE AN ARRAY OF INTEGERS')
-				.isInt()
-				.withMessage('SHOULD BE AN ARRAY OF INTEGERS'),
-		]
 	}
 
 	static title(

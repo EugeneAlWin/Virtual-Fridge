@@ -1,13 +1,13 @@
 import express from 'express'
+import { exit } from 'node:process'
 import { CONFIG } from './config'
 import errorMiddleware from './middlewares/errorMiddleware'
 import prismaClient from './prismaClient'
 import checklistRouter from './router/checklistRouter'
 import productRouter from './router/productRouter'
-import userRouter from './router/userRouter'
-import storeRouter from './router/storeRouter'
 import recipeRouter from './router/recipeRouter'
-import { exit } from 'node:process'
+import storeRouter from './router/storeRouter'
+import userRouter from './router/userRouter'
 
 const app = express()
 

@@ -10,6 +10,20 @@ export default class BasicValidator {
 			.withMessage('SHOULD BE AN INTEGER >= 0')
 	}
 
+	static ids(location: TLocation, field: string) {
+		return [
+			location(field)
+				.isArray()
+				.withMessage('SHOULD BE AN ARRAY OF INTEGERS'),
+			location(`${field}.*`)
+				.not()
+				.isString()
+				.withMessage('SHOULD BE AN ARRAY OF INTEGERS')
+				.isInt()
+				.withMessage('SHOULD BE AN ARRAY OF INTEGERS'),
+		]
+	}
+
 	static title(
 		location: TLocation,
 		isOptional: boolean = true,
@@ -81,7 +95,7 @@ export default class BasicValidator {
 			.not()
 			.isString()
 			.withMessage('SHOULD BE BOOLEAN')
-			.isBoolean()
+			.isBoolean({ strict: true })
 			.withMessage('SHOULD BE BOOLEAN')
 	}
 }
