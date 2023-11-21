@@ -1,9 +1,9 @@
-import { IGetStoreByUserIdRequest } from '../api/stores/dto/getStoreByUserId'
-import prismaClient from '../prismaClient'
 import { ICreateStoreRequest } from '../api/stores/dto/createStore'
-import UserRequestError from '../errors/userRequestError'
-import { IUpdateStoreRequest } from '../api/stores/dto/updateStore'
 import { IDeleteStoreRequest } from '../api/stores/dto/deleteStore'
+import { IGetStoreByUserIdRequest } from '../api/stores/dto/getStoreByUserId'
+import { IUpdateStoreRequest } from '../api/stores/dto/updateStore'
+import UserRequestError from '../errors/userRequestError'
+import prismaClient from '../prismaClient'
 
 export default class StoreService {
 	//get
@@ -74,6 +74,12 @@ export default class StoreService {
 		title,
 		storeComposition,
 	}: IUpdateStoreRequest) => {
+		if (
+			new Set(storeComposition?.map(rec => `productId${rec.productId}`))
+				.size !== storeComposition?.length
+		)
+			throw UserRequestError.BadRequest('PRODUCT DUPLICATES')
+
 		const user = await prismaClient.user.findUnique({
 			where: { id: creatorId },
 			select: { id: true },
@@ -97,30 +103,19 @@ export default class StoreService {
 		if (productsCount !== storeComposition.length)
 			throw UserRequestError.NotFound('UNKNOWN PRODUCT ID')
 
-		return prismaClient.$transaction([
-			prismaClient.storeComposition.deleteMany({
-				where: { storeId: id },
-			}),
-			prismaClient.store.update({
-				where: { id },
-				data: {
-					title,
-					storeComposition: {
-						createMany: {
-							data: storeComposition.map(record => ({
-								productId: record.productId,
-								quantity: record.quantity,
-								expires: record.expires,
-								price: record.price,
-								currency: record.currency,
-								unit: record.unit,
-							})),
-						},
+		return prismaClient.store.update({
+			where: { id },
+			data: {
+				title,
+				storeComposition: {
+					deleteMany: { storeId: { equals: id } },
+					createMany: {
+						data: storeComposition,
 					},
 				},
-				include: { storeComposition: true },
-			}),
-		])
+			},
+			include: { storeComposition: true },
+		})
 	}
 
 	//delete

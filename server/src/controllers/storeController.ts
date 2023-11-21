@@ -1,25 +1,25 @@
 import { RequestHandler } from 'express'
 import { IErrorResponse } from '../api/errorResponse'
-import UserRequestError from '../errors/userRequestError'
-import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
-import getValidationResult from '../helpers/getValidationResult'
+import {
+	ICreateStoreRequest,
+	ICreateStoreResponse,
+} from '../api/stores/dto/createStore'
+import {
+	IDeleteStoreRequest,
+	IDeleteStoreResponse,
+} from '../api/stores/dto/deleteStore'
 import {
 	IGetStoreByUserIdRequest,
 	IGetStoreByUserIdResponse,
 } from '../api/stores/dto/getStoreByUserId'
 import {
-	ICreateStoreRequest,
-	ICreateStoreResponse,
-} from '../api/stores/dto/createStore'
-import StoreService from '../services/storeService'
-import {
 	IUpdateStoreRequest,
 	IUpdateStoreResponse,
 } from '../api/stores/dto/updateStore'
-import {
-	IDeleteStoreRequest,
-	IDeleteStoreResponse,
-} from '../api/stores/dto/deleteStore'
+import UserRequestError from '../errors/userRequestError'
+import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
+import getValidationResult from '../helpers/getValidationResult'
+import StoreService from '../services/storeService'
 
 export default class StoreController {
 	//get
@@ -85,11 +85,10 @@ export default class StoreController {
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const transactionResult = await StoreService.updateStore(req.body)
-			const updateResult = transactionResult[1]
+			const result = await StoreService.updateStore(req.body)
 			res.json({
-				...updateResult,
-				storeComposition: updateResult.storeComposition.map(record => ({
+				...result,
+				storeComposition: result.storeComposition.map(record => ({
 					...record,
 					price: record.price.toNumber(),
 				})),

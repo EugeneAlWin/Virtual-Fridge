@@ -1,5 +1,4 @@
 export interface IDeleteRecipesRequest {
-	userId: number
 	recipesId: number[]
 }
 

@@ -1,5 +1,4 @@
 export interface IDeleteProductsRequest {
-	creatorId: number
 	productsId: number[]
 }
 

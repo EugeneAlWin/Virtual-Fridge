@@ -208,7 +208,6 @@ export default class RecipeService {
 	static updateRecipe = async ({
 		id,
 		title,
-		creatorId,
 		recipeComposition,
 		isVisible,
 		isApproved,
@@ -216,17 +215,11 @@ export default class RecipeService {
 		type,
 	}: IUpdateRecipeRequest) => {
 		if (
+			recipeComposition &&
 			new Set(recipeComposition?.map(rec => `productId${rec.productId}`))
 				.size !== recipeComposition?.length
 		)
 			throw UserRequestError.BadRequest('PRODUCT DUPLICATES')
-
-		const user = await prismaClient.user.findUnique({
-			where: { id: creatorId },
-			select: { id: true },
-		})
-		if (!user)
-			throw UserRequestError.NotFound(`USER WITH ID ${creatorId} NOT FOUND`)
 
 		const recipe = await prismaClient.recipe.findUnique({
 			where: { id },
@@ -239,7 +232,7 @@ export default class RecipeService {
 			where: { id: { in: recipeComposition?.map(rec => rec.productId) } },
 		})
 
-		if (productsCount !== recipeComposition?.length)
+		if (recipeComposition && productsCount !== recipeComposition?.length)
 			throw UserRequestError.NotFound('SOME PRODUCT DOES NOT EXISTS')
 
 		return prismaClient.recipe.update({
@@ -291,14 +284,10 @@ export default class RecipeService {
 	}
 
 	//delete
-	static deleteRecipes = async ({
-		recipesId,
-		userId,
-	}: IDeleteRecipesRequest) =>
+	static deleteRecipes = async ({ recipesId }: IDeleteRecipesRequest) =>
 		prismaClient.recipe.deleteMany({
 			where: {
 				id: { in: recipesId },
-				creatorId: userId,
 			},
 		})
 

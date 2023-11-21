@@ -1,7 +1,7 @@
 import { Router } from 'express'
+import { body, param } from 'express-validator'
 import UserEndpoints from '../api/users/endpoints'
 import UserController from '../controllers/userController'
-import { body, param } from 'express-validator'
 import UserDataValidator from '../validators/userDataValidator'
 
 const userRouter = Router()
@@ -65,8 +65,8 @@ userRouter.patch(
 
 userRouter.delete(
 	UserEndpoints.DELETE_USERS,
-	UserDataValidator.userIds(body),
-	UserController.deleteUserTokens
+	UserDataValidator.ids(body, 'userIds'),
+	UserController.deleteUsers
 )
 
 userRouter.delete(

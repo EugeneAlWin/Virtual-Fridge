@@ -1,6 +1,6 @@
 import { Roles } from '../api/enums'
-import { TLocation } from './types'
 import BasicValidator from './basicValidator'
+import { TLocation } from './types'
 
 export default class UserDataValidator extends BasicValidator {
 	static login(
@@ -36,15 +36,6 @@ export default class UserDataValidator extends BasicValidator {
 			.isString()
 			.withMessage('SHOULD BE AN INTEGER >= 0')
 			.isInt({ min: 0 })
-			.withMessage('SHOULD BE AN INTEGER >= 0')
-	}
-
-	static userIds(location: TLocation) {
-		return location('userIds.*')
-			.not()
-			.isString()
-			.withMessage('SHOULD BE AN INTEGER >= 0')
-			.isInt()
 			.withMessage('SHOULD BE AN INTEGER >= 0')
 	}
 

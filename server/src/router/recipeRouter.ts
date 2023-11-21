@@ -71,7 +71,6 @@ recipeRouter.post(
 recipeRouter.patch(
 	RecipeEndpoints.UPDATE,
 	RecipeDataValidator.id(body),
-	RecipeDataValidator.id(body, 'creatorId'),
 	RecipeDataValidator.title(body, true, { min: 1, max: 100 }),
 	RecipeDataValidator.type(body, false),
 	RecipeDataValidator.description(body),
@@ -91,7 +90,6 @@ recipeRouter.patch(
 
 recipeRouter.delete(
 	RecipeEndpoints.DELETE,
-	RecipeDataValidator.userId(body),
 	RecipeDataValidator.ids(body, 'recipesId'),
 	RecipeController.deleteRecipes
 )

@@ -1,6 +1,6 @@
 export interface IDeleteUserTokensRequest {
 	userId: number
-	deviceId: string[]
+	devicesId: string[]
 }
 
 export interface IDeleteUserTokensResponse {

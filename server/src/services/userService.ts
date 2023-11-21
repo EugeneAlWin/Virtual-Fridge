@@ -1,15 +1,15 @@
-import { IGetUserByLoginRequest } from '../api/users/dto/getUserByLogin'
-import prismaClient from '../prismaClient'
-import { IGetAllUsersRequest } from '../api/users/dto/getAllUsers'
-import { IGetUserTokensRequest } from '../api/users/dto/getUserTokens'
+import { createHash } from 'node:crypto'
 import { ICreateUserRequest } from '../api/users/dto/createUser'
-import UserRequestError from '../errors/userRequestError'
 import { ICreateUserTokenRequest } from '../api/users/dto/createUserToken'
+import { IDeleteUsersRequest } from '../api/users/dto/deleteUsers'
+import { IDeleteUserTokensRequest } from '../api/users/dto/deleteUserTokens'
+import { IGetAllUsersRequest } from '../api/users/dto/getAllUsers'
+import { IGetUserByLoginRequest } from '../api/users/dto/getUserByLogin'
+import { IGetUserTokensRequest } from '../api/users/dto/getUserTokens'
 import { IUpdateUserDataRequest } from '../api/users/dto/updateUserData'
 import { IUpdateUserTokenRequest } from '../api/users/dto/updateUserToken'
-import { IDeleteUserTokensRequest } from '../api/users/dto/deleteUserTokens'
-import { createHash } from 'node:crypto'
-import { IDeleteUsersRequest } from '../api/users/dto/deleteUsers'
+import UserRequestError from '../errors/userRequestError'
+import prismaClient from '../prismaClient'
 
 export default class UserService {
 	//get
@@ -157,11 +157,11 @@ export default class UserService {
 
 	static deleteUserTokens = async ({
 		userId,
-		deviceId,
+		devicesId,
 	}: IDeleteUserTokensRequest) =>
 		prismaClient.userToken.deleteMany({
 			where: {
-				deviceId: { in: deviceId },
+				deviceId: { in: devicesId },
 				userId,
 			},
 		})

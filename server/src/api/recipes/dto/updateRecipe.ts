@@ -2,7 +2,6 @@ import { RecipeTypes } from '../../enums'
 
 export interface IUpdateRecipeRequest {
 	id: number
-	creatorId: number
 	title?: string
 	type?: keyof typeof RecipeTypes
 	description?: string

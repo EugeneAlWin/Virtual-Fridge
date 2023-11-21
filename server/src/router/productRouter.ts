@@ -1,8 +1,8 @@
 import { Router } from 'express'
+import { body } from 'express-validator'
 import ProductEndpoints from '../api/products/endpoints'
 import ProductController from '../controllers/productController'
 import ProductDataValidator from '../validators/productDataValidator'
-import { body } from 'express-validator'
 
 const productRouter = Router()
 
@@ -45,7 +45,6 @@ productRouter.patch(
 
 productRouter.delete(
 	ProductEndpoints.DELETE_PRODUCT,
-	ProductDataValidator.creatorId(body),
 	ProductDataValidator.productId(body, true),
 	ProductDataValidator.productIdArrayEntries(body),
 	ProductController.deleteProducts
