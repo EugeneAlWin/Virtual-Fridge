@@ -8,7 +8,7 @@ export default class ProductDataValidator extends BasicValidator {
 
 	static productId(location: TLocation, isArray = false) {
 		return isArray
-			? location('productId')
+			? location('productsId')
 					.isArray()
 					.withMessage('SHOULD BE AN ARRAY OF INTEGERS')
 			: location('productId')
@@ -20,7 +20,7 @@ export default class ProductDataValidator extends BasicValidator {
 	}
 
 	static productIdArrayEntries(location: TLocation) {
-		return location('productId.*')
+		return location('productsId.*')
 			.not()
 			.isString()
 			.withMessage('SHOULD BE AN INTEGER')
