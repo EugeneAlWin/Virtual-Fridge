@@ -39,6 +39,15 @@ export default class UserDataValidator extends BasicValidator {
 			.withMessage('SHOULD BE AN INTEGER >= 0')
 	}
 
+	static userIds(location: TLocation) {
+		return location('userIds.*')
+			.not()
+			.isString()
+			.withMessage('SHOULD BE AN INTEGER >= 0')
+			.isInt()
+			.withMessage('SHOULD BE AN INTEGER >= 0')
+	}
+
 	static role(location: TLocation) {
 		return location('role')
 			.isString()

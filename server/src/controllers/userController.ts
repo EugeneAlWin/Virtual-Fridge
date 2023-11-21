@@ -37,6 +37,10 @@ import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
 import getValidationResult from '../helpers/getValidationResult'
 import UserService from '../services/userService'
 import Tokenizator from '../helpers/tokenizator'
+import {
+	IDeleteUsersRequest,
+	IDeleteUsersResponse,
+} from '../api/users/dto/deleteUsers'
 
 export default class UserController {
 	//get
@@ -198,6 +202,23 @@ export default class UserController {
 	}
 
 	//delete
+	static deleteUsers: RequestHandler<
+		undefined,
+		IDeleteUsersResponse | IErrorResponse,
+		IDeleteUsersRequest
+	> = async (req, res, next) => {
+		const errorData = getValidationResult(req)
+		if (errorData) return callUnprocessableEntity(next, errorData)
+
+		try {
+			const result = await UserService.deleteUsers(req.body)
+
+			res.json(result)
+		} catch (e) {
+			return next(e)
+		}
+	}
+
 	static deleteUserTokens: RequestHandler<
 		undefined,
 		IDeleteUserTokensResponse | IErrorResponse,

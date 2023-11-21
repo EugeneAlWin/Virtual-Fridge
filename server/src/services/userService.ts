@@ -9,6 +9,7 @@ import { IUpdateUserDataRequest } from '../api/users/dto/updateUserData'
 import { IUpdateUserTokenRequest } from '../api/users/dto/updateUserToken'
 import { IDeleteUserTokensRequest } from '../api/users/dto/deleteUserTokens'
 import { createHash } from 'node:crypto'
+import { IDeleteUsersRequest } from '../api/users/dto/deleteUsers'
 
 export default class UserService {
 	//get
@@ -147,6 +148,13 @@ export default class UserService {
 	}
 
 	//delete
+	static deleteUsers = async ({ userIds }: IDeleteUsersRequest) =>
+		prismaClient.user.deleteMany({
+			where: {
+				id: { in: userIds },
+			},
+		})
+
 	static deleteUserTokens = async ({
 		userId,
 		deviceId,
@@ -157,6 +165,4 @@ export default class UserService {
 				userId,
 			},
 		})
-
-	//TODO: delete user
 }

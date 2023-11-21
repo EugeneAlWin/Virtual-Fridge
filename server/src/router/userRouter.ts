@@ -64,6 +64,12 @@ userRouter.patch(
 )
 
 userRouter.delete(
+	UserEndpoints.DELETE_USERS,
+	UserDataValidator.userIds(body),
+	UserController.deleteUserTokens
+)
+
+userRouter.delete(
 	UserEndpoints.DELETE_USER_TOKENS,
 	UserDataValidator.userId(body),
 	UserDataValidator.deviceId(body, true),

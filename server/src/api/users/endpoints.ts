@@ -7,5 +7,6 @@ export default class UserEndpoints {
 	static CREATE_USER_TOKEN = '/tokens/create'
 	static UPDATE_USER_DATA = '/update'
 	static UPDATE_USER_TOKEN = '/tokens/update'
+	static DELETE_USERS = '/delete'
 	static DELETE_USER_TOKENS = '/tokens/delete'
 }
