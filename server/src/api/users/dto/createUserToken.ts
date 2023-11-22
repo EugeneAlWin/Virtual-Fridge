@@ -11,5 +11,6 @@ export interface ICreateUserTokenRequest {
 export interface ICreateUserTokenResponse {
 	userId: number
 	deviceId: string
+	accessToken: string
 	refreshToken: string
 }

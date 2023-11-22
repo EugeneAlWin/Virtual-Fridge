@@ -1,20 +1,23 @@
-import { Roles } from '../api/enums'
 import { sign, verify } from 'jsonwebtoken'
+import { Roles } from '../api/enums'
 import { CONFIG } from '../config'
 
 export default class Tokenizator {
-	static generateTokens(payload: {
+	static generateTokens({
+		login,
+		role,
+		deviceId,
+	}: {
 		login: string
-		password: string
 		role: keyof typeof Roles
 		deviceId: string
 	}) {
-		const accessToken = sign(payload, CONFIG.JWT_ACCESS, {
-			expiresIn: '3d',
+		const accessToken = sign({ login, role, deviceId }, CONFIG.JWT_ACCESS, {
+			expiresIn: '30m',
 			algorithm: 'HS512',
 		})
-		const refreshToken = sign(payload, CONFIG.JWT_REFRESH, {
-			expiresIn: '10d',
+		const refreshToken = sign({ login, role, deviceId }, CONFIG.JWT_REFRESH, {
+			expiresIn: '15d',
 			algorithm: 'HS512',
 		})
 

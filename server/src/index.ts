@@ -1,3 +1,5 @@
+import cookieParser from 'cookie-parser'
+import cors from 'cors'
 import express from 'express'
 import { exit } from 'node:process'
 import { CONFIG } from './config'
@@ -12,6 +14,8 @@ import userRouter from './router/userRouter'
 const app = express()
 
 app.use(express.json())
+app.use(cookieParser())
+app.use(cors({ credentials: true, origin: CONFIG.CLIENT_URL }))
 
 app.use('/users', userRouter)
 app.use('/products', productRouter)

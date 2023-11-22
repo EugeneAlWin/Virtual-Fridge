@@ -9,6 +9,10 @@ import {
 	ICreateUserTokenResponse,
 } from '../api/users/dto/createUserToken'
 import {
+	IDeleteUsersRequest,
+	IDeleteUsersResponse,
+} from '../api/users/dto/deleteUsers'
+import {
 	IDeleteUserTokensRequest,
 	IDeleteUserTokensResponse,
 } from '../api/users/dto/deleteUserTokens'
@@ -35,12 +39,8 @@ import {
 import UserRequestError from '../errors/userRequestError'
 import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
 import getValidationResult from '../helpers/getValidationResult'
-import UserService from '../services/userService'
 import Tokenizator from '../helpers/tokenizator'
-import {
-	IDeleteUsersRequest,
-	IDeleteUsersResponse,
-} from '../api/users/dto/deleteUsers'
+import UserService from '../services/userService'
 
 export default class UserController {
 	//get
@@ -119,11 +119,17 @@ export default class UserController {
 				refreshToken,
 			})
 
-			res.cookie('accessToken', accessToken, {
+			res.cookie('refreshToken', refreshToken, {
 				maxAge: 30 * 24 * 60 * 60 * 1000,
 				httpOnly: true,
 			})
-			res.status(201).json(result)
+			res.status(201).json({
+				...result,
+				userToken: result.userToken.map(rec => ({
+					...rec,
+					accessToken,
+				})),
+			})
 		} catch (e) {
 			return next(e)
 		}
@@ -146,11 +152,11 @@ export default class UserController {
 				refreshToken,
 			})
 
-			res.cookie('accessToken', accessToken, {
+			res.cookie('refreshToken', refreshToken, {
 				maxAge: 30 * 24 * 60 * 60 * 1000,
 				httpOnly: true,
 			})
-			res.status(201).json(result)
+			res.status(201).json({ ...result, accessToken })
 		} catch (e) {
 			return next(e)
 		}
@@ -190,12 +196,10 @@ export default class UserController {
 				...req.body,
 				refreshToken,
 			})
-			res.cookie('accessToken', accessToken, {
+			res.cookie('refreshToken', refreshToken, {
 				maxAge: 30 * 24 * 60 * 60 * 1000,
 				httpOnly: true,
-			})
-
-			res.json(result)
+			}).json({ ...result, accessToken })
 		} catch (e) {
 			return next(e)
 		}

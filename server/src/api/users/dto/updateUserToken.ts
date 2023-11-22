@@ -11,5 +11,6 @@ export interface IUpdateUserTokenRequest {
 export interface IUpdateUserTokenResponse {
 	userId: number
 	deviceId: string
+	accessToken: string
 	refreshToken: string
 }
