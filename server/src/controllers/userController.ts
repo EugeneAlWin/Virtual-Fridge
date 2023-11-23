@@ -1,4 +1,5 @@
 import { RequestHandler } from 'express'
+import { createHash } from 'node:crypto'
 import { IErrorResponse } from '../api/errorResponse'
 import {
 	ICreateUserRequest,
@@ -29,6 +30,11 @@ import {
 	IGetUserTokensResponse,
 } from '../api/users/dto/getUserTokens'
 import {
+	ILoginUserRequest,
+	ILoginUserRequestCookies,
+	ILoginUserResponse,
+} from '../api/users/dto/loginUser'
+import {
 	IUpdateUserDataRequest,
 	IUpdateUserDataResponse,
 } from '../api/users/dto/updateUserData'
@@ -43,6 +49,58 @@ import Tokenizator from '../helpers/tokenizator'
 import UserService from '../services/userService'
 
 export default class UserController {
+	//login
+	static loginUser: RequestHandler<
+		undefined,
+		ILoginUserResponse | IErrorResponse,
+		ILoginUserRequest
+	> = async (req, res, next) => {
+		const errorData = getValidationResult(req)
+		if (errorData) return callUnprocessableEntity(next, errorData)
+
+		try {
+			const user = await UserService.getUserByLogin(req.body)
+			if (!user)
+				return next(
+					UserRequestError.NotFound(`USER ${req.body.login} NOT FOUND`)
+				)
+
+			if (
+				createHash('sha512').update(req.body.password).digest('hex') !==
+				user.password
+			)
+				return next(UserRequestError.BadRequest('WRONG PASSWORD'))
+
+			const { refreshToken, accessToken } = Tokenizator.generateTokens({
+				login: user.login,
+				role: user.role,
+				deviceId: req.body.deviceId,
+			})
+
+			const userTokens = await UserService.getUserTokens({ userId: user.id })
+
+			if (userTokens.find(rec => rec.deviceId === req.body.deviceId)) {
+				await UserService.updateUserToken({
+					userId: user.id,
+					deviceId: req.body.deviceId,
+					refreshToken,
+				} as IUpdateUserTokenRequest & { refreshToken: string })
+			} else
+				await UserService.createUserToken({
+					deviceId: req.body.deviceId,
+					refreshToken,
+					userId: user.id,
+				} as ICreateUserTokenRequest & { refreshToken: string })
+
+			res.cookie('refreshToken', refreshToken, {
+				maxAge: 30 * 24 * 60 * 60 * 1000,
+				httpOnly: true,
+			}).json({ userId: user.id, refreshToken, accessToken })
+		} catch (e) {
+			return next(e)
+		}
+	}
+
 	//get
 	static getUserByLogin: RequestHandler<
 		IGetUserByLoginRequest,
@@ -123,13 +181,14 @@ export default class UserController {
 				maxAge: 30 * 24 * 60 * 60 * 1000,
 				httpOnly: true,
 			})
-			res.status(201).json({
-				...result,
-				userToken: result.userToken.map(rec => ({
-					...rec,
-					accessToken,
-				})),
-			})
+				.status(201)
+				.json({
+					...result,
+					userToken: result.userToken.map(rec => ({
+						...rec,
+						accessToken,
+					})),
+				})
 		} catch (e) {
 			return next(e)
 		}
@@ -188,9 +247,19 @@ export default class UserController {
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const { refreshToken, accessToken } = Tokenizator.generateTokens(
-				req.body
-			)
+			const { refreshToken: prevRefreshToken } =
+				req.cookies as ILoginUserRequestCookies
+			if (!prevRefreshToken) return next(UserRequestError.Unauthorized())
+
+			const user = await UserService.getUserByLogin(req.body)
+			const userData = Tokenizator.validateRefreshToken(prevRefreshToken)
+			if (!user || !userData) return next(UserRequestError.Unauthorized())
+
+			const { refreshToken, accessToken } = Tokenizator.generateTokens({
+				login: user.login,
+				role: user.role,
+				deviceId: req.body.deviceId,
+			})
 
 			const result = await UserService.updateUserToken({
 				...req.body,

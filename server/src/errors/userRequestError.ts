@@ -25,4 +25,8 @@ export default class UserRequestError extends Error {
 	static UnprocessableEntity(error: Omit<IErrorResponse, 'code'>) {
 		return new UserRequestError({ code: 422, ...error })
 	}
+
+	static Unauthorized() {
+		return new UserRequestError({ code: 401, message: 'UNAUTHORIZED' })
+	}
 }

@@ -4,7 +4,6 @@ export interface IUpdateUserTokenRequest {
 	userId: number
 	deviceId: string
 	login: string
-	password: string
 	role: keyof typeof Roles
 }
 
