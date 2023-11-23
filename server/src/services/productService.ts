@@ -2,6 +2,7 @@ import { ICreateProductRequest } from '../api/products/dto/createProduct'
 import { IDeleteProductsRequest } from '../api/products/dto/deleteProduct'
 import { IGetAllProductsRequest } from '../api/products/dto/getAllProducts'
 import { IGetProductByIdRequest } from '../api/products/dto/getProductById'
+import { IGetProductsByIdRequest } from '../api/products/dto/getProductsById'
 import { IUpdateProductRequest } from '../api/products/dto/updateProduct'
 import UserRequestError from '../errors/userRequestError'
 import prismaClient from '../prismaClient'
@@ -11,6 +12,11 @@ export default class ProductService {
 	static getProductById = async ({ id }: IGetProductByIdRequest) =>
 		prismaClient.product.findUnique({
 			where: { id },
+		})
+
+	static getProductsById = async ({ ids }: IGetProductsByIdRequest) =>
+		prismaClient.product.findMany({
+			where: { id: { in: ids } },
 		})
 
 	static getAllProducts = async ({

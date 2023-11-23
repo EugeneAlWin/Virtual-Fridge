@@ -13,6 +13,12 @@ productRouter.get(
 )
 
 productRouter.get(
+	ProductEndpoints.GET_PRODUCTS_BY_ID,
+	ProductDataValidator.ids(body, 'ids'),
+	ProductController.getProductsById
+)
+
+productRouter.get(
 	ProductEndpoints.GET_ALL_PRODUCTS,
 	ProductDataValidator.title(body),
 	ProductDataValidator.cursor(body),

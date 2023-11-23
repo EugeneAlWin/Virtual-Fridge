@@ -1,29 +1,33 @@
 import { RequestHandler } from 'express'
 import { IErrorResponse } from '../api/errorResponse'
-import UserRequestError from '../errors/userRequestError'
-import {
-	IGetProductByIdRequest,
-	IGetProductByIdResponse,
-} from '../api/products/dto/getProductById'
-import ProductService from '../services/productService'
-import {
-	IGetAllProductsRequest,
-	IGetAllProductsResponse,
-} from '../api/products/dto/getAllProducts'
 import {
 	ICreateProductRequest,
 	ICreateProductResponse,
 } from '../api/products/dto/createProduct'
 import {
-	IUpdateProductRequest,
-	IUpdateProductResponse,
-} from '../api/products/dto/updateProduct'
-import {
 	IDeleteProductsRequest,
 	IDeleteProductsResponse,
 } from '../api/products/dto/deleteProduct'
+import {
+	IGetAllProductsRequest,
+	IGetAllProductsResponse,
+} from '../api/products/dto/getAllProducts'
+import {
+	IGetProductByIdRequest,
+	IGetProductByIdResponse,
+} from '../api/products/dto/getProductById'
+import {
+	IGetProductsByIdRequest,
+	IGetProductsByIdResponse,
+} from '../api/products/dto/getProductsById'
+import {
+	IUpdateProductRequest,
+	IUpdateProductResponse,
+} from '../api/products/dto/updateProduct'
+import UserRequestError from '../errors/userRequestError'
 import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
 import getValidationResult from '../helpers/getValidationResult'
+import ProductService from '../services/productService'
 
 export default class ProductController {
 	//get
@@ -43,6 +47,24 @@ export default class ProductController {
 						`PRODUCT WITH ID ${req.body.id} NOT FOUND`
 					)
 				)
+
+			res.json(result)
+		} catch (e) {
+			return next(e)
+		}
+	}
+
+	static getProductsById: RequestHandler<
+		undefined,
+		IGetProductsByIdResponse[] | IErrorResponse,
+		IGetProductsByIdRequest
+	> = async (req, res, next) => {
+		const errorData = getValidationResult(req)
+		if (errorData) return callUnprocessableEntity(next, errorData)
+
+		try {
+			const result = await ProductService.getProductsById(req.body)
+			if (!result) return next(UserRequestError.NotFound(''))
 
 			res.json(result)
 		} catch (e) {
