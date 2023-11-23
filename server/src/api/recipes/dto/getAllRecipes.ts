@@ -1,4 +1,4 @@
-import { RecipeTypes } from '../../enums'
+import { RecipeTypes, Units } from '../../enums'
 
 export interface IGetAllRecipesRequest {
 	title?: string
@@ -24,6 +24,7 @@ export interface IGetAllRecipesResponse {
 			productId: number
 			recipeId: number
 			quantity: number
+			units: keyof typeof Units
 		}[]
 	}[]
 }

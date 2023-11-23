@@ -1,4 +1,4 @@
-import { RecipeTypes } from '../../enums'
+import { RecipeTypes, Units } from '../../enums'
 
 export interface ICreateRecipeRequest {
 	creatorId: number
@@ -9,6 +9,7 @@ export interface ICreateRecipeRequest {
 	recipeComposition: {
 		productId: number
 		quantity: number
+		units: keyof typeof Units
 	}[]
 }
 
@@ -25,5 +26,6 @@ export interface ICreateRecipeResponse {
 		productId: number
 		recipeId: number
 		quantity: number
+		units: keyof typeof Units
 	}[]
 }
