@@ -30,17 +30,18 @@ export default class ChecklistController {
 	static getChecklistById: RequestHandler<
 		undefined,
 		IGetChecklistByIdResponse | IErrorResponse,
+		undefined,
 		IGetChecklistByIdRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await ChecklistService.getChecklistById(req.body)
+			const result = await ChecklistService.getChecklistById(req.query)
 			if (!result)
 				return next(
 					UserRequestError.NotFound(
-						`CHECKLIST WITH ID ${req.body.id} NOT FOUND`
+						`CHECKLIST WITH ID ${req.query.id} NOT FOUND`
 					)
 				)
 
@@ -65,13 +66,14 @@ export default class ChecklistController {
 	static getAllChecklists: RequestHandler<
 		undefined,
 		IGetAllChecklistsResponse | IErrorResponse,
+		undefined,
 		IGetAllChecklistsRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await ChecklistService.getAllChecklists(req.body)
+			const result = await ChecklistService.getAllChecklists(req.query)
 			res.json({
 				checklistsData: result.map(record => ({
 					...record,

@@ -38,12 +38,10 @@ export default class UserService {
 
 	//create
 	static createUser = async ({
-		deviceId,
-		refreshToken,
 		login,
 		password,
 		role,
-	}: ICreateUserRequest & { refreshToken: string }) => {
+	}: ICreateUserRequest) => {
 		const user = await prismaClient.user.findUnique({
 			where: { login },
 			select: { id: true },
@@ -55,9 +53,6 @@ export default class UserService {
 				login,
 				role,
 				password: createHash('sha512').update(password).digest('hex'),
-				userToken: {
-					create: { deviceId, refreshToken },
-				},
 			},
 			include: { userToken: true },
 		})
@@ -100,6 +95,7 @@ export default class UserService {
 		isArchived,
 		isBanned,
 		login,
+		role,
 		password,
 	}: IUpdateUserDataRequest) => {
 		const user = await prismaClient.user.findUnique({
@@ -115,6 +111,7 @@ export default class UserService {
 				isArchived,
 				isBanned,
 				login,
+				role,
 				password: password
 					? createHash('sha512').update(password).digest('hex')
 					: undefined,

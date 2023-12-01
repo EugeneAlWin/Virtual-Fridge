@@ -26,17 +26,18 @@ export default class StoreController {
 	static getStoreById: RequestHandler<
 		undefined,
 		IGetStoreByUserIdResponse | IErrorResponse,
+		undefined,
 		IGetStoreByUserIdRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await StoreService.getStoreById(req.body)
+			const result = await StoreService.getStoreById(req.query)
 			if (!result)
 				return next(
 					UserRequestError.NotFound(
-						`STORE WITH CREATOR_ID ${req.body.creatorId} NOT FOUND`
+						`STORE WITH CREATOR_ID ${req.query.creatorId} NOT FOUND`
 					)
 				)
 

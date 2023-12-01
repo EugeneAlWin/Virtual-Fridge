@@ -35,6 +35,7 @@ import {
 import {
 	IGetAllRecipesRequest,
 	IGetAllRecipesResponse,
+	RecipesProductData,
 } from '../api/recipes/dto/getAllRecipes'
 import {
 	IGetRecipeByIdRequest,
@@ -53,23 +54,25 @@ import UserRequestError from '../errors/userRequestError'
 import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
 import getValidationResult from '../helpers/getValidationResult'
 import RecipeService from '../services/recipeService'
+import { Units } from '../api/enums'
 
 export default class RecipeController {
 	//get
 	static getRecipeById: RequestHandler<
 		undefined,
 		IGetRecipeByIdResponse | IErrorResponse,
+		undefined,
 		IGetRecipeByIdRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await RecipeService.getRecipeById(req.body)
+			const result = await RecipeService.getRecipeById(req.query)
 			if (!result)
 				return next(
 					UserRequestError.NotFound(
-						`RECIPE WITH ID ${req.body.id} NOT FOUND`
+						`RECIPE WITH ID ${req.query.id} NOT FOUND`
 					)
 				)
 
@@ -82,16 +85,45 @@ export default class RecipeController {
 	static getAllRecipes: RequestHandler<
 		undefined,
 		IGetAllRecipesResponse | IErrorResponse,
+		undefined,
 		IGetAllRecipesRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await RecipeService.getAllRecipes(req.body)
+			const { recipes, products, recipesComposition, cursor } =
+				await RecipeService.getAllRecipes(req.query)
+
 			res.json({
-				recipesData: result,
-				cursor: result[result.length - 1]?.id || null,
+				recipesData: recipes.map(recipe => ({
+					recipe: {
+						...recipe,
+						products: products.reduce((prev, curr) => {
+							if (
+								!recipesComposition[recipe.id].find(
+									item => item.productId === curr.id
+								)
+							)
+								return prev
+							return [
+								...prev,
+								{
+									...curr,
+									quantity:
+										recipesComposition[recipe.id].find(
+											item => item.productId === curr.id
+										)?.quantity ?? 0,
+									units:
+										recipesComposition[recipe.id].find(
+											item => item.productId === curr.id
+										)?.units ?? Units.GRAMS,
+								},
+							]
+						}, [] as RecipesProductData[]),
+					},
+				})),
+				cursor,
 			})
 		} catch (e) {
 			return next(e)
@@ -101,13 +133,14 @@ export default class RecipeController {
 	static getAllChosenRecipes: RequestHandler<
 		undefined,
 		IGetAllChosenRecipesResponse | IErrorResponse,
+		undefined,
 		IGetAllChosenRecipesRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await RecipeService.getAllChosenRecipes(req.body)
+			const result = await RecipeService.getAllChosenRecipes(req.query)
 			res.json({
 				chosenRecipesData: result.map(record => ({
 					info: {
@@ -129,13 +162,14 @@ export default class RecipeController {
 	static getAllFavoriteRecipes: RequestHandler<
 		undefined,
 		IGetAllFavoriteRecipesResponse | IErrorResponse,
+		undefined,
 		IGetAllFavoriteRecipesRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await RecipeService.getAllFavoriteRecipes(req.body)
+			const result = await RecipeService.getAllFavoriteRecipes(req.query)
 			res.json({
 				favoriteRecipesData: result.map(record => ({
 					info: {

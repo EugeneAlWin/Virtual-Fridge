@@ -34,17 +34,18 @@ export default class ProductController {
 	static getProductById: RequestHandler<
 		undefined,
 		IGetProductByIdResponse | IErrorResponse,
+		undefined,
 		IGetProductByIdRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await ProductService.getProductById(req.body)
+			const result = await ProductService.getProductById(req.query)
 			if (!result)
 				return next(
 					UserRequestError.NotFound(
-						`PRODUCT WITH ID ${req.body.id} NOT FOUND`
+						`PRODUCT WITH ID ${req.query.id} NOT FOUND`
 					)
 				)
 
@@ -57,13 +58,14 @@ export default class ProductController {
 	static getProductsById: RequestHandler<
 		undefined,
 		IGetProductsByIdResponse[] | IErrorResponse,
+		undefined,
 		IGetProductsByIdRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await ProductService.getProductsById(req.body)
+			const result = await ProductService.getProductsById(req.query)
 			if (!result) return next(UserRequestError.NotFound(''))
 
 			res.json(result)
@@ -75,13 +77,14 @@ export default class ProductController {
 	static getAllProducts: RequestHandler<
 		undefined,
 		IGetAllProductsResponse | IErrorResponse,
+		undefined,
 		IGetAllProductsRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await ProductService.getAllProducts(req.body)
+			const result = await ProductService.getAllProducts(req.query)
 			res.json({
 				productsData: result,
 				cursor: result[result.length - 1]?.id || null,

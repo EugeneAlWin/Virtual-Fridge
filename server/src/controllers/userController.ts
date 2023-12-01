@@ -53,20 +53,21 @@ export default class UserController {
 	static loginUser: RequestHandler<
 		undefined,
 		ILoginUserResponse | IErrorResponse,
+		undefined,
 		ILoginUserRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const user = await UserService.getUserByLogin(req.body)
+			const user = await UserService.getUserByLogin(req.query)
 			if (!user)
 				return next(
-					UserRequestError.NotFound(`USER ${req.body.login} NOT FOUND`)
+					UserRequestError.NotFound(`USER ${req.query.login} NOT FOUND`)
 				)
 
 			if (
-				createHash('sha512').update(req.body.password).digest('hex') !==
+				createHash('sha512').update(req.query.password).digest('hex') !==
 				user.password
 			)
 				return next(UserRequestError.BadRequest('WRONG PASSWORD'))
@@ -74,20 +75,20 @@ export default class UserController {
 			const { refreshToken, accessToken } = Tokenizator.generateTokens({
 				login: user.login,
 				role: user.role,
-				deviceId: req.body.deviceId,
+				deviceId: req.query.deviceId,
 			})
 
 			const userTokens = await UserService.getUserTokens({ userId: user.id })
 
-			if (userTokens.find(rec => rec.deviceId === req.body.deviceId)) {
+			if (userTokens.find(rec => rec.deviceId === req.query.deviceId)) {
 				await UserService.updateUserToken({
 					userId: user.id,
-					deviceId: req.body.deviceId,
+					deviceId: req.query.deviceId,
 					refreshToken,
 				} as IUpdateUserTokenRequest & { refreshToken: string })
 			} else
 				await UserService.createUserToken({
-					deviceId: req.body.deviceId,
+					deviceId: req.query.deviceId,
 					refreshToken,
 					userId: user.id,
 				} as ICreateUserTokenRequest & { refreshToken: string })
@@ -127,13 +128,14 @@ export default class UserController {
 	static getAllUsers: RequestHandler<
 		undefined,
 		IGetAllUsersResponse | IErrorResponse,
+		undefined,
 		IGetAllUsersRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await UserService.getAllUsers(req.body)
+			const result = await UserService.getAllUsers(req.query)
 			res.json({
 				usersData: result,
 				cursor: result[result.length - 1]?.id || null,
@@ -146,13 +148,14 @@ export default class UserController {
 	static getUserTokens: RequestHandler<
 		undefined,
 		IGetUserTokensResponse[] | IErrorResponse,
+		undefined,
 		IGetUserTokensRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await UserService.getUserTokens(req.body)
+			const result = await UserService.getUserTokens(req.query)
 			res.json(result)
 		} catch (e) {
 			return next(e)
@@ -169,26 +172,9 @@ export default class UserController {
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const { refreshToken, accessToken } = Tokenizator.generateTokens(
-				req.body
-			)
-			const result = await UserService.createUser({
-				...req.body,
-				refreshToken,
-			})
+			const result = await UserService.createUser(req.body)
 
-			res.cookie('refreshToken', refreshToken, {
-				maxAge: 30 * 24 * 60 * 60 * 1000,
-				httpOnly: true,
-			})
-				.status(201)
-				.json({
-					...result,
-					userToken: result.userToken.map(rec => ({
-						...rec,
-						accessToken,
-					})),
-				})
+			res.status(201).json(result)
 		} catch (e) {
 			return next(e)
 		}

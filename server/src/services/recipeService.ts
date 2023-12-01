@@ -12,6 +12,7 @@ import { IUpdateChosenRecipeRequest } from '../api/recipes/dto/updateChosenRecip
 import { IUpdateRecipeRequest } from '../api/recipes/dto/updateRecipe'
 import UserRequestError from '../errors/userRequestError'
 import prismaClient from '../prismaClient'
+import { Units } from '../api/enums'
 
 export default class RecipeService {
 	//get
@@ -28,18 +29,81 @@ export default class RecipeService {
 		take,
 		isVisible,
 		isApproved,
-	}: IGetAllRecipesRequest) =>
-		prismaClient.recipe.findMany({
+	}: IGetAllRecipesRequest) => {
+		const recipesComposition = await prismaClient.recipeComposition.findMany({
 			skip,
 			take,
-			cursor: cursor ? { id: cursor } : undefined,
+			cursor: cursor
+				? {
+						productId_recipeId: {
+							productId: cursor?.productId,
+							recipeId: cursor?.recipeId,
+						},
+				  }
+				: undefined,
 			where: {
-				title: title ? { contains: title, mode: 'insensitive' } : undefined,
-				isVisible: isVisible === undefined ? true : isVisible,
-				isApproved: isVisible === undefined ? true : isApproved,
+				recipe: {
+					title: title
+						? { contains: title, mode: 'insensitive' }
+						: undefined,
+					isVisible:
+						isVisible === undefined ? true : isVisible ? true : {},
+					isApproved:
+						isApproved === undefined ? true : isApproved ? true : {},
+				},
 			},
-			include: { recipeComposition: true },
 		})
+		const params = recipesComposition.reduce(
+			(prev, curr) => {
+				prev.productsId.add(curr.productId)
+				prev.recipesId.add(curr.recipeId)
+				prev.recipeComposition = {
+					...prev.recipeComposition,
+					[curr.recipeId]: [
+						...(prev.recipeComposition[curr.recipeId] || []),
+						{
+							productId: curr.productId,
+							quantity: curr.quantity,
+							units: curr.units as Units,
+						},
+					],
+				}
+				return prev
+			},
+			{
+				productsId: new Set<number>(),
+				recipesId: new Set<number>(),
+				recipeComposition: {} as {
+					[key: number]: {
+						productId: number
+						quantity: number
+						units: Units
+					}[]
+				},
+			}
+		)
+
+		const products = await prismaClient.product.findMany({
+			where: { id: { in: [...params.productsId] } },
+		})
+		const recipes = await prismaClient.recipe.findMany({
+			where: { id: { in: [...params.recipesId] } },
+		})
+		return {
+			recipes,
+			products,
+			recipesComposition: params.recipeComposition,
+			cursor: recipesComposition[recipesComposition.length - 1]?.productId
+				? {
+						recipeId:
+							recipesComposition[recipesComposition.length - 1].recipeId,
+						productId:
+							recipesComposition[recipesComposition.length - 1]
+								.productId,
+				  }
+				: null,
+		}
+	}
 
 	static getAllChosenRecipes = async ({
 		title,
