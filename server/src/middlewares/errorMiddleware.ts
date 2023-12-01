@@ -19,5 +19,6 @@ export default function (
 		} satisfies IErrorResponse)
 	}
 
+	console.error(err)
 	return res.status(500).json({ message: 'SERVER ERROR' })
 }
