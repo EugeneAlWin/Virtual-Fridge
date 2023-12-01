@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Client Vite CI
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: server
+        working-directory: client
     strategy:
       matrix:
         node-version: [ 21.x ]
@@ -27,8 +27,5 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
           cache-dependency-path: server
-      - name: 'Create env file'
-        run: |
-          sudo echo "DATABASE_URL=postgresql://user:pass@host:5432/dbname?schema=public" > .env
       - run: sudo npm i
-      - run: sudo npm run compile
+      - run: sudo npm build
