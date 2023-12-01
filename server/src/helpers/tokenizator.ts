@@ -5,11 +5,11 @@ import { CONFIG } from '../config'
 export default class Tokenizator {
 	static generateTokens({
 		login,
-		role,
+		role = Roles.DEFAULT,
 		deviceId,
 	}: {
 		login: string
-		role: keyof typeof Roles
+		role?: keyof typeof Roles
 		deviceId: string
 	}) {
 		const accessToken = sign({ login, role, deviceId }, CONFIG.JWT_ACCESS, {
