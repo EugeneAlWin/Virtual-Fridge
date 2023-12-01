@@ -4,4 +4,6 @@ export default class StoreEndpoints {
 	static CREATE = '/create'
 	static UPDATE = '/update'
 	static DELETE = '/delete'
+
+	static BASE = '/stores'
 }

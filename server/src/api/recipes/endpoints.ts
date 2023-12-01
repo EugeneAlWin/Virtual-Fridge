@@ -12,4 +12,6 @@ export default class RecipeEndpoints {
 	static DELETE = '/delete'
 	static DELETE_CHOSEN = '/chosen/delete'
 	static DELETE_FAVORITE = '/favorites/delete'
+
+	static BASE = '/recipes'
 }

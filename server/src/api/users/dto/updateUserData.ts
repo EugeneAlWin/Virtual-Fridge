@@ -4,6 +4,7 @@ export interface IUpdateUserDataRequest {
 	userId: number
 	login?: string
 	password?: string
+	role?: keyof typeof Roles
 	isArchived?: boolean
 	isBanned?: boolean
 }

@@ -3,8 +3,7 @@ import { Roles } from '../../enums'
 export interface ICreateUserRequest {
 	login: string
 	password: string
-	role: keyof typeof Roles
-	deviceId: string
+	role?: keyof typeof Roles
 }
 
 export interface ICreateUserResponse {
@@ -18,7 +17,6 @@ export interface ICreateUserResponse {
 	userToken: {
 		userId: number
 		deviceId: string
-		accessToken: string
 		refreshToken: string
 	}[]
 }

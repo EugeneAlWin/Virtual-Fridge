@@ -6,4 +6,6 @@ export default class ProductEndpoints {
 	static CREATE_PRODUCT = '/create'
 	static UPDATE_PRODUCT = '/update'
 	static DELETE_PRODUCT = '/delete'
+
+	static BASE = '/products'
 }

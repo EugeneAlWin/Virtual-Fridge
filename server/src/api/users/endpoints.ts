@@ -10,4 +10,6 @@ export default class UserEndpoints {
 	static UPDATE_USER_TOKEN = '/tokens/update' //map: refresh
 	static DELETE_USERS = '/delete'
 	static DELETE_USER_TOKENS = '/tokens/delete' //map: logout
+
+	static BASE = '/users'
 }

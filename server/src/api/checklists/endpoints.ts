@@ -5,4 +5,6 @@ export default class ChecklistEndpoints {
 	static CREATE = '/create'
 	static UPDATE = '/update'
 	static DELETE = '/delete'
+
+	static BASE = '/checklists'
 }
