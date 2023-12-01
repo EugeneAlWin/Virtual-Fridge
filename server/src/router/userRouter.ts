@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { body, cookie, param } from 'express-validator'
+import { body, cookie, param, query } from 'express-validator'
 import UserEndpoints from '../api/users/endpoints'
 import UserController from '../controllers/userController'
 import authMiddleware from '../middlewares/authMiddleware'
@@ -9,31 +9,31 @@ const userRouter = Router()
 
 userRouter.post(
 	UserEndpoints.LOGIN,
-	UserDataValidator.login(body, false, { max: 30 }),
-	UserDataValidator.password(body, false, { max: 120 }),
-	UserDataValidator.deviceId(body),
+	UserDataValidator.login(param, false, { max: 30 }),
+	UserDataValidator.password(param, false, { max: 120 }),
+	UserDataValidator.deviceId(param),
 	UserController.loginUser
 )
 
 userRouter.get(
 	UserEndpoints.GET_USER_BY_LOGIN,
-	UserDataValidator.login(param),
+	UserDataValidator.login(query),
 	authMiddleware,
 	UserController.getUserByLogin
 )
 
 userRouter.get(
 	UserEndpoints.GET_ALL_USERS,
-	UserDataValidator.take(body),
-	UserDataValidator.skip(body),
-	UserDataValidator.login(body, true),
-	UserDataValidator.cursor(body),
+	UserDataValidator.take(query),
+	UserDataValidator.skip(query),
+	UserDataValidator.login(query, true),
+	UserDataValidator.cursor(query),
 	UserController.getAllUsers
 )
 
 userRouter.get(
 	UserEndpoints.GET_USER_TOKENS,
-	UserDataValidator.userId(body),
+	UserDataValidator.userId(query),
 	UserController.getUserTokens
 )
 
@@ -42,8 +42,6 @@ userRouter.post(
 	UserDataValidator.login(body, false, { max: 30 }),
 	UserDataValidator.password(body, false, { max: 120 }),
 	UserDataValidator.role(body),
-	UserDataValidator.deviceId(body),
-	UserDataValidator.refreshToken(body),
 	UserController.createUser
 )
 

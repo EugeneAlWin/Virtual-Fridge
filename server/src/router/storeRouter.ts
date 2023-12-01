@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { body } from 'express-validator'
+import { body, query } from 'express-validator'
 import StoreEndpoints from '../api/stores/endpoints'
 import StoreController from '../controllers/storeController'
 import StoreDataValidator from '../validators/storeDataValidator'
@@ -8,7 +8,7 @@ const storeRouter = Router()
 
 storeRouter.get(
 	StoreEndpoints.GET_BY_ID,
-	StoreDataValidator.creatorId(body),
+	StoreDataValidator.creatorId(query),
 	StoreController.getStoreById
 )
 

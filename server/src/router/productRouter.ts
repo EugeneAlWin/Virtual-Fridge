@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { body } from 'express-validator'
+import { body, query } from 'express-validator'
 import ProductEndpoints from '../api/products/endpoints'
 import ProductController from '../controllers/productController'
 import ProductDataValidator from '../validators/productDataValidator'
@@ -8,22 +8,22 @@ const productRouter = Router()
 
 productRouter.get(
 	ProductEndpoints.GET_PRODUCT_BY_ID,
-	ProductDataValidator.id(body),
+	ProductDataValidator.id(query),
 	ProductController.getProductById
 )
 
 productRouter.get(
 	ProductEndpoints.GET_PRODUCTS_BY_ID,
-	ProductDataValidator.ids(body, 'ids'),
+	ProductDataValidator.ids(query, 'ids'),
 	ProductController.getProductsById
 )
 
 productRouter.get(
 	ProductEndpoints.GET_ALL_PRODUCTS,
-	ProductDataValidator.title(body),
-	ProductDataValidator.cursor(body),
-	ProductDataValidator.skip(body),
-	ProductDataValidator.take(body),
+	ProductDataValidator.title(query),
+	ProductDataValidator.cursor(query),
+	ProductDataValidator.skip(query),
+	ProductDataValidator.take(query),
 	ProductController.getAllProducts
 )
 

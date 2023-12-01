@@ -3,43 +3,44 @@ import { body } from 'express-validator/src/middlewares/validation-chain-builder
 import RecipeEndpoints from '../api/recipes/endpoints'
 import RecipeController from '../controllers/recipeController'
 import RecipeDataValidator from '../validators/recipeDataValidator'
+import { query } from 'express-validator'
 
 const recipeRouter = Router()
 
 recipeRouter.get(
 	RecipeEndpoints.GET_BY_ID,
-	RecipeDataValidator.id(body),
+	RecipeDataValidator.id(query),
 	RecipeController.getRecipeById
 )
 
 recipeRouter.get(
 	RecipeEndpoints.GET_ALL,
-	RecipeDataValidator.title(body),
-	RecipeDataValidator.skip(body),
-	RecipeDataValidator.take(body),
-	RecipeDataValidator.cursor(body),
-	RecipeDataValidator.booleanOptional(body, 'isVisible'),
-	RecipeDataValidator.booleanOptional(body, 'isApproved'),
+	RecipeDataValidator.title(query),
+	RecipeDataValidator.skip(query),
+	RecipeDataValidator.take(query),
+	// RecipeDataValidator.cursor(query),
+	RecipeDataValidator.booleanOptional(query, 'isVisible'),
+	RecipeDataValidator.booleanOptional(query, 'isApproved'),
 	RecipeController.getAllRecipes
 )
 
 recipeRouter.get(
 	RecipeEndpoints.GET_ALL_CHOSEN,
-	RecipeDataValidator.skip(body),
-	RecipeDataValidator.take(body),
-	RecipeDataValidator.cursor(body),
-	RecipeDataValidator.title(body),
-	RecipeDataValidator.userId(body),
+	RecipeDataValidator.skip(query),
+	RecipeDataValidator.take(query),
+	RecipeDataValidator.cursor(query),
+	RecipeDataValidator.title(query),
+	RecipeDataValidator.userId(query),
 	RecipeController.getAllChosenRecipes
 )
 
 recipeRouter.get(
 	RecipeEndpoints.GET_ALL_FAVORITES,
-	RecipeDataValidator.skip(body),
-	RecipeDataValidator.take(body),
-	RecipeDataValidator.cursor(body),
-	RecipeDataValidator.title(body),
-	RecipeDataValidator.userId(body),
+	RecipeDataValidator.skip(query),
+	RecipeDataValidator.take(query),
+	RecipeDataValidator.cursor(query),
+	RecipeDataValidator.title(query),
+	RecipeDataValidator.userId(query),
 	RecipeController.getAllFavoriteRecipes
 )
 
