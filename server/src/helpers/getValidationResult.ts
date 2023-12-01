@@ -1,8 +1,7 @@
-import { Request } from 'express'
 import { validationResult } from 'express-validator'
 
 export default function getValidationResult(
-	req: Request<Record<never, never> | undefined>
+	req: Parameters<typeof validationResult>[0]
 ) {
 	const validatedData = validationResult(req)
 	return validatedData.isEmpty() ? null : validatedData.array()[0]
