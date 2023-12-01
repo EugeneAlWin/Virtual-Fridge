@@ -32,9 +32,9 @@ export default class StoreDataValidator extends BasicValidator {
 						values: 'undefined',
 				  }),
 			location('storeComposition[*].quantity')
-				.not()
-				.isString()
-				.withMessage('SHOULD BE NUMERIC > 0'),
+				.isInt({ min: 0 })
+				.withMessage('SHOULD BE NUMERIC > 0')
+				.toInt(),
 			location('storeComposition[*].unit')
 				.isString()
 				.withMessage('SHOULD BE STRING')

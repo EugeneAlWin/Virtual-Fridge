@@ -26,9 +26,9 @@ export default class ChecklistDataValidator extends BasicValidator {
 			BasicValidator.isArray(location, 'checklistComposition'),
 			BasicValidator.id(location, 'checklistComposition[*].productId'),
 			location('checklistComposition[*].quantity')
-				.not()
-				.isString()
-				.withMessage('SHOULD BE NUMERIC > 0'),
+				.isInt({ min: 0 })
+				.withMessage('SHOULD BE NUMERIC > 0')
+				.toInt(),
 			location('checklistComposition[*].units')
 				.isString()
 				.withMessage('SHOULD BE STRING')
@@ -60,7 +60,8 @@ export default class ChecklistDataValidator extends BasicValidator {
 				.withMessage('SHOULD BE AN ARRAY OF NUMBERS >= 0'),
 			location('checklistsId.*')
 				.isInt({ min: 0 })
-				.withMessage('SHOULD BE AN ARRAY OF NUMBERS >= 0'),
+				.withMessage('SHOULD BE AN ARRAY OF NUMBERS >= 0')
+				.toInt(),
 		]
 	}
 }

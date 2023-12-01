@@ -3,11 +3,9 @@ import { TLocation } from './types'
 export default class BasicValidator {
 	static id(location: TLocation, field: string = 'id') {
 		return location(field)
-			.not()
-			.isString()
-			.withMessage('SHOULD BE AN INTEGER >= 0')
 			.isInt({ min: 0 })
 			.withMessage('SHOULD BE AN INTEGER >= 0')
+			.toInt()
 	}
 
 	static ids(location: TLocation, field: string) {
@@ -16,11 +14,9 @@ export default class BasicValidator {
 				.isArray()
 				.withMessage('SHOULD BE AN ARRAY OF INTEGERS'),
 			location(`${field}.*`)
-				.not()
-				.isString()
-				.withMessage('SHOULD BE AN ARRAY OF INTEGERS')
 				.isInt()
-				.withMessage('SHOULD BE AN ARRAY OF INTEGERS'),
+				.withMessage('SHOULD BE AN ARRAY OF INTEGERS')
+				.toInt(),
 		]
 	}
 
@@ -46,31 +42,25 @@ export default class BasicValidator {
 
 	static take(location: TLocation) {
 		return location('take')
-			.not()
-			.isString()
-			.withMessage('SHOULD BE AN INTEGER >= 0')
 			.isInt({ min: 0 })
 			.withMessage('SHOULD BE AN INTEGER >= 0')
+			.toInt()
 	}
 
 	static skip(location: TLocation) {
 		return location('skip')
-			.not()
-			.isString()
-			.withMessage('SHOULD BE AN INTEGER >= 0')
 			.isInt({ min: 0 })
 			.withMessage('SHOULD BE AN INTEGER >= 0')
+			.toInt()
 	}
 
 	static cursor(location: TLocation) {
 		return location('cursor')
 			.optional({ values: 'undefined' })
 			.default(undefined)
-			.not()
-			.isString()
-			.withMessage('SHOULD BE AN INTEGER >= 0')
 			.isInt({ min: 0 })
 			.withMessage('SHOULD BE AN INTEGER >= 0')
+			.toInt()
 	}
 
 	static isArray(location: TLocation, field: string) {
@@ -79,10 +69,9 @@ export default class BasicValidator {
 
 	static decimal(location: TLocation, field: string) {
 		return location(field)
-			.isString()
-			.withMessage('SHOULD BE STRING')
 			.isDecimal()
 			.withMessage('SHOULD BE DECIMAL STRING')
+			.toFloat()
 	}
 
 	static date(location: TLocation, field: string) {
@@ -92,10 +81,8 @@ export default class BasicValidator {
 	static booleanOptional(location: TLocation, field: string) {
 		return location(field)
 			.optional({ values: 'undefined' })
-			.not()
-			.isString()
+			.isBoolean()
 			.withMessage('SHOULD BE BOOLEAN')
-			.isBoolean({ strict: true })
-			.withMessage('SHOULD BE BOOLEAN')
+			.toBoolean(true)
 	}
 }

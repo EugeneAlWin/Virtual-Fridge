@@ -51,16 +51,12 @@ export default class RecipeDataValidator extends BasicValidator {
 				.if(location('recipeComposition').isArray())
 				.isInt()
 				.withMessage('SHOULD BE INT >= 0')
-				.not()
-				.isString()
-				.withMessage('SHOULD BE INT >= 0'),
+				.toInt(),
 			location('recipeComposition.*.quantity')
 				.if(location('recipeComposition').isArray())
 				.isInt()
 				.withMessage('SHOULD BE INT >= 0')
-				.not()
-				.isString()
-				.withMessage('SHOULD BE INT >= 0'),
+				.toInt(),
 		]
 	}
 }

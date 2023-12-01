@@ -12,20 +12,16 @@ export default class ProductDataValidator extends BasicValidator {
 					.isArray()
 					.withMessage('SHOULD BE AN ARRAY OF INTEGERS')
 			: location('productId')
-					.not()
-					.isString()
-					.withMessage('SHOULD BE AN INTEGER')
 					.isInt({ min: 0 })
 					.withMessage('SHOULD BE AN INTEGER >= 0')
+					.toInt()
 	}
 
 	static productIdArrayEntries(location: TLocation) {
 		return location('productsId.*')
-			.not()
-			.isString()
-			.withMessage('SHOULD BE AN INTEGER')
 			.isInt({ min: 0 })
 			.withMessage('SHOULD BE AN INTEGER >= 0')
+			.toInt()
 	}
 
 	static title(
@@ -38,45 +34,53 @@ export default class ProductDataValidator extends BasicValidator {
 
 	static calories(location: TLocation, isOptional = false) {
 		return isOptional
-			? location('calories').optional({ values: 'undefined' })
-			: location('calories')
-					.not()
-					.isString()
-					.withMessage('SHOULD BE AN INTEGER >= 0 AND <= 32767')
+			? location('calories')
+					.optional({ values: 'undefined' })
 					.isInt({ min: 0, max: 32767 })
-					.withMessage('SHOULD BE AN INTEGER >= 0 AND <= 32767')
+					.withMessage('SHOULD BE AN INT >= 0 AND <= 32767')
+					.toInt()
+			: location('calories')
+					.isInt({ min: 0, max: 32767 })
+					.withMessage('SHOULD BE AN INT >= 0 AND <= 32767')
+					.toInt()
 	}
 
 	static protein(location: TLocation, isOptional = false) {
 		return isOptional
-			? location('protein').optional({ values: 'undefined' })
-			: location('protein')
-					.not()
-					.isString()
-					.withMessage('SHOULD BE AN INTEGER >= 0 AND <= 32767')
+			? location('protein')
+					.optional({ values: 'undefined' })
 					.isInt({ min: 0, max: 32767 })
-					.withMessage('SHOULD BE AN INTEGER >= 0 AND <= 32767')
+					.withMessage('SHOULD BE AN INT >= 0 AND <= 32767')
+					.toInt()
+			: location('protein')
+					.isInt({ min: 0, max: 32767 })
+					.withMessage('SHOULD BE AN INT >= 0 AND <= 32767')
+					.toInt()
 	}
 
 	static fats(location: TLocation, isOptional = false) {
 		return isOptional
-			? location('fats').optional({ values: 'undefined' })
-			: location('fats')
-					.not()
-					.isString()
-					.withMessage('SHOULD BE AN INTEGER >= 0 AND <= 32767')
+			? location('fats')
+					.optional({ values: 'undefined' })
 					.isInt({ min: 0, max: 32767 })
-					.withMessage('SHOULD BE AN INTEGER >= 0 AND <= 32767')
+					.withMessage('SHOULD BE AN INT >= 0 AND <= 32767')
+					.toInt()
+			: location('fats')
+					.isInt({ min: 0, max: 32767 })
+					.withMessage('SHOULD BE AN INT >= 0 AND <= 32767')
+					.toInt()
 	}
 
 	static carbohydrates(location: TLocation, isOptional = false) {
 		return isOptional
-			? location('carbohydrates').optional({ values: 'undefined' })
-			: location('carbohydrates')
-					.not()
-					.isString()
-					.withMessage('SHOULD BE AN INTEGER >= 0 AND <= 32767')
+			? location('carbohydrates')
+					.optional({ values: 'undefined' })
 					.isInt({ min: 0, max: 32767 })
-					.withMessage('SHOULD BE AN INTEGER >= 0 AND <= 32767')
+					.withMessage('SHOULD BE AN INT >= 0 AND <= 32767')
+					.toInt()
+			: location('carbohydrates')
+					.isInt({ min: 0, max: 32767 })
+					.withMessage('SHOULD BE AN INT >= 0 AND <= 32767')
+					.toInt()
 	}
 }

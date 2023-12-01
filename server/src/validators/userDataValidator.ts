@@ -32,15 +32,14 @@ export default class UserDataValidator extends BasicValidator {
 
 	static userId(location: TLocation) {
 		return location('userId')
-			.not()
-			.isString()
-			.withMessage('SHOULD BE AN INTEGER >= 0')
 			.isInt({ min: 0 })
 			.withMessage('SHOULD BE AN INTEGER >= 0')
+			.toInt()
 	}
 
 	static role(location: TLocation) {
 		return location('role')
+			.optional({ values: 'undefined' })
 			.isString()
 			.withMessage('SHOULD BE A STRING')
 			.isIn(Object.values(Roles))
