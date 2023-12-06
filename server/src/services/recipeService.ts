@@ -1,3 +1,4 @@
+import { Units } from '../api/enums'
 import { ICreateChosenRecipeRequest } from '../api/recipes/dto/createChosenRecipe'
 import { ICreateFavoriteRecipeRequest } from '../api/recipes/dto/createFavoriteRecipe'
 import { ICreateRecipeRequest } from '../api/recipes/dto/createRecipe'
@@ -12,7 +13,6 @@ import { IUpdateChosenRecipeRequest } from '../api/recipes/dto/updateChosenRecip
 import { IUpdateRecipeRequest } from '../api/recipes/dto/updateRecipe'
 import UserRequestError from '../errors/userRequestError'
 import prismaClient from '../prismaClient'
-import { Units } from '../api/enums'
 
 export default class RecipeService {
 	//get

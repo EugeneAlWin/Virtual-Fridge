@@ -1,5 +1,7 @@
 import { RequestHandler } from 'express'
+import { Units } from '../api/enums'
 import { IErrorResponse } from '../api/errorResponse'
+import { ProductData } from '../api/products/common'
 import {
 	ICreateChosenRecipeRequest,
 	ICreateChosenRecipeResponse,
@@ -35,7 +37,6 @@ import {
 import {
 	IGetAllRecipesRequest,
 	IGetAllRecipesResponse,
-	RecipesProductData,
 } from '../api/recipes/dto/getAllRecipes'
 import {
 	IGetRecipeByIdRequest,
@@ -54,7 +55,6 @@ import UserRequestError from '../errors/userRequestError'
 import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
 import getValidationResult from '../helpers/getValidationResult'
 import RecipeService from '../services/recipeService'
-import { Units } from '../api/enums'
 
 export default class RecipeController {
 	//get
@@ -120,7 +120,7 @@ export default class RecipeController {
 										)?.units ?? Units.GRAMS,
 								},
 							]
-						}, [] as RecipesProductData[]),
+						}, [] as ProductData[]),
 					},
 				})),
 				cursor,

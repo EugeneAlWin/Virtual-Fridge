@@ -44,7 +44,7 @@ export default class ProductService {
 		creatorId,
 	}: ICreateProductRequest) => {
 		const user = await prismaClient.user.findUnique({
-			where: { id: creatorId },
+			where: { id: creatorId || undefined },
 			select: { id: true },
 		})
 		if (!user)

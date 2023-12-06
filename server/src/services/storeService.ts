@@ -1,17 +1,46 @@
 import { ICreateStoreRequest } from '../api/stores/dto/createStore'
 import { IDeleteStoreRequest } from '../api/stores/dto/deleteStore'
-import { IGetStoreByUserIdRequest } from '../api/stores/dto/getStoreByUserId'
+import {
+	IGetStoreByUserIdRequest,
+	IGetStoreByUserIdResponse,
+} from '../api/stores/dto/getStoreByUserId'
 import { IUpdateStoreRequest } from '../api/stores/dto/updateStore'
 import UserRequestError from '../errors/userRequestError'
 import prismaClient from '../prismaClient'
 
 export default class StoreService {
 	//get
-	static getStoreById = async ({ creatorId }: IGetStoreByUserIdRequest) =>
-		prismaClient.store.findUnique({
+	static getStoreById = async ({
+		creatorId,
+	}: IGetStoreByUserIdRequest): Promise<IGetStoreByUserIdResponse> => {
+		const store = await prismaClient.store.findUnique({
 			where: { creatorId },
 			include: { storeComposition: true },
 		})
+		if (!store)
+			throw UserRequestError.NotFound(
+				`STORE WITH CREATOR_ID ${creatorId} NOT FOUND`
+			)
+
+		const productIds = store.storeComposition.map(
+			product => product.productId
+		)
+
+		const products = await prismaClient.product.findMany({
+			where: { id: { in: productIds } },
+		})
+
+		return {
+			...store,
+			storeComposition: store.storeComposition.map(product => ({
+				...product,
+				storeId: undefined,
+				productId: undefined,
+				product: products.find(item => item.id === product.productId),
+				price: product.price.toNumber(),
+			})),
+		}
+	}
 
 	//create
 	static createStore = async ({

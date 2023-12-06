@@ -9,18 +9,17 @@ const checklistRouter = Router()
 checklistRouter.get(
 	ChecklistEndpoints.GET_BY_ID,
 	ChecklistDataValidator.id(query),
-	ChecklistDataValidator.creatorId(query),
 	ChecklistController.getChecklistById
 )
 
 checklistRouter.get(
-	ChecklistEndpoints.GET_ALL,
+	ChecklistEndpoints.GET_ALL_PREVIEW,
 	ChecklistDataValidator.skip(query),
 	ChecklistDataValidator.take(query),
 	ChecklistDataValidator.cursor(query),
 	ChecklistDataValidator.creatorId(query),
 	ChecklistDataValidator.createdAt(query),
-	ChecklistController.getAllChecklists
+	ChecklistController.getAllChecklistsPreview
 )
 
 checklistRouter.post(

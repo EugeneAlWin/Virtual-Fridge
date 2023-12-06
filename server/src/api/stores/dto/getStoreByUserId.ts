@@ -1,4 +1,5 @@
 import { Currencies, Units } from '../../enums'
+import { ProductData } from '../../products/common'
 
 export interface IGetStoreByUserIdRequest {
 	creatorId: number
@@ -9,8 +10,7 @@ export interface IGetStoreByUserIdResponse {
 	creatorId: number
 	title: string | null
 	storeComposition: {
-		storeId: number
-		productId: number
+		product: ProductData | undefined
 		quantity: number
 		unit: keyof typeof Units
 		expires: Date | null

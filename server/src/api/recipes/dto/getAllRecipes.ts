@@ -1,4 +1,5 @@
-import { RecipeTypes, Units } from '../../enums'
+import { RecipeTypes } from '../../enums'
+import { ProductData } from '../../products/common'
 
 export interface IGetAllRecipesRequest {
 	title?: string
@@ -29,19 +30,7 @@ export interface IGetAllRecipesResponse {
 			createdAt: Date
 			isVisible: boolean
 			isApproved: boolean
-			products: RecipesProductData[]
+			products: ProductData[]
 		}
 	}[]
-}
-
-export interface RecipesProductData {
-	id: number
-	title: string
-	calories: number
-	protein: number
-	fats: number
-	carbohydrates: number
-	creatorId: number | null
-	quantity: number
-	units: keyof typeof Units
 }

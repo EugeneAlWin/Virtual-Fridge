@@ -1,3 +1,5 @@
+import { Roles } from '../../enums'
+
 export interface ILoginUserRequest {
 	login: string
 	password: string
@@ -12,4 +14,7 @@ export interface ILoginUserResponse {
 	userId: number
 	refreshToken: string
 	accessToken: string
+	deviceId: string
+	role: keyof typeof Roles
+	login: string
 }

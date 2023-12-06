@@ -4,7 +4,7 @@ export interface IUpdateChecklistRequest {
 	checklistId: number
 	creatorId: number
 	isConfirmed?: boolean
-	checklistComposition: {
+	checklistComposition?: {
 		id: number
 		productId: number
 		quantity: number

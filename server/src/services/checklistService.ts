@@ -1,29 +1,60 @@
 import { ICreateChecklistRequest } from '../api/checklists/dto/createChecklist'
 import { IDeleteChecklistsRequest } from '../api/checklists/dto/deleteChecklist'
-import { IGetAllChecklistsRequest } from '../api/checklists/dto/getAllChecklists'
-import { IGetChecklistByIdRequest } from '../api/checklists/dto/getChecklistById'
+import { IGetAllChecklistsPreviewRequest } from '../api/checklists/dto/getAllChecklists'
+import {
+	IGetChecklistByIdRequest,
+	IGetChecklistByIdResponse,
+} from '../api/checklists/dto/getChecklistById'
 import { IUpdateChecklistRequest } from '../api/checklists/dto/updateChecklist'
 import UserRequestError from '../errors/userRequestError'
 import prismaClient from '../prismaClient'
 
 export default class ChecklistService {
 	//get
-	static getChecklistById = async ({ id }: IGetChecklistByIdRequest) =>
-		prismaClient.checklist.findUnique({
+	static getChecklistById = async ({
+		id,
+	}: IGetChecklistByIdRequest): Promise<IGetChecklistByIdResponse> => {
+		const checklist = await prismaClient.checklist.findUnique({
 			where: { id },
 			include: {
 				checklistComposition: true,
 				checklistPrices: true,
 			},
 		})
+		if (!checklist)
+			throw UserRequestError.NotFound(`CHECKLIST WITH ID ${id} NOT FOUND`)
 
-	static getAllChecklists = async ({
+		const productIds = checklist.checklistComposition.map(
+			product => product.productId
+		)
+
+		const products = await prismaClient.product.findMany({
+			where: { id: { in: productIds } },
+		})
+
+		return {
+			...checklist,
+			checklistComposition: checklist.checklistComposition.map(product => ({
+				...product,
+				product: products.find(item => item.id === product.productId),
+				price: product.price.toNumber(),
+				checklistId: undefined,
+				productId: undefined,
+			})),
+			checklistPrices: {
+				BYN: checklist.checklistPrices?.BYN.toNumber() ?? null,
+				USD: checklist.checklistPrices?.USD.toNumber() ?? null,
+				RUB: checklist.checklistPrices?.USD.toNumber() ?? null,
+			},
+		}
+	}
+	static getAllChecklistsPreview = async ({
 		cursor,
 		skip,
 		take,
 		createdAt,
 		creatorId,
-	}: IGetAllChecklistsRequest) =>
+	}: IGetAllChecklistsPreviewRequest) =>
 		prismaClient.checklist.findMany({
 			skip,
 			take,
@@ -33,7 +64,6 @@ export default class ChecklistService {
 				createdAt: createdAt ? { lte: createdAt } : undefined,
 			},
 			include: {
-				checklistComposition: true,
 				checklistPrices: true,
 			},
 			orderBy: { createdAt: 'desc' },

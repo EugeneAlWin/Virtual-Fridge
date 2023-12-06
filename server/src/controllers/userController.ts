@@ -85,18 +85,29 @@ export default class UserController {
 					userId: user.id,
 					deviceId: req.query.deviceId,
 					refreshToken,
-				} as IUpdateUserTokenRequest & { refreshToken: string })
+				} as IUpdateUserTokenRequest & {
+					refreshToken: string
+				})
 			} else
 				await UserService.createUserToken({
 					deviceId: req.query.deviceId,
 					refreshToken,
 					userId: user.id,
-				} as ICreateUserTokenRequest & { refreshToken: string })
+				} as ICreateUserTokenRequest & {
+					refreshToken: string
+				})
 
 			res.cookie('refreshToken', refreshToken, {
 				maxAge: 30 * 24 * 60 * 60 * 1000,
 				httpOnly: true,
-			}).json({ userId: user.id, refreshToken, accessToken })
+			}).json({
+				userId: user.id,
+				refreshToken,
+				accessToken,
+				login: user.login,
+				role: user.role,
+				deviceId: req.query.deviceId,
+			})
 		} catch (e) {
 			return next(e)
 		}

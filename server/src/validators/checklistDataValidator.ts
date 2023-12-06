@@ -23,19 +23,30 @@ export default class ChecklistDataValidator extends BasicValidator {
 
 	static ChecklistCompositionArrayEntries(location: TLocation) {
 		return [
-			BasicValidator.isArray(location, 'checklistComposition'),
-			BasicValidator.id(location, 'checklistComposition[*].productId'),
+			BasicValidator.isArray(location, 'checklistComposition').optional({
+				values: 'undefined',
+			}),
+			BasicValidator.id(
+				location,
+				'checklistComposition[*].productId'
+			).optional({ values: 'undefined' }),
 			location('checklistComposition[*].quantity')
+				.optional({ values: 'undefined' })
 				.isInt({ min: 0 })
 				.withMessage('SHOULD BE NUMERIC > 0')
 				.toInt(),
 			location('checklistComposition[*].units')
+				.optional({ values: 'undefined' })
 				.isString()
 				.withMessage('SHOULD BE STRING')
 				.isIn(Object.values(Units))
 				.withMessage(`ALLOWED VALUES: ${Object.values(Units).join(' | ')}`),
-			BasicValidator.decimal(location, 'checklistComposition[*].price'),
+			BasicValidator.decimal(
+				location,
+				'checklistComposition[*].price'
+			).optional({ values: 'undefined' }),
 			location('checklistComposition[*].currency')
+				.optional({ values: 'undefined' })
 				.isString()
 				.withMessage('SHOULD BE STRING')
 				.isIn(Object.values(Currencies))
@@ -47,9 +58,9 @@ export default class ChecklistDataValidator extends BasicValidator {
 
 	static ChecklistPricesEntries(location: TLocation) {
 		return [
-			BasicValidator.decimal(location, 'checklistPrices.BYN'),
-			BasicValidator.decimal(location, 'checklistPrices.USD'),
-			BasicValidator.decimal(location, 'checklistPrices.RUB'),
+			BasicValidator.decimal(location, 'checklistPrices.BYN').optional(),
+			BasicValidator.decimal(location, 'checklistPrices.USD').optional(),
+			BasicValidator.decimal(location, 'checklistPrices.RUB').optional(),
 		]
 	}
 

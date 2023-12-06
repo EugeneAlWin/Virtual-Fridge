@@ -1,18 +1,5 @@
-export interface ICreateProductRequest {
-	title: string
-	calories: number
-	protein: number
-	fats: number
-	carbohydrates: number
-	creatorId: number
-}
+import { ProductData } from '../common'
 
-export interface ICreateProductResponse {
-	id: number
-	title: string
-	calories: number
-	protein: number
-	fats: number
-	carbohydrates: number
-	creatorId: number | null
-}
+export interface ICreateProductRequest extends Omit<ProductData, 'id'> {}
+
+export interface ICreateProductResponse extends ProductData {}

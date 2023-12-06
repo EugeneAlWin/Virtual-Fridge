@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { body, cookie, param, query } from 'express-validator'
+import { body, cookie, query } from 'express-validator'
 import UserEndpoints from '../api/users/endpoints'
 import UserController from '../controllers/userController'
 import authMiddleware from '../middlewares/authMiddleware'
@@ -9,9 +9,9 @@ const userRouter = Router()
 
 userRouter.post(
 	UserEndpoints.LOGIN,
-	UserDataValidator.login(param, false, { max: 30 }),
-	UserDataValidator.password(param, false, { max: 120 }),
-	UserDataValidator.deviceId(param),
+	UserDataValidator.login(query, false, { max: 30 }),
+	UserDataValidator.password(query, false, { max: 120 }),
+	UserDataValidator.deviceId(query),
 	UserController.loginUser
 )
 
@@ -49,7 +49,7 @@ userRouter.post(
 	UserEndpoints.CREATE_USER_TOKEN,
 	UserDataValidator.userId(body),
 	UserDataValidator.deviceId(body),
-	UserDataValidator.refreshToken(body),
+	// UserDataValidator.refreshToken(body),
 	UserController.createUserToken
 )
 

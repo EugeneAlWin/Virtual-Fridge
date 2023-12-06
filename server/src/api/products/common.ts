@@ -1,8 +1,4 @@
-export interface IGetProductsByIdRequest {
-	ids: number[]
-}
-
-export interface IGetProductsByIdResponse {
+export interface ProductData {
 	id: number
 	title: string
 	calories: number

@@ -53,6 +53,7 @@ export default class UserService {
 				login,
 				role,
 				password: createHash('sha512').update(password).digest('hex'),
+				store: { create: {} },
 			},
 			include: { userToken: true },
 		})

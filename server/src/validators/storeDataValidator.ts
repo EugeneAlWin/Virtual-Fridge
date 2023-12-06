@@ -48,10 +48,12 @@ export default class StoreDataValidator extends BasicValidator {
 				.withMessage(
 					`ALLOWED VALUES: ${Object.values(Currencies).join(' | ')}`
 				),
-			location('storeComposition[*].expires')
-				.optional({ values: 'undefined' })
-				.isDate()
-				.withMessage('MUST BE DATE FORMAT'),
+			location('storeComposition[*].expires').optional({
+				values: 'undefined',
+			}),
+			// .isDate()
+			// .toDate()
+			// .withMessage('MUST BE DATE FORMAT'),
 		]
 	}
 }

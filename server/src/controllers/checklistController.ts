@@ -1,29 +1,29 @@
 import { RequestHandler } from 'express'
 import {
-	IGetChecklistByIdRequest,
-	IGetChecklistByIdResponse,
-} from '../api/checklists/dto/getChecklistById'
-import getValidationResult from '../helpers/getValidationResult'
-import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
-import ChecklistService from '../services/checklistService'
-import UserRequestError from '../errors/userRequestError'
-import {
-	IGetAllChecklistsRequest,
-	IGetAllChecklistsResponse,
-} from '../api/checklists/dto/getAllChecklists'
-import {
 	ICreateChecklistRequest,
 	ICreateChecklistResponse,
 } from '../api/checklists/dto/createChecklist'
 import {
-	IUpdateChecklistRequest,
-	IUpdateChecklistResponse,
-} from '../api/checklists/dto/updateChecklist'
-import {
 	IDeleteChecklistsRequest,
 	IDeleteChecklistsResponse,
 } from '../api/checklists/dto/deleteChecklist'
+import {
+	IGetAllChecklistsPreviewRequest,
+	IGetAllChecklistsPreviewResponse,
+} from '../api/checklists/dto/getAllChecklists'
+import {
+	IGetChecklistByIdRequest,
+	IGetChecklistByIdResponse,
+} from '../api/checklists/dto/getChecklistById'
+import {
+	IUpdateChecklistRequest,
+	IUpdateChecklistResponse,
+} from '../api/checklists/dto/updateChecklist'
 import { IErrorResponse } from '../api/errorResponse'
+import UserRequestError from '../errors/userRequestError'
+import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
+import getValidationResult from '../helpers/getValidationResult'
+import ChecklistService from '../services/checklistService'
 
 export default class ChecklistController {
 	//get
@@ -38,56 +38,34 @@ export default class ChecklistController {
 
 		try {
 			const result = await ChecklistService.getChecklistById(req.query)
-			if (!result)
-				return next(
-					UserRequestError.NotFound(
-						`CHECKLIST WITH ID ${req.query.id} NOT FOUND`
-					)
-				)
 
-			res.json({
-				...result,
-				checklistComposition: result.checklistComposition.map(record => ({
-					...record,
-					price: record.price.toNumber(),
-				})),
-				checklistPrices: {
-					checklistId: result.checklistPrices?.checklistId || result.id,
-					BYN: result.checklistPrices?.BYN.toNumber() || null,
-					USD: result.checklistPrices?.USD.toNumber() || null,
-					RUB: result.checklistPrices?.RUB.toNumber() || null,
-				},
-			})
+			res.json(result)
 		} catch (e) {
 			return next(e)
 		}
 	}
 
-	static getAllChecklists: RequestHandler<
+	static getAllChecklistsPreview: RequestHandler<
 		undefined,
-		IGetAllChecklistsResponse | IErrorResponse,
+		IGetAllChecklistsPreviewResponse | IErrorResponse,
 		undefined,
-		IGetAllChecklistsRequest
+		IGetAllChecklistsPreviewRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const result = await ChecklistService.getAllChecklists(req.query)
+			const result = await ChecklistService.getAllChecklistsPreview(
+				req.query
+			)
 			res.json({
 				checklistsData: result.map(record => ({
 					...record,
 					checklistPrices: {
-						checklistId: record.checklistPrices?.checklistId || record.id,
 						BYN: record.checklistPrices?.BYN.toNumber() || null,
 						USD: record.checklistPrices?.USD.toNumber() || null,
 						RUB: record.checklistPrices?.RUB.toNumber() || null,
 					},
-					checklistComposition: record.checklistComposition.map(item => ({
-						...item,
-						checklistId: item.checklistId,
-						price: item.price?.toNumber() || 0,
-					})),
 				})),
 				cursor: result[result.length - 1]?.id || null,
 			})

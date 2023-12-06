@@ -16,7 +16,6 @@ import {
 	IUpdateStoreRequest,
 	IUpdateStoreResponse,
 } from '../api/stores/dto/updateStore'
-import UserRequestError from '../errors/userRequestError'
 import callUnprocessableEntity from '../helpers/callUnprocessableEntity'
 import getValidationResult from '../helpers/getValidationResult'
 import StoreService from '../services/storeService'
@@ -34,20 +33,8 @@ export default class StoreController {
 
 		try {
 			const result = await StoreService.getStoreById(req.query)
-			if (!result)
-				return next(
-					UserRequestError.NotFound(
-						`STORE WITH CREATOR_ID ${req.query.creatorId} NOT FOUND`
-					)
-				)
 
-			res.json({
-				...result,
-				storeComposition: result.storeComposition.map(record => ({
-					...record,
-					price: record.price.toNumber(),
-				})),
-			})
+			res.json(result)
 		} catch (e) {
 			return next(e)
 		}
