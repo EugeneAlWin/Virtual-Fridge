@@ -23,7 +23,13 @@ import ProductEndpoints from '../../../api/products/endpoints.ts'
 export const RecipesPage = () => {
 	const { data, error, isLoading } = useInfiniteQuery<
 		IGetAllRecipesResponse,
-		IErrorResponse
+		IErrorResponse,
+		unknown,
+		unknown[],
+		{
+			pageSize: number
+			cursor: { recipeId: number; productId: number } | null
+		}
 	>({
 		queryKey: ['recipes'],
 		queryFn: async ({ pageParam }) => {
@@ -113,7 +119,7 @@ export const RecipesPage = () => {
 					})),
 					creatorId: 11, //TODO
 				})
-				return result.data
+				return result?.data
 			} catch (e) {
 				if (axios.isAxiosError(e)) throw e?.response?.data
 				throw e

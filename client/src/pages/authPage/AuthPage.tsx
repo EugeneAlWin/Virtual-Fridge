@@ -1,45 +1,65 @@
 import { useEffect, useState } from 'react'
 import styles from './authPage.module.scss'
-import { v4 } from 'uuid'
-import { useQuery } from '@tanstack/react-query'
-import $api from '../../query/axios/base.ts'
-import UserEndpoints from '../../api/users/endpoints.ts'
+import useVirtualStore from '../../storage'
+import { useAuth } from '../../query/auth/useAuth.ts'
+import { useRegistration } from '../../query/auth/useRegistration.ts'
+import { useNavigate } from 'react-router-dom'
+import { Roles } from '../../api/enums.ts'
 
 export const AuthPage = () => {
 	const [isRegistration, setIsRegistration] = useState(false)
 	const [login, setLogin] = useState('')
 	const [password, setPassword] = useState('')
 
-	const { data, refetch, error, isSuccess } = useQuery({
-		queryKey: ['f'],
-		queryFn: async () => {
-			return isRegistration
-				? await $api.post(
-						`${UserEndpoints.BASE}${UserEndpoints.CREATE_USER}`,
-						{ password, login, role: 'DEFAULT', deviceId: v4() },
-						{
-							headers: {
-								'Content-Type': 'application/json',
-							},
-						}
-				  )
-				: await $api.get(
-						`${UserEndpoints.BASE}${UserEndpoints.GET_USER_BY_LOGIN}/${login}`,
-						{}
-				  )
-		},
-		enabled: false,
-		retry: false,
-	})
+	const navigate = useNavigate()
 
-	if (error) console.log(error?.response?.data)
+	const { data: loggedUserData, loginUser, isLoginSuccess } = useAuth()
+	const { data, registerUser, error, isSuccessRegistration } = useRegistration()
+	const { setCredentials, role } = useVirtualStore()
+	if (error) console.log(error)
 
 	useEffect(() => {
-		if (isSuccess && isRegistration) {
-			localStorage.setItem('accessToken', data?.data.userToken[0].accessToken)
-			localStorage.setItem('deviceId', data?.data.userToken[0].deviceId)
+		if (isSuccessRegistration && isRegistration && data) {
+			localStorage.setItem('accessToken', data.accessToken)
+			localStorage.setItem('deviceId', data.deviceId)
+			localStorage.setItem('userId', data.userId.toString())
+			localStorage.setItem('role', data.role)
+			localStorage.setItem('login', login)
+			setCredentials({
+				login,
+				role: data?.role,
+				deviceId: data.deviceId,
+				userId: data.userId,
+			})
+			navigate('/user/store')
+		} else if (isLoginSuccess && !isRegistration && loggedUserData) {
+			localStorage.setItem('accessToken', loggedUserData.accessToken)
+			localStorage.setItem('deviceId', loggedUserData.deviceId)
+			localStorage.setItem('userId', loggedUserData.userId.toString())
+			localStorage.setItem('role', loggedUserData.role)
+			localStorage.setItem('login', login)
+			setCredentials({
+				login,
+				deviceId: loggedUserData.deviceId,
+				userId: loggedUserData.userId,
+				role: loggedUserData.role,
+			})
+			navigate(loggedUserData.role === Roles.DEFAULT ? '/user/store' : '/admin/users/')
 		}
-	}, [isSuccess, data])
+	}, [
+		navigate,
+		data,
+		isLoginSuccess,
+		isRegistration,
+		isSuccessRegistration,
+		loggedUserData,
+		login,
+		setCredentials,
+	])
+
+	// if (role) {
+	// 	return <Navigate to={'/'} />
+	// }
 	return (
 		<div
 			style={{
@@ -70,7 +90,14 @@ export const AuthPage = () => {
 				</div>
 				<br />
 				<br />
-				<button type={'button'} className={styles.button} onClick={() => refetch()}>
+				<button
+					type={'button'}
+					className={styles.button}
+					onClick={() =>
+						isRegistration
+							? registerUser({ login, password })
+							: loginUser({ login, password })
+					}>
 					Отправить
 				</button>
 				<br />

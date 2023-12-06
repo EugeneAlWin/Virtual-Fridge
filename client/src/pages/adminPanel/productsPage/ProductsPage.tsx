@@ -228,7 +228,7 @@ export const ProductsPage = () => {
 								<p>Ккал</p>
 								<input
 									type='number'
-									step={0.01}
+									step={1}
 									value={selectedProduct.calories}
 									onChange={e =>
 										setSelectedProduct(prev => ({

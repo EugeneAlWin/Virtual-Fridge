@@ -40,7 +40,6 @@ export const UsersPage = () => {
 						isBanned: false,
 					},
 				})
-				console.log(result.data.cursor)
 				return { usersData: result.data?.usersData, cursor: result.data?.cursor }
 			} catch (e) {
 				if (axios.isAxiosError(e)) throw e?.response?.data
