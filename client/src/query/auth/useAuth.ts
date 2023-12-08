@@ -7,7 +7,7 @@ import { ILoginUserResponse } from '../../api/users/dto/loginUser.ts'
 import { v4 } from 'uuid'
 
 export const useAuth = () => {
-	const { data, mutateAsync, error, isSuccess } = useMutation({
+	const { data, mutateAsync, error, isSuccess, isError } = useMutation({
 		mutationKey: ['login'],
 		mutationFn: async ({ login, password }: { login: string; password: string }) => {
 			const result = await $api.post<
@@ -28,5 +28,6 @@ export const useAuth = () => {
 		loginUser: mutateAsync,
 		error,
 		isLoginSuccess: isSuccess,
+		isLoginError: isError,
 	}
 }

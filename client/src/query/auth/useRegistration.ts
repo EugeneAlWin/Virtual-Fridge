@@ -15,7 +15,7 @@ import {
 import { Roles } from '../../api/enums.ts'
 
 export const useRegistration = () => {
-	const { data, mutateAsync, error, isSuccess } = useMutation({
+	const { data, mutateAsync, error, isSuccess, isError } = useMutation({
 		mutationKey: ['login'],
 		mutationFn: async ({ password, login }: { password: string; login: string }) => {
 			const user = await $api.post<
@@ -54,5 +54,6 @@ export const useRegistration = () => {
 		registerUser: mutateAsync,
 		error,
 		isSuccessRegistration: isSuccess,
+		isRegistrationError: isError,
 	}
 }

@@ -15,8 +15,11 @@ import {
 } from '../../../api/stores/dto/updateStore.ts'
 import ProductEndpoints from '../../../api/products/endpoints.ts'
 import { IGetAllProductsResponse } from '../../../api/products/dto/getAllProducts.ts'
+import useVirtualStore from '../../../storage'
 
 export const UserStorePage = () => {
+	const { userId } = useVirtualStore()
+
 	const { data, error, isLoading } = useQuery<
 		IGetStoreByUserIdResponse,
 		IErrorResponse,
@@ -31,7 +34,7 @@ export const UserStorePage = () => {
 					AxiosResponse<IGetStoreByUserIdResponse>
 				>(`${StoreEndpoints.BASE}${StoreEndpoints.GET_BY_ID}`, {
 					params: {
-						creatorId: 43,
+						creatorId: +userId!,
 					},
 				})
 				return result.data
@@ -130,7 +133,7 @@ export const UserStorePage = () => {
 					IUpdateStoreRequest
 				>(`${StoreEndpoints.BASE}${StoreEndpoints.UPDATE}`, {
 					id: data?.id || -1,
-					creatorId: 43,
+					creatorId: +userId!,
 					storeComposition: [
 						...storageComposition.filter(
 							item => item.productId !== selectedProduct?.productId
@@ -403,7 +406,7 @@ export const UserStorePage = () => {
 					)}
 				</div>
 				<div className={styles.cardsContainer}>
-					{!data?.storeComposition.length || 0 === 0 ? (
+					{data?.storeComposition.length === 0 ? (
 						<p style={{ color: 'red' }}>Ничего нет</p>
 					) : (
 						data?.storeComposition

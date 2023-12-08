@@ -19,8 +19,10 @@ import {
 } from '../../../api/recipes/dto/updateRecipe.ts'
 import { IGetAllProductsResponse } from '../../../api/products/dto/getAllProducts.ts'
 import ProductEndpoints from '../../../api/products/endpoints.ts'
+import useVirtualStore from '../../../storage'
 
 export const RecipesPage = () => {
+	const { userId } = useVirtualStore()
 	const { data, error, isLoading } = useInfiniteQuery<
 		IGetAllRecipesResponse,
 		IErrorResponse,
@@ -94,7 +96,7 @@ export const RecipesPage = () => {
 		isVisible: false,
 		type: RecipeTypes.VEGETARIAN,
 		title: '',
-		creatorId: 11,
+		creatorId: +userId!,
 	} satisfies ICreateRecipeRequest
 	const [newRecipe, setNewRecipe] = useState<ICreateRecipeRequest>(newRecipeInitState)
 
@@ -117,7 +119,7 @@ export const RecipesPage = () => {
 						quantity: item.quantity,
 						units: item.units,
 					})),
-					creatorId: 11, //TODO
+					creatorId: +userId!, //TODO
 				})
 				return result?.data
 			} catch (e) {

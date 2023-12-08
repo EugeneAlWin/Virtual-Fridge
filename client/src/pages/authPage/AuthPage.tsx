@@ -13,9 +13,16 @@ export const AuthPage = () => {
 
 	const navigate = useNavigate()
 
-	const { data: loggedUserData, loginUser, isLoginSuccess } = useAuth()
-	const { data, registerUser, error, isSuccessRegistration } = useRegistration()
-	const { setCredentials, role } = useVirtualStore()
+	const {
+		data: loggedUserData,
+		loginUser,
+		isLoginSuccess,
+		isLoginError,
+		error: authError,
+	} = useAuth()
+	const { data, registerUser, error, isSuccessRegistration, isRegistrationError } =
+		useRegistration()
+	const { setCredentials } = useVirtualStore()
 	if (error) console.log(error)
 
 	useEffect(() => {
@@ -57,9 +64,6 @@ export const AuthPage = () => {
 		setCredentials,
 	])
 
-	// if (role) {
-	// 	return <Navigate to={'/'} />
-	// }
 	return (
 		<div
 			style={{
@@ -93,11 +97,11 @@ export const AuthPage = () => {
 				<button
 					type={'button'}
 					className={styles.button}
-					onClick={() =>
+					onClick={async () => {
 						isRegistration
-							? registerUser({ login, password })
-							: loginUser({ login, password })
-					}>
+							? await registerUser({ login, password })
+							: await loginUser({ login, password })
+					}}>
 					Отправить
 				</button>
 				<br />
@@ -122,6 +126,11 @@ export const AuthPage = () => {
 						</p>
 					)}
 				</div>
+				{(isRegistrationError || isLoginError) && (
+					<p style={{ color: 'red', marginTop: '5px' }}>
+						{authError?.response.data.message || error?.response.data.message}
+					</p>
+				)}
 			</div>
 		</div>
 	)

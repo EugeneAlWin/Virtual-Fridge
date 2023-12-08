@@ -19,8 +19,11 @@ import {
 	IUpdateStoreResponse,
 	StoreCompositionData,
 } from '../../../api/stores/dto/updateStore.ts'
+import useVirtualStore from '../../../storage'
 
 export const UserChecklistsPage = () => {
+	const { userId } = useVirtualStore()
+
 	const navigate = useNavigate()
 	const { data, error, isLoading } = useQuery<
 		IGetAllChecklistsPreviewResponse,
@@ -38,7 +41,7 @@ export const UserChecklistsPage = () => {
 					params: {
 						skip: 0,
 						take: 25,
-						creatorId: 43,
+						creatorId: +userId!,
 					},
 				})
 				return result.data
@@ -69,7 +72,7 @@ export const UserChecklistsPage = () => {
 					AxiosResponse<IGetStoreByUserIdResponse>
 				>(`${StoreEndpoints.BASE}${StoreEndpoints.GET_BY_ID}`, {
 					params: {
-						creatorId: 43,
+						creatorId: +userId!,
 					},
 				})
 				return result.data
@@ -101,7 +104,7 @@ export const UserChecklistsPage = () => {
 					IUpdateChecklistRequest
 				>(`${ChecklistEndpoints.BASE}${ChecklistEndpoints.UPDATE}`, {
 					checklistId: id,
-					creatorId: 43,
+					creatorId: +userId!,
 					isConfirmed,
 					checklistComposition,
 					checklistPrices,
@@ -126,13 +129,21 @@ export const UserChecklistsPage = () => {
 			newChecklistData: StoreCompositionData[]
 		}) => {
 			try {
+				const store = await $api.get<
+					AxiosResponse<IErrorResponse>,
+					AxiosResponse<IGetStoreByUserIdResponse>
+				>(`${StoreEndpoints.BASE}${StoreEndpoints.GET_BY_ID}`, {
+					params: {
+						creatorId: +userId!,
+					},
+				})
 				const result = await $api.patch<
 					IUpdateStoreResponse | IErrorResponse,
 					AxiosResponse<IUpdateStoreResponse | IErrorResponse>,
 					IUpdateStoreRequest
 				>(`${StoreEndpoints.BASE}${StoreEndpoints.UPDATE}`, {
-					id: 12 || -1,
-					creatorId: 43,
+					id: store.data.id || -1,
+					creatorId: +userId!,
 					storeComposition: newChecklistData,
 				})
 				return result.data

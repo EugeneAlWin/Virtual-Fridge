@@ -20,8 +20,11 @@ import {
 	ICreateChecklistRequest,
 	ICreateChecklistResponse,
 } from '../../../api/checklists/dto/createChecklist.ts'
+import useVirtualStore from '../../../storage'
 
 export const UserRecipesPage = () => {
+	const { userId } = useVirtualStore()
+
 	const [selectedRecipes, setSelectedRecipes] = useState<{
 		[recipeId: number]: boolean
 	}>({})
@@ -81,7 +84,7 @@ export const UserRecipesPage = () => {
 					AxiosResponse<IGetStoreByUserIdResponse>
 				>(`${StoreEndpoints.BASE}${StoreEndpoints.GET_BY_ID}`, {
 					params: {
-						creatorId: 43,
+						creatorId: +userId!,
 					},
 				})
 				return result.data
@@ -110,7 +113,7 @@ export const UserRecipesPage = () => {
 					AxiosResponse<ICreateChecklistResponse | IErrorResponse>,
 					ICreateChecklistRequest
 				>(`${ChecklistEndpoints.BASE}${ChecklistEndpoints.CREATE}`, {
-					creatorId: 43,
+					creatorId: +userId!,
 					checklistComposition: data,
 					checklistPrices: {
 						BYN: '3',

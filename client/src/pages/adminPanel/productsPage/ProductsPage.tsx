@@ -16,8 +16,11 @@ import {
 	IUpdateProductResponse,
 } from '../../../api/products/dto/updateProduct.ts'
 import { IErrorResponse } from '../../../api/errorResponse.ts'
+import useVirtualStore from '../../../storage'
 
 export const ProductsPage = () => {
+	const { userId } = useVirtualStore()
+
 	const [selectedProduct, setSelectedProduct] = useState<null | IUpdateProductRequest>(
 		null
 	)
@@ -109,7 +112,7 @@ export const ProductsPage = () => {
 					carbohydrates: newProduct.carbohydrates,
 					protein: newProduct.protein,
 					title: newProduct.title,
-					creatorId: 11,
+					creatorId: +userId!,
 				})
 				return result.data
 			} catch (e) {

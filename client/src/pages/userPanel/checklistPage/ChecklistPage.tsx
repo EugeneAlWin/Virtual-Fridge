@@ -19,8 +19,11 @@ import {
 	IUpdateChecklistRequest,
 	IUpdateChecklistResponse,
 } from '../../../api/checklists/dto/updateChecklist.ts'
+import useVirtualStore from '../../../storage'
 
 export const UserChecklistPage = () => {
+	const { userId } = useVirtualStore()
+
 	const { checklistId } = useParams()
 	const { data, error, isLoading } = useQuery<
 		IGetChecklistByIdRequest,
@@ -129,7 +132,7 @@ export const UserChecklistPage = () => {
 					IUpdateChecklistRequest
 				>(`${ChecklistEndpoints.BASE}${ChecklistEndpoints.UPDATE}`, {
 					checklistId: data.id || -1,
-					creatorId: 43, //TODO: fix id
+					creatorId: +userId!, //TODO: fix id
 					checklistComposition: productsFromModal.map(product => ({
 						currency: product.currency,
 						price: product.price,
