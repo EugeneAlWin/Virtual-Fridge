@@ -107,12 +107,12 @@ export const UserStorePage = () => {
 	const { mutateAsync: updateStorage } = useMutation({
 		mutationFn: async () => {
 			try {
+				if (!data) return
 				const storageComposition: StoreCompositionData[] =
 					data?.storeComposition.map<StoreCompositionData>(item => ({
 						productId: item.product?.id || 1,
 						quantity: item.quantity,
-						expires: item.expires,
-						unit: item.unit,
+						expires: item.expires || undefined,
 						price: item.price.toString(),
 						currency: item.currency,
 					}))
@@ -127,12 +127,13 @@ export const UserStorePage = () => {
 						productId: value.productId,
 					})
 				)
+
 				const result = await $api.patch<
 					IUpdateStoreResponse | IErrorResponse,
 					AxiosResponse<IUpdateStoreResponse | IErrorResponse>,
 					IUpdateStoreRequest
 				>(`${StoreEndpoints.BASE}${StoreEndpoints.UPDATE}`, {
-					id: data?.id || -1,
+					id: data.id,
 					creatorId: +userId!,
 					storeComposition: [
 						...storageComposition.filter(
@@ -144,9 +145,8 @@ export const UserStorePage = () => {
 										productId: selectedProduct.productId || 1,
 										quantity: selectedProduct.quantity,
 										expires: selectedProduct.expires
-											? new Date(selectedProduct.expires).toISOString()
+											? new Date(selectedProduct.expires)
 											: undefined,
-										unit: selectedProduct.units,
 										price: '0.0',
 										currency: Currencies.BYN,
 									},

@@ -2,15 +2,21 @@ import './App.css'
 import { Link, Navigate, Outlet, useNavigate } from 'react-router-dom'
 import useVirtualStore from './storage'
 import { Roles } from './api/enums.ts'
+import { useLogout } from './query/auth/useLogout.ts'
 
 function App() {
-	const { role, checkStorageHealth } = useVirtualStore()
+	const { role, checkStorageHealth, userId, deviceId } = useVirtualStore()
 	const navigate = useNavigate()
+
+	const { logout } = useLogout()
+
 	if (!checkStorageHealth()) return <Navigate to={'/auth'} />
 	return (
 		<>
 			<p
-				onClick={() => {
+				onClick={async () => {
+					if (!userId || !deviceId) return
+					await logout({ userId: +userId, devicesId: [deviceId] })
 					localStorage.clear()
 					navigate('/auth') //TODO: fix logout
 				}}>

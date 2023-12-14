@@ -15,6 +15,5 @@
   "trailingComma": "es5",
   "useTabs": true,
   "endOfLine": "crlf",
-  "bracketSameLine": true,
-  "parser": "typescript"
+  "bracketSameLine": true
 }

@@ -1,9 +1,10 @@
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import {
 	IUpdateUserTokenRequest,
 	IUpdateUserTokenResponse,
 } from '../../api/users/dto/updateUserToken.ts'
-import useVirtualStore from '../../storage'
+import UserEndpoints from '../../api/users/endpoints.ts'
+import { Roles } from '../../api/enums.ts'
 
 export const API_URL = 'http://localhost:3000'
 
@@ -26,25 +27,34 @@ $api.interceptors.response.use(
 		if (error?.response.status == 401 && error.config && !error.config._isRetry) {
 			originalRequest._isRetry = true
 			try {
-				if (useVirtualStore(state => state.userId) !== undefined) {
-					const response = await axios.get<
+				const { login, role, deviceId, userId } = {
+					deviceId: localStorage.getItem('deviceId'),
+					login: localStorage.getItem('login'),
+					role: localStorage.getItem('role') as Roles,
+					userId: localStorage.getItem('userId'),
+				}
+
+				if (userId && deviceId && login) {
+					const response = await axios.patch<
 						IUpdateUserTokenRequest,
-						IUpdateUserTokenResponse,
+						AxiosResponse<IUpdateUserTokenResponse>,
 						IUpdateUserTokenRequest
-					>(`${API_URL}/tokens/update`, {
-						withCredentials: true,
-						data: {
-							userId: useVirtualStore(state => state.userId)!,
-							deviceId: useVirtualStore(state => state.deviceId)!,
-							role: useVirtualStore(state => state.role)!,
-							login: useVirtualStore(state => state.login)!,
+					>(
+						`${API_URL}${UserEndpoints.BASE}${UserEndpoints.UPDATE_USER_TOKEN}`,
+						{
+							userId: +userId,
+							deviceId,
+							role,
+							login,
 						},
-					})
-					localStorage.setItem('accessToken', response.accessToken)
+						{ withCredentials: true }
+					)
+
+					localStorage.setItem('accessToken', response.data.accessToken)
 					return $api.request(originalRequest)
 				}
 			} catch (e) {
-				console.log('Unauthorized')
+				console.log(e)
 			}
 		}
 		throw error

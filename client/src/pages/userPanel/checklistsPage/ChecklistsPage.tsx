@@ -227,7 +227,6 @@ export const UserChecklistsPage = () => {
 																	product.quantity,
 																expires: null,
 																productId: product.productId,
-																unit: product.units,
 																price: product.price,
 																currency: product.currency,
 															}
@@ -235,7 +234,6 @@ export const UserChecklistsPage = () => {
 															quantity: product.quantity,
 															expires: null,
 															productId: product.productId,
-															unit: product.units,
 															price: product.price,
 															currency: product.currency,
 														}
@@ -255,7 +253,6 @@ export const UserChecklistsPage = () => {
 														quantity: product.quantity,
 														expires: product.expires,
 														productId: product.product?.id,
-														unit: product.unit,
 														price: product.price,
 														currency: product.currency,
 													})),

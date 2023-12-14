@@ -11,7 +11,7 @@ import axios, { AxiosResponse } from 'axios'
 import RecipeEndpoints from '../../../api/recipes/endpoints.ts'
 import { useState } from 'react'
 import styles from './recipesPage.module.scss'
-import { Currencies, Units } from '../../../api/enums.ts'
+import { Currencies } from '../../../api/enums.ts'
 import { IGetStoreByUserIdResponse } from '../../../api/stores/dto/getStoreByUserId.ts'
 import StoreEndpoints from '../../../api/stores/endpoints.ts'
 import ChecklistEndpoints from '../../../api/checklists/endpoints.ts'
@@ -35,7 +35,10 @@ export const UserRecipesPage = () => {
 		['recipes'],
 		{
 			pageSize: number
-			cursor: { recipeId: number; productId: number } | null
+			cursor: {
+				recipeId: number
+				productId: number
+			} | null
 		}
 	>({
 		queryKey: ['recipes'],
@@ -102,7 +105,6 @@ export const UserRecipesPage = () => {
 			data: {
 				productId: number
 				quantity: number
-				units: keyof typeof Units
 				price: string
 				currency: keyof typeof Currencies
 			}[]
@@ -162,7 +164,6 @@ export const UserRecipesPage = () => {
 								[title: string]: {
 									productId: number
 									quantity: number
-									units: keyof typeof Units
 									price: string
 									currency: keyof typeof Currencies
 								}
@@ -174,7 +175,6 @@ export const UserRecipesPage = () => {
 									quantity: prev[curr.title]
 										? (prev[curr.title].quantity += quantity)
 										: quantity,
-									unit: curr?.units,
 								}
 
 								return {
@@ -185,7 +185,6 @@ export const UserRecipesPage = () => {
 							const checklist = Object.keys(uniqueProducts).map<{
 								productId: number
 								quantity: number
-								units: keyof typeof Units
 								price: string
 								currency: keyof typeof Currencies
 							}>(title => {
@@ -200,7 +199,6 @@ export const UserRecipesPage = () => {
 												currency: 'BYN',
 												price: '3',
 												productId: uniqueProducts[title]?.id,
-												units: uniqueProducts[title]?.units,
 												quantity: Math.abs(
 													productFromStore.quantity -
 														uniqueProducts[title].quantity
@@ -213,7 +211,6 @@ export const UserRecipesPage = () => {
 									currency: 'BYN',
 									price: '3',
 									productId: uniqueProducts[title]?.id,
-									units: uniqueProducts[title]?.units,
 								}
 							})
 							if (checklist.every(item => !item))

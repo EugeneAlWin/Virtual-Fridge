@@ -36,7 +36,7 @@ export const AuthPage = () => {
 				login,
 				role: data?.role,
 				deviceId: data.deviceId,
-				userId: data.userId,
+				userId: data.userId.toString(),
 			})
 			navigate('/user/store')
 		} else if (isLoginSuccess && !isRegistration && loggedUserData) {
@@ -48,7 +48,7 @@ export const AuthPage = () => {
 			setCredentials({
 				login,
 				deviceId: loggedUserData.deviceId,
-				userId: loggedUserData.userId,
+				userId: loggedUserData.userId.toString(),
 				role: loggedUserData.role,
 			})
 			navigate(loggedUserData.role === Roles.DEFAULT ? '/user/store' : '/admin/users/')

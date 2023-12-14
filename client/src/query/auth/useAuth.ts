@@ -3,7 +3,7 @@ import UserEndpoints from '../../api/users/endpoints.ts'
 import { useMutation } from '@tanstack/react-query'
 import { AxiosResponse } from 'axios'
 import { IErrorResponse } from '../../api/errorResponse.ts'
-import { ILoginUserResponse } from '../../api/users/dto/loginUser.ts'
+import { ILoginUserRequest, ILoginUserResponse } from '../../api/users/dto/loginUser.ts'
 import { v4 } from 'uuid'
 
 export const useAuth = () => {
@@ -12,12 +12,13 @@ export const useAuth = () => {
 		mutationFn: async ({ login, password }: { login: string; password: string }) => {
 			const result = await $api.post<
 				AxiosResponse<IErrorResponse>,
-				AxiosResponse<ILoginUserResponse>
-			>(
-				`${UserEndpoints.BASE}${
-					UserEndpoints.LOGIN
-				}?login=${login}&password=${password}&deviceId=${v4()}`
-			)
+				AxiosResponse<ILoginUserResponse>,
+				ILoginUserRequest
+			>(`${UserEndpoints.BASE}${UserEndpoints.LOGIN}`, {
+				login,
+				password,
+				deviceId: v4(),
+			})
 			return result.data
 		},
 		retry: false,
