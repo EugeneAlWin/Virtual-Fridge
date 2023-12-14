@@ -1,5 +1,6 @@
 import BasicValidator from './basicValidator'
 import { TLocation } from './types'
+import { Units } from '../api/enums'
 
 export default class ProductDataValidator extends BasicValidator {
 	static creatorId(location: TLocation) {
@@ -82,5 +83,24 @@ export default class ProductDataValidator extends BasicValidator {
 					.isInt({ min: 0, max: 32767 })
 					.withMessage('SHOULD BE AN INT >= 0 AND <= 32767')
 					.toInt()
+	}
+
+	static units(location: TLocation, isOptional = false) {
+		return isOptional
+			? location('units')
+					.isString()
+					.withMessage('SHOULD BE STRING')
+					.isIn(Object.values(Units))
+					.withMessage(
+						`ALLOWED VALUES: ${Object.values(Units).join(' | ')}`
+					)
+			: location('units')
+					.optional()
+					.isString()
+					.withMessage('SHOULD BE STRING')
+					.isIn(Object.values(Units))
+					.withMessage(
+						`ALLOWED VALUES: ${Object.values(Units).join(' | ')}`
+					)
 	}
 }

@@ -53,21 +53,20 @@ export default class UserController {
 	static loginUser: RequestHandler<
 		undefined,
 		ILoginUserResponse | IErrorResponse,
-		undefined,
 		ILoginUserRequest
 	> = async (req, res, next) => {
 		const errorData = getValidationResult(req)
 		if (errorData) return callUnprocessableEntity(next, errorData)
 
 		try {
-			const user = await UserService.getUserByLogin(req.query)
+			const user = await UserService.getUserByLogin(req.body)
 			if (!user)
 				return next(
-					UserRequestError.NotFound(`USER ${req.query.login} NOT FOUND`)
+					UserRequestError.NotFound(`USER ${req.body.login} NOT FOUND`)
 				)
 
 			if (
-				createHash('sha512').update(req.query.password).digest('hex') !==
+				createHash('sha512').update(req.body.password).digest('hex') !==
 				user.password
 			)
 				return next(UserRequestError.BadRequest('WRONG PASSWORD'))
@@ -75,7 +74,7 @@ export default class UserController {
 			const { refreshToken, accessToken } = Tokenizator.generateTokens({
 				login: user.login,
 				role: user.role,
-				deviceId: req.query.deviceId,
+				deviceId: req.body.deviceId,
 			})
 
 			const userTokens = await UserService.getUserTokens({ userId: user.id })
@@ -90,7 +89,7 @@ export default class UserController {
 				})
 			} else
 				await UserService.createUserToken({
-					deviceId: req.query.deviceId,
+					deviceId: req.body.deviceId,
 					refreshToken,
 					userId: user.id,
 				} as ICreateUserTokenRequest & {
@@ -106,7 +105,7 @@ export default class UserController {
 				accessToken,
 				login: user.login,
 				role: user.role,
-				deviceId: req.query.deviceId,
+				deviceId: req.body.deviceId,
 			})
 		} catch (e) {
 			return next(e)

@@ -1,3 +1,5 @@
+import { ChecklistPricesData } from '../common'
+
 export interface IGetAllChecklistsPreviewRequest {
 	skip: number
 	take: number
@@ -12,11 +14,7 @@ export interface IGetAllChecklistsPreviewResponse {
 		creatorId: number
 		createdAt: Date
 		isConfirmed: boolean
-		checklistPrices: {
-			USD: number | null
-			BYN: number | null
-			RUB: number | null
-		}
+		checklistPrices: ChecklistPricesData
 	}[]
 	cursor: number | null
 }

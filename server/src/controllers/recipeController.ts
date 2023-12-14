@@ -1,5 +1,4 @@
 import { RequestHandler } from 'express'
-import { Units } from '../api/enums'
 import { IErrorResponse } from '../api/errorResponse'
 import { ProductData } from '../api/products/common'
 import {
@@ -114,10 +113,6 @@ export default class RecipeController {
 										recipesComposition[recipe.id].find(
 											item => item.productId === curr.id
 										)?.quantity ?? 0,
-									units:
-										recipesComposition[recipe.id].find(
-											item => item.productId === curr.id
-										)?.units ?? Units.GRAMS,
 								},
 							]
 						}, [] as ProductData[]),

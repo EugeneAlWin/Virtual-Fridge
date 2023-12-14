@@ -1,4 +1,3 @@
-import { Units } from '../api/enums'
 import { ICreateChosenRecipeRequest } from '../api/recipes/dto/createChosenRecipe'
 import { ICreateFavoriteRecipeRequest } from '../api/recipes/dto/createFavoriteRecipe'
 import { ICreateRecipeRequest } from '../api/recipes/dto/createRecipe'
@@ -64,7 +63,6 @@ export default class RecipeService {
 						{
 							productId: curr.productId,
 							quantity: curr.quantity,
-							units: curr.units as Units,
 						},
 					],
 				}
@@ -77,7 +75,6 @@ export default class RecipeService {
 					[key: number]: {
 						productId: number
 						quantity: number
-						units: Units
 					}[]
 				},
 			}

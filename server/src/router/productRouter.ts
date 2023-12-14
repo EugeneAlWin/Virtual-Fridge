@@ -35,6 +35,7 @@ productRouter.post(
 	ProductDataValidator.fats(body),
 	ProductDataValidator.carbohydrates(body),
 	ProductDataValidator.creatorId(body),
+	ProductDataValidator.units(body),
 	ProductController.createProduct
 )
 
@@ -46,6 +47,7 @@ productRouter.patch(
 	ProductDataValidator.protein(body, true),
 	ProductDataValidator.fats(body, true),
 	ProductDataValidator.carbohydrates(body, true),
+	ProductDataValidator.units(body, true),
 	ProductController.updateProductData
 )
 

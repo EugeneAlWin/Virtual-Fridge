@@ -18,7 +18,7 @@ export default class UserDataValidator extends BasicValidator {
 	) {
 		const result = isOptional
 			? location('password').optional({ values: 'undefined' })
-			: location('password').isString().withMessage('SHOULD BE A STRING')
+			: location('password')
 
 		return length
 			? result
@@ -50,7 +50,7 @@ export default class UserDataValidator extends BasicValidator {
 
 	static deviceId(location: TLocation, isArray = false) {
 		return isArray
-			? location('deviceId')
+			? location('devicesId')
 					.isArray()
 					.withMessage('SHOULD BE AN ARRAY OF STRINGS')
 			: location('deviceId')

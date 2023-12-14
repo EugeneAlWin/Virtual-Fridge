@@ -13,7 +13,7 @@ export default class Tokenizator {
 		deviceId: string
 	}) {
 		const accessToken = sign({ login, role, deviceId }, CONFIG.JWT_ACCESS, {
-			expiresIn: '30m',
+			expiresIn: '10s',
 			algorithm: 'HS512',
 		})
 		const refreshToken = sign({ login, role, deviceId }, CONFIG.JWT_REFRESH, {

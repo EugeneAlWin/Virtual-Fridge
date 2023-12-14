@@ -1,14 +1,6 @@
 import { RequestHandler } from 'express'
 import { IErrorResponse } from '../api/errorResponse'
 import {
-	ICreateStoreRequest,
-	ICreateStoreResponse,
-} from '../api/stores/dto/createStore'
-import {
-	IDeleteStoreRequest,
-	IDeleteStoreResponse,
-} from '../api/stores/dto/deleteStore'
-import {
 	IGetStoreByUserIdRequest,
 	IGetStoreByUserIdResponse,
 } from '../api/stores/dto/getStoreByUserId'
@@ -40,29 +32,6 @@ export default class StoreController {
 		}
 	}
 
-	//create
-	static createStore: RequestHandler<
-		undefined,
-		ICreateStoreResponse | IErrorResponse,
-		ICreateStoreRequest
-	> = async (req, res, next) => {
-		const errorData = getValidationResult(req)
-		if (errorData) return callUnprocessableEntity(next, errorData)
-
-		try {
-			const result = await StoreService.createStore(req.body)
-			res.status(201).json({
-				...result,
-				storeComposition: result.storeComposition.map(record => ({
-					...record,
-					price: record.price.toNumber(),
-				})),
-			})
-		} catch (e) {
-			return next(e)
-		}
-	}
-
 	//update
 	static updateStoreData: RequestHandler<
 		undefined,
@@ -81,24 +50,6 @@ export default class StoreController {
 					price: record.price.toNumber(),
 				})),
 			})
-		} catch (e) {
-			return next(e)
-		}
-	}
-
-	//delete
-	static deleteStore: RequestHandler<
-		undefined,
-		IDeleteStoreResponse | IErrorResponse,
-		IDeleteStoreRequest
-	> = async (req, res, next) => {
-		const errorData = getValidationResult(req)
-		if (errorData) return callUnprocessableEntity(next, errorData)
-
-		try {
-			await StoreService.deleteStore(req.body)
-
-			res.json({ count: 1 })
 		} catch (e) {
 			return next(e)
 		}

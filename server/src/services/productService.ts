@@ -42,6 +42,7 @@ export default class ProductService {
 		protein,
 		title,
 		creatorId,
+		units,
 	}: ICreateProductRequest) => {
 		const user = await prismaClient.user.findUnique({
 			where: { id: creatorId || undefined },
@@ -65,6 +66,7 @@ export default class ProductService {
 				protein,
 				title,
 				creatorId,
+				units,
 			},
 		})
 	}

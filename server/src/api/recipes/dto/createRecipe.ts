@@ -1,4 +1,5 @@
-import { RecipeTypes, Units } from '../../enums'
+import { RecipeTypes } from '../../enums'
+import { RecipeCompositionData } from '../common'
 
 export interface ICreateRecipeRequest {
 	creatorId: number
@@ -6,11 +7,7 @@ export interface ICreateRecipeRequest {
 	type: keyof typeof RecipeTypes
 	description?: string
 	isVisible?: boolean
-	recipeComposition: {
-		productId: number
-		quantity: number
-		units: keyof typeof Units
-	}[]
+	recipeComposition: RecipeCompositionData[]
 }
 
 export interface ICreateRecipeResponse {
@@ -22,10 +19,5 @@ export interface ICreateRecipeResponse {
 	createdAt: Date
 	isVisible: boolean
 	isApproved: boolean
-	recipeComposition: {
-		productId: number
-		recipeId: number
-		quantity: number
-		units: keyof typeof Units
-	}[]
+	recipeComposition: RecipeCompositionData[]
 }

@@ -1,4 +1,4 @@
-import { Currencies, Units } from '../api/enums'
+import { Currencies } from '../api/enums'
 import BasicValidator from './basicValidator'
 import { TLocation } from './types'
 
@@ -35,12 +35,6 @@ export default class ChecklistDataValidator extends BasicValidator {
 				.isInt({ min: 0 })
 				.withMessage('SHOULD BE NUMERIC > 0')
 				.toInt(),
-			location('checklistComposition[*].units')
-				.optional({ values: 'undefined' })
-				.isString()
-				.withMessage('SHOULD BE STRING')
-				.isIn(Object.values(Units))
-				.withMessage(`ALLOWED VALUES: ${Object.values(Units).join(' | ')}`),
 			BasicValidator.decimal(
 				location,
 				'checklistComposition[*].price'

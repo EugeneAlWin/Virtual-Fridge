@@ -38,8 +38,6 @@ export default class ChecklistService {
 				...product,
 				product: products.find(item => item.id === product.productId),
 				price: product.price.toNumber(),
-				checklistId: undefined,
-				productId: undefined,
 			})),
 			checklistPrices: {
 				BYN: checklist.checklistPrices?.BYN.toNumber() ?? null,
@@ -106,13 +104,12 @@ export default class ChecklistService {
 							quantity: record.quantity,
 							currency: record.currency,
 							price: record.price,
-							units: record.units,
 						})),
 					},
 				},
 				checklistPrices: {
 					create: {
-						BYN: checklistPrices.BYN,
+						BYN: checklistPrices.BYN ?? undefined,
 						RUB: checklistPrices.RUB,
 						USD: checklistPrices.USD,
 					},
@@ -158,7 +155,6 @@ export default class ChecklistService {
 						quantity: record.quantity,
 						currency: record.currency,
 						price: record.price,
-						units: record.units,
 						checklistId,
 					})),
 				}),

@@ -1,4 +1,4 @@
-import { Currencies, Units } from '../../enums'
+import { Currencies } from '../../enums'
 import { ProductData } from '../../products/common'
 
 export interface IGetStoreByUserIdRequest {
@@ -12,7 +12,6 @@ export interface IGetStoreByUserIdResponse {
 	storeComposition: {
 		product: ProductData | undefined
 		quantity: number
-		unit: keyof typeof Units
 		expires: Date | null
 		price: number
 		currency: keyof typeof Currencies

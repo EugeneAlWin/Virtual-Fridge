@@ -3,9 +3,8 @@ import UserRequestError from '../errors/userRequestError'
 import Tokenizator from '../helpers/tokenizator'
 
 export default function (
-	req: Request<unknown>,
-	_res: Response<unknown>,
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	req: Request<unknown, unknown, unknown, unknown>,
+	_res: Response,
 	next: NextFunction
 ) {
 	const authorizationHeader = req.headers.authorization

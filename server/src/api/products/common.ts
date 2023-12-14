@@ -1,3 +1,5 @@
+import { Units } from '../enums'
+
 export interface ProductData {
 	id: number
 	title: string
@@ -6,4 +8,5 @@ export interface ProductData {
 	fats: number
 	carbohydrates: number
 	creatorId: number | null
+	units: keyof typeof Units
 }

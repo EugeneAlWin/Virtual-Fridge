@@ -44,7 +44,6 @@ model StoreComposition {
   storeId   Int
   productId Int
   quantity  Int        @db.SmallInt
-  unit      Units      @default(ITEMS)
   expires   DateTime?  @db.Timestamp(6)
   price     Decimal    @db.Money
   currency  Currencies @default(BYN)
@@ -63,6 +62,7 @@ model Product {
   carbohydrates        Int                    @db.SmallInt
   creatorId            Int?
   isApproved           Boolean                @default(false)
+  units                Units                  @default(ITEMS)
   checklistComposition ChecklistComposition[]
   user                 User?                  @relation(fields: [creatorId], references: [id], onDelete: SetNull)
   recipeComposition    RecipeComposition[]
@@ -88,7 +88,6 @@ model RecipeComposition {
   recipeId  Int
   productId Int
   quantity  Int     @db.SmallInt
-  units     Units   @default(GRAMS)
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   recipe    Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
@@ -128,7 +127,6 @@ model ChecklistComposition {
   checklistId Int
   productId   Int
   quantity    Int        @db.SmallInt
-  units       Units      @default(PIECES)
   currency    Currencies @default(BYN)
   price       Decimal    @default(0) @db.Money
   checklist   Checklist  @relation(fields: [checklistId], references: [id], onDelete: Cascade)
