@@ -5,6 +5,8 @@ import {
 } from '../../api/users/dto/updateUserToken.ts'
 import UserEndpoints from '../../api/users/endpoints.ts'
 import { Roles } from '../../api/enums.ts'
+import { redirect } from 'react-router-dom'
+import { IErrorResponse } from '../../api/errorResponse.ts'
 
 export const API_URL = 'http://localhost:3000'
 
@@ -23,6 +25,16 @@ $api.interceptors.response.use(
 		return instance
 	},
 	async error => {
+		if (!error.response) {
+			error.response = {
+				data: {
+					message: 'Сервер не отвечает',
+					code: 503,
+				} satisfies IErrorResponse,
+			}
+			console.log(error)
+			await Promise.reject(error)
+		}
 		const originalRequest = error?.config
 		if (error?.response.status == 401 && error.config && !error.config._isRetry) {
 			originalRequest._isRetry = true
@@ -55,6 +67,7 @@ $api.interceptors.response.use(
 				}
 			} catch (e) {
 				console.log(e)
+				redirect('/auth')
 			}
 		}
 		throw error
