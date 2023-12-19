@@ -1,22 +1,41 @@
 version: '3.8'
 
 services:
+  web:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+      - '3001:3001'
+    networks:
+      - mynetwork
+    depends_on:
+      - db
   db:
     image: postgres
     restart: always
     environment:
-      POSTGRES_USER: "${USER}"
-      POSTGRES_PASSWORD: "${PASSWORD}"
-      POSTGRES_DB: "${DATABASE}"
+      POSTGRES_USER: '${USER}'
+      POSTGRES_PASSWORD: '${PASSWORD}'
+      POSTGRES_DB: '${DATABASE}'
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - db_data:/var/lib/postgresql/db_data
+    networks:
+      - mynetwork
 
   adminer:
     image: adminer
     restart: always
     ports:
-      - "8080:8080"
+      - '8080:8080'
+    networks:
+      - mynetwork
 volumes:
-  db_data: 
+  db_data:
+
+networks:
+  mynetwork:
+    driver: bridge
