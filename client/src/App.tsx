@@ -18,22 +18,24 @@ function App() {
 					if (!userId || !deviceId) return
 					await logout({ userId: +userId, devicesId: [deviceId] })
 					localStorage.clear()
-					navigate('/auth') //TODO: fix logout
+					navigate('/auth')
 				}}>
 				Logout
 			</p>
-			{role === Roles.DEFAULT ? (
+			{role === Roles.ADMIN ? (
+				<div>
+					<Link to='/admin/users'>Users </Link>
+					<Link to='/admin/products'>Products </Link>
+					<Link to='/admin/recipes'>Recipes</Link>
+				</div>
+			) : role === Roles.DEFAULT ? (
 				<div>
 					<Link to='/user/recipes'>Рецепты </Link>
 					<Link to='/user/store'>Хранилище</Link>
 					<Link to='/user/checklists'>Чек-листы</Link>
 				</div>
 			) : (
-				<div>
-					<Link to='/admin/users'>Users </Link>
-					<Link to='/admin/products'>Products </Link>
-					<Link to='/admin/recipes'>Recipes</Link>
-				</div>
+				<Navigate to={'/auth'} />
 			)}
 			<Outlet />
 		</>

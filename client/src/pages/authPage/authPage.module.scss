@@ -1,6 +1,6 @@
 .authorizationWindow {
   width: 550px;
-  height: 500px;
+  min-height: 500px;
   background: white;
   border-radius: 25px;
   color: black;
@@ -39,9 +39,26 @@
   padding: 0 8px;
   color: #1a1a1a;
   font-size: 13pt;
+
 }
 
+.error {
+  border: 2px solid red;
+
+  &:focus {
+    outline: none !important;
+    border: 2px solid red;
+    box-shadow: 0 0 10px #719ECE;
+  }
+}
+
+
 .authorizationMark {
+  background: #1a1a1a;
+  color: yellow;
+  border-radius: 8px;
+  padding: 4px;
+
   &:hover {
     cursor: pointer;
   }
@@ -50,3 +67,4 @@
     font-size: 11pt;
   }
 }
+
