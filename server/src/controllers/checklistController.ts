@@ -92,7 +92,6 @@ export default class ChecklistController {
 					price: record.price.toNumber(),
 				})),
 				checklistPrices: {
-					checklistId: result.checklistPrices?.checklistId || result.id,
 					BYN: result.checklistPrices?.BYN.toNumber() || null,
 					USD: result.checklistPrices?.USD.toNumber() || null,
 					RUB: result.checklistPrices?.RUB.toNumber() || null,
@@ -128,7 +127,6 @@ export default class ChecklistController {
 					price: record.price.toNumber(),
 				})),
 				checklistPrices: {
-					checklistId: result.checklistPrices?.checklistId || result.id,
 					BYN: result.checklistPrices?.BYN.toNumber() || null,
 					USD: result.checklistPrices?.USD.toNumber() || null,
 					RUB: result.checklistPrices?.RUB.toNumber() || null,

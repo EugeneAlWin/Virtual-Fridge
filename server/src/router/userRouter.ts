@@ -8,8 +8,8 @@ const userRouter = Router()
 
 userRouter.post(
 	UserEndpoints.LOGIN,
-	UserDataValidator.login(body, false, { max: 30 }),
-	UserDataValidator.password(body, false, { max: 120 }),
+	UserDataValidator.login(body, false, { max: 30, min: 4 }),
+	UserDataValidator.password(body, false, { max: 120, min: 8 }),
 	UserDataValidator.deviceId(body),
 	UserController.loginUser
 )
@@ -38,8 +38,8 @@ userRouter.get(
 
 userRouter.post(
 	UserEndpoints.CREATE_USER,
-	UserDataValidator.login(body, false, { max: 30 }),
-	UserDataValidator.password(body, false, { max: 120 }),
+	UserDataValidator.login(body, false, { max: 30, min: 4 }),
+	UserDataValidator.password(body, false, { max: 120, min: 8 }),
 	UserDataValidator.role(body),
 	UserController.createUser
 )

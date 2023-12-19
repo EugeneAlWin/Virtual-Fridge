@@ -110,8 +110,8 @@ export default class ChecklistService {
 				checklistPrices: {
 					create: {
 						BYN: checklistPrices.BYN ?? undefined,
-						RUB: checklistPrices.RUB,
-						USD: checklistPrices.USD,
+						RUB: checklistPrices.RUB ?? undefined,
+						USD: checklistPrices.USD ?? undefined,
 					},
 				},
 			},
@@ -163,9 +163,9 @@ export default class ChecklistService {
 				}),
 				prismaClient.checklistPrices.create({
 					data: {
-						BYN: checklistPrices.BYN,
-						RUB: checklistPrices.RUB,
-						USD: checklistPrices.USD,
+						BYN: checklistPrices.BYN ?? undefined,
+						RUB: checklistPrices.RUB ?? undefined,
+						USD: checklistPrices.USD ?? undefined,
 						checklistId,
 					},
 				})
