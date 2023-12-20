@@ -55,6 +55,7 @@ export default class ProductService {
 			where: { title },
 			select: { title: true },
 		})
+
 		if (productTitle)
 			throw UserRequestError.BadRequest('PRODUCT TITLE ALREADY TAKEN')
 
@@ -79,6 +80,7 @@ export default class ProductService {
 		fats,
 		protein,
 		title,
+		units,
 	}: IUpdateProductRequest) => {
 		const product = await prismaClient.product.findUnique({
 			where: { id },
@@ -87,9 +89,17 @@ export default class ProductService {
 		if (!product)
 			throw UserRequestError.NotFound(`PRODUCT WITH ID ${id} NOT FOUND`)
 
+		const productTitle = await prismaClient.product.findUnique({
+			where: { title },
+			select: { title: true },
+		})
+
+		if (productTitle)
+			throw UserRequestError.BadRequest('PRODUCT TITLE ALREADY TAKEN')
+
 		return prismaClient.product.update({
 			where: { id },
-			data: { calories, carbohydrates, fats, protein, title },
+			data: { calories, carbohydrates, fats, protein, title, units },
 		})
 	}
 

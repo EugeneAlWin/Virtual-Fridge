@@ -49,13 +49,13 @@ export default class RecipeDataValidator extends BasicValidator {
 				.withMessage('SHOULD BE AN ARRAY'),
 			location('recipeComposition.*.productId')
 				.if(location('recipeComposition').isArray())
-				.isInt()
-				.withMessage('SHOULD BE INT >= 0')
+				.isInt({ max: 30000 })
+				.withMessage('SHOULD BE INT >= 0 AND <= 30000')
 				.toInt(),
 			location('recipeComposition.*.quantity')
 				.if(location('recipeComposition').isArray())
-				.isInt()
-				.withMessage('SHOULD BE INT >= 0')
+				.isInt({ max: 30000 })
+				.withMessage('SHOULD BE INT >= 0 AND <= 30000')
 				.toInt(),
 		]
 	}
