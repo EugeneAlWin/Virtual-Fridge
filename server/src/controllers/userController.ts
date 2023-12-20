@@ -65,6 +65,13 @@ export default class UserController {
 					UserRequestError.NotFound(`USER ${req.body.login} NOT FOUND`)
 				)
 
+			if (user.isArchived)
+				return next(
+					UserRequestError.Forbidden(
+						`PROFILE ${req.body.login.toUpperCase()} REMOVED`
+					)
+				)
+
 			if (
 				createHash('sha512').update(req.body.password).digest('hex') !==
 				user.password
