@@ -1,0 +1,44 @@
+.modal {
+  width: 60%;
+  display: flex;
+  height: 280px;
+  flex-direction: column;
+  align-items: center;
+  background: white;
+  color: black;
+  font-size: 14pt;
+  border-radius: 16px;
+}
+
+.input {
+  border-radius: 8px;
+  padding: 2%;
+}
+
+.div {
+  display: flex;
+  justify-content: space-between;
+  gap: 5%;
+  height: 30px;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.checkbox {
+  width: 40px;
+}
+
+.error {
+  border: 2px solid red;
+
+  &:focus {
+    outline: none !important;
+    border: 2px solid red;
+    box-shadow: 0 0 10px #719ECE;
+  }
+}
+
+.buttons {
+  display: flex;
+  gap: 5%;
+}

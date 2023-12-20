@@ -2,14 +2,9 @@
   display: flex;
   flex-direction: row;
   width: 100%;
+  justify-content: space-between;
 }
 
-.modal {
-  width: 40%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 
 .cardsContainer {
   display: flex;
@@ -24,6 +19,7 @@
   padding: 1%;
   border-radius: 25px;
   min-width: 200px;
+  padding: 4%;
 }
 
 .cardEditBar {

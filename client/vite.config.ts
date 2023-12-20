@@ -5,14 +5,14 @@ export default defineConfig({
 	plugins: [react()],
 	server: {
 		port: 3001,
-		// https: true,
+		https: false,
 	},
 	build: {
 		minify: 'esbuild',
 		cssMinify: true,
 	},
 	esbuild: {
-		drop: ['console', 'debugger'],
+		// drop: ['console', 'debugger'],
 		legalComments: 'none',
 		minifyIdentifiers: true,
 		minifyWhitespace: true,

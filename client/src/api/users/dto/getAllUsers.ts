@@ -1,4 +1,4 @@
-import { Roles } from 'api/enums'
+import { Roles } from '../../enums.ts'
 
 export interface IGetAllUsersRequest {
 	skip: number

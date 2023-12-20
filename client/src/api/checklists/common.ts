@@ -1,4 +1,4 @@
-import { Currencies } from 'api/enums'
+import { Currencies } from '../enums.ts'
 
 export type ChecklistCompositionData = {
 	productId: number

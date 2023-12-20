@@ -1,11 +1,9 @@
-import { useInfiniteQuery, useMutation } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import $api from '../../../query/axios/base.ts'
 import ProductEndpoints from '../../../api/products/endpoints.ts'
-import { IGetAllProductsResponse } from '../../../api/products/dto/getAllProducts.ts'
-import axios, { AxiosError, AxiosResponse } from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import styles from './productPage.module.scss'
-import { useState } from 'react'
-import { IDeleteProductsResponse } from '../../../api/products/dto/deleteProduct.ts'
+import { useEffect, useState } from 'react'
 import queryClient from '../../../query/queryClient.ts'
 import {
 	ICreateProductRequest,
@@ -17,12 +15,17 @@ import {
 } from '../../../api/products/dto/updateProduct.ts'
 import { IErrorResponse } from '../../../api/errorResponse.ts'
 import useVirtualStore from '../../../storage'
+import { useGetAllProducts } from '../../../query/adminPanel/useGetAllProducts.ts'
+import { useDropProduct } from '../../../query/adminPanel/useDropProduct.ts'
+import { SearchInput } from '../../../components/searchInput/SearchInput.tsx'
+import { Units } from '../../../api/enums.ts'
+import { toast, ToastContainer } from 'react-toastify'
 
 export const ProductsPage = () => {
 	const { userId } = useVirtualStore()
 
-	const [selectedProduct, setSelectedProduct] = useState<null | IUpdateProductRequest>(
-		null
+	const [selectedProduct, setSelectedProduct] = useState<IUpdateProductRequest>(
+		{} as IUpdateProductRequest
 	)
 
 	const newProductInitState: ICreateProductRequest = {
@@ -32,78 +35,25 @@ export const ProductsPage = () => {
 		calories: 0,
 		fats: 0,
 		protein: 0,
+		units: 'GRAMS',
 	}
 	const [newProduct, setNewProduct] =
 		useState<ICreateProductRequest>(newProductInitState)
 
-	const { data, hasNextPage, fetchNextPage } = useInfiniteQuery<
-		IGetAllProductsResponse,
-		IErrorResponse
-	>({
-		queryKey: ['products'],
-		queryFn: async ({ pageParam }) => {
-			try {
-				const result = await $api.get<
-					AxiosResponse<IErrorResponse>,
-					AxiosResponse<IGetAllProductsResponse>
-				>(`${ProductEndpoints.BASE}${ProductEndpoints.GET_ALL_PRODUCTS}`, {
-					params: {
-						skip: 0,
-						take: pageParam?.pageSize || 25,
-						cursor: pageParam?.cursor,
-					},
-				})
-				return {
-					productsData: result.data?.productsData,
-					cursor: result.data?.cursor,
-				}
-			} catch (e) {
-				if (axios.isAxiosError(e)) throw e?.response?.data
-				throw e
-			}
-		},
-		refetchOnWindowFocus: false,
-		initialPageParam: { pageSize: 25, cursor: null },
-		getNextPageParam: lastPage => {
-			if (lastPage.productsData.length < 25) return
-			return {
-				cursor: lastPage?.cursor ? lastPage.cursor + 1 : null,
-				pageSize: 25,
-			}
-		},
-		retry: false,
-	})
+	const { data, fetchNextPage, hasNextPage } = useGetAllProducts()
 	const [search, setSearch] = useState('')
 
-	const { mutateAsync: dropProduct } = useMutation({
-		mutationFn: async (id: number) => {
-			try {
-				const result = await $api.delete<IDeleteProductsResponse>(
-					`${ProductEndpoints.BASE}${ProductEndpoints.DELETE_PRODUCT}`,
-					{
-						data: {
-							productsId: [id],
-						},
-					}
-				)
-				return result.data.count
-			} catch (e) {
-				if (axios.isAxiosError(e)) throw e?.response?.data
-				throw e
-			}
-		},
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({
-				queryKey: ['products'],
-			})
-		},
-	})
+	const { dropProduct } = useDropProduct()
 
-	const { mutateAsync: createProduct } = useMutation({
+	const {
+		mutateAsync: createProduct,
+		isError: isCreateError,
+		error: createError,
+	} = useMutation<ICreateProductResponse, IErrorResponse>({
 		mutationFn: async () => {
 			try {
 				const result = await $api.post<
-					AxiosError<IErrorResponse>,
+					ICreateProductResponse,
 					AxiosResponse<ICreateProductResponse>,
 					ICreateProductRequest
 				>(`${ProductEndpoints.BASE}${ProductEndpoints.CREATE_PRODUCT}`, {
@@ -113,6 +63,7 @@ export const ProductsPage = () => {
 					protein: newProduct.protein,
 					title: newProduct.title,
 					creatorId: +userId!,
+					units: newProduct.units,
 				})
 				return result.data
 			} catch (e) {
@@ -124,15 +75,21 @@ export const ProductsPage = () => {
 			await queryClient.invalidateQueries({
 				queryKey: ['products'],
 			})
+			await queryClient.invalidateQueries({
+				queryKey: ['recipes'],
+			})
 		},
 	})
 
-	const { mutateAsync: updateProduct } = useMutation({
-		mutationFn: async () => {
+	const {
+		mutateAsync: updateProduct,
+		isError: isUpdateError,
+		error: updateError,
+	} = useMutation<IUpdateProductResponse, IErrorResponse, IUpdateProductRequest>({
+		mutationFn: async selectedProduct => {
 			try {
-				if (!selectedProduct) return
 				const result = await $api.patch<
-					IErrorResponse,
+					IUpdateProductResponse,
 					AxiosResponse<IUpdateProductResponse>,
 					IUpdateProductRequest
 				>(`${ProductEndpoints.BASE}${ProductEndpoints.UPDATE_PRODUCT}`, {
@@ -142,6 +99,7 @@ export const ProductsPage = () => {
 					protein: selectedProduct?.protein,
 					title: selectedProduct?.title,
 					id: selectedProduct.id,
+					units: selectedProduct?.units,
 				})
 				return result.data
 			} catch (e) {
@@ -153,30 +111,35 @@ export const ProductsPage = () => {
 			await queryClient.invalidateQueries({
 				queryKey: ['products'],
 			})
+			await queryClient.invalidateQueries({
+				queryKey: ['recipes'],
+			})
 		},
 	})
+	useEffect(() => {
+		if (isCreateError)
+			toast(createError?.field + ' ' + createError.message, { type: 'error' })
+		if (isUpdateError)
+			toast(updateError?.field + ' ' + updateError.message, { type: 'error' })
+	}, [isCreateError, isUpdateError])
+
 	return (
 		<>
 			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-				<div>
-					<p>Искать</p>
-					<input
-						type='text'
-						value={search}
-						onChange={e => setSearch(e.target.value)}
-					/>
-				</div>
+				<SearchInput search={search} onChange={e => setSearch(e.target.value)} />
 			</div>
 			<div className={styles.container}>
 				<div className={styles.modal}>
-					{selectedProduct ? (
-						<>
+					{Object.keys(selectedProduct).length ? (
+						<div className={styles.modal}>
 							<p>Редактирование продукта</p>
-							<div>
+							<div className={styles.div}>
 								<p>Название</p>
 								<input
 									type='text'
+									className={styles.input}
 									value={selectedProduct.title}
+									maxLength={20}
 									onChange={e =>
 										setSelectedProduct(prev => ({
 											...prev,
@@ -185,81 +148,109 @@ export const ProductsPage = () => {
 									}
 								/>
 							</div>
-							<div>
+							<div className={styles.div}>
 								<p>Белки</p>
 								<input
 									type='number'
 									step={0.01}
+									max={30000}
 									value={selectedProduct.protein}
 									onChange={e =>
 										setSelectedProduct(prev => ({
 											...prev,
-											protein: e.target.value,
+											protein: +e.target.value,
 										}))
 									}
 								/>
 							</div>
-							<div>
+							<div className={styles.div}>
 								<p>Жиры</p>
 								<input
 									type='number'
 									step={0.01}
+									max={30000}
 									value={selectedProduct.fats}
 									onChange={e =>
 										setSelectedProduct(prev => ({
 											...prev,
-											fats: e.target.value,
+											fats: +e.target.value,
 										}))
 									}
 								/>
 							</div>
-							<div>
+							<div className={styles.div}>
 								<p>Углеводы</p>
 								<input
 									type='number'
 									step={0.01}
+									max={30000}
 									value={selectedProduct.carbohydrates}
 									onChange={e =>
 										setSelectedProduct(prev => ({
 											...prev,
-											carbohydrates: e.target.value,
+											carbohydrates: +e.target.value,
 										}))
 									}
 								/>
 							</div>
-							<div>
+							<div className={styles.div}>
 								<p>Ккал</p>
 								<input
 									type='number'
 									step={1}
 									value={selectedProduct.calories}
+									max={30000}
 									onChange={e =>
 										setSelectedProduct(prev => ({
 											...prev,
-											calories: e.target.value,
+											calories: +e.target.value,
 										}))
 									}
 								/>
 							</div>
+							<div className={styles.div}>
+								<p>Единицы</p>
+								<select
+									name='unitsselect'
+									id='unitsselectnew'
+									value={selectedProduct.units}
+									onChange={e =>
+										setSelectedProduct(prev => ({
+											...prev,
+											units: e.target.value as Units,
+										}))
+									}>
+									{Object.values(Units).map(unit => (
+										<option value={unit}>{unit}</option>
+									))}
+								</select>
+							</div>
 							<div>
 								<button
+									disabled={selectedProduct.title === ''}
 									onClick={async () => {
-										await updateProduct()
-										setSelectedProduct(null)
+										await updateProduct(selectedProduct)
+										setSelectedProduct({} as IUpdateProductRequest)
 									}}>
 									Сохранить
 								</button>
-								<button onClick={() => setSelectedProduct(null)}>Отменить</button>
+								<button
+									onClick={() =>
+										setSelectedProduct({} as IUpdateProductRequest)
+									}>
+									Отменить
+								</button>
 							</div>
-						</>
+						</div>
 					) : (
-						<>
+						<div className={styles.modal}>
 							<p>Создание продукта</p>
-							<div>
+							<div className={styles.div}>
 								<p>Название</p>
 								<input
 									type='text'
 									value={newProduct.title}
+									maxLength={20}
 									onChange={e =>
 										setNewProduct(prev => ({
 											...prev,
@@ -268,71 +259,97 @@ export const ProductsPage = () => {
 									}
 								/>
 							</div>
-							<div>
+							<div className={styles.div}>
 								<p>Белки</p>
 								<input
 									type='number'
 									step={0.01}
+									max={30000}
 									value={newProduct.protein}
 									onChange={e =>
 										setNewProduct(prev => ({
 											...prev,
-											protein: e.target.value,
+											protein: +e.target.value,
 										}))
 									}
 								/>
 							</div>
-							<div>
+							<div className={styles.div}>
 								<p>Жиры</p>
 								<input
 									type='number'
 									step={0.01}
+									max={30000}
 									value={newProduct.fats}
 									onChange={e =>
 										setNewProduct(prev => ({
 											...prev,
-											fats: e.target.value,
+											fats: +e.target.value,
 										}))
 									}
 								/>
 							</div>
-							<div>
+							<div className={styles.div}>
 								<p>Углеводы</p>
 								<input
 									type='number'
 									step={0.01}
+									max={30000}
 									value={newProduct.carbohydrates}
 									onChange={e =>
 										setNewProduct(prev => ({
 											...prev,
-											carbohydrates: e.target.value,
+											carbohydrates: +e.target.value,
 										}))
 									}
 								/>
 							</div>
-							<div>
+							<div className={styles.div}>
 								<p>Ккал</p>
 								<input
 									type='number'
+									max={30000}
 									step={0.01}
 									value={newProduct.calories}
 									onChange={e =>
 										setNewProduct(prev => ({
 											...prev,
-											calories: e.target.value,
+											calories: +e.target.value,
 										}))
 									}
 								/>
 							</div>
-							<div>
-								<button onClick={async () => await createProduct()}>
+							<div className={styles.div}>
+								<p>Единицы</p>
+								<select
+									name='unitsselect'
+									id='unitsselect'
+									value={newProduct.units}
+									onChange={e =>
+										setNewProduct(prev => ({
+											...prev,
+											units: e.target.value as Units,
+										}))
+									}>
+									{Object.values(Units).map(unit => (
+										<option value={unit}>{unit}</option>
+									))}
+								</select>
+							</div>
+							<div className={styles.buttons}>
+								<button
+									disabled={newProduct.title === ''}
+									onClick={async () => {
+										await createProduct()
+										setNewProduct(newProductInitState)
+									}}>
 									Сохранить
 								</button>
 								<button onClick={() => setNewProduct(newProductInitState)}>
 									Отменить
 								</button>
 							</div>
-						</>
+						</div>
 					)}
 				</div>
 				<div className={styles.cardsContainer}>
@@ -350,6 +367,7 @@ export const ProductsPage = () => {
 											<p>Б: {item.protein}</p>
 											<p>Ж: {item.fats}</p>
 											<p>У: {item.carbohydrates}</p>
+											<p>Единицы: {item.units}</p>
 										</div>
 										<div className={styles.cardEditBar}>
 											<button
@@ -361,6 +379,7 @@ export const ProductsPage = () => {
 														id: item.id,
 														protein: item.protein,
 														title: item.title,
+														units: item.units,
 													})
 												}>
 												Edit
@@ -377,6 +396,7 @@ export const ProductsPage = () => {
 					)}
 					{hasNextPage && <button onClick={() => fetchNextPage()}>Ещё</button>}
 				</div>
+				<ToastContainer />
 			</div>
 		</>
 	)
