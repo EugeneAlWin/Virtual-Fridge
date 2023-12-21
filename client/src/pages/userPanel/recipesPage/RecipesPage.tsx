@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react'
 import styles from './recipesPage.module.scss'
 import useVirtualStore from '../../../storage'
 import { useGetAllRecipes } from '../../../query/adminPanel/useGetAllRecipes.ts'
-import { useGetStore } from '../../../query/useGetStore.ts'
 import { ChecklistCompositionData } from '../../../api/checklists/common.ts'
 import { ProductData } from '../../../api/products/common.ts'
 import { useCreateChecklist } from '../../../query/userPanel/useCreateCheckList.ts'
 import { SearchInput } from '../../../components/searchInput/SearchInput.tsx'
 import { toast, ToastContainer } from 'react-toastify'
+import { useGetStore } from '../../../query/userPanel/useGetStore.ts'
 
 export const UserRecipesPage = () => {
 	const { userId } = useVirtualStore()

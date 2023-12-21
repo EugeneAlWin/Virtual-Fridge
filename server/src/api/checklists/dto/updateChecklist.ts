@@ -5,7 +5,7 @@ export interface IUpdateChecklistRequest {
 	creatorId: number
 	isConfirmed?: boolean
 	checklistComposition?: ChecklistCompositionData[]
-	checklistPrices: ChecklistPricesData
+	checklistPrices?: ChecklistPricesData
 }
 
 export interface IUpdateChecklistResponse {

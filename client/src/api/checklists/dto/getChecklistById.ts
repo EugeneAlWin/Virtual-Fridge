@@ -1,4 +1,5 @@
 import { ChecklistCompositionData, ChecklistPricesData } from '../common'
+import { ProductData } from '../../products/common.ts'
 
 export interface IGetChecklistByIdRequest {
 	id: number
@@ -9,6 +10,8 @@ export interface IGetChecklistByIdResponse {
 	creatorId: number
 	createdAt: Date
 	isConfirmed: boolean
-	checklistComposition: ChecklistCompositionData[]
+	checklistComposition: (ChecklistCompositionData & {
+		product: ProductData | undefined
+	})[]
 	checklistPrices: ChecklistPricesData
 }

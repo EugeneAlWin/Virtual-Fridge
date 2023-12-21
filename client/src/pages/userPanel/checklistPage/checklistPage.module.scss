@@ -5,11 +5,28 @@
 }
 
 .modal {
-  width: 40%;
+  width: 70%;
   display: flex;
+  height: max-content;
   flex-direction: column;
   align-items: center;
-  margin-right: 5%;
+  background: white;
+  color: black;
+  font-size: 14pt;
+  border-radius: 16px;
+}
+
+.div {
+  display: flex;
+  justify-content: space-between;
+  gap: 5%;
+  height: 30px;
+  align-items: center;
+  margin-bottom: 5px;
+
+  > input {
+    border-radius: 8px;
+  }
 }
 
 .cardsContainer {
@@ -42,4 +59,5 @@
   width: 100%;
   background: #1a1a1a;
   overflow: auto;
+  color: white;
 }

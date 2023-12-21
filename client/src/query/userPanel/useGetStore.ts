@@ -1,9 +1,9 @@
-import { IGetStoreByUserIdResponse } from '../api/stores/dto/getStoreByUserId.ts'
-import { IErrorResponse } from '../api/errorResponse.ts'
-import $api from './axios/base.ts'
-import StoreEndpoints from '../api/stores/endpoints.ts'
 import { AxiosResponse, isAxiosError } from 'axios'
 import { useQuery } from '@tanstack/react-query'
+import { IGetStoreByUserIdResponse } from '../../api/stores/dto/getStoreByUserId.ts'
+import { IErrorResponse } from '../../api/errorResponse.ts'
+import $api from '../axios/base.ts'
+import StoreEndpoints from '../../api/stores/endpoints.ts'
 
 export function useGetStore(userId: string | null) {
 	return useQuery<

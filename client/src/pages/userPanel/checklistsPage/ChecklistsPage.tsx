@@ -2,7 +2,6 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { IErrorResponse } from '../../../api/errorResponse.ts'
 import $api from '../../../query/axios/base.ts'
 import axios, { AxiosResponse } from 'axios'
-import { useState } from 'react'
 import styles from './checklistsPage.module.scss'
 import { IGetAllChecklistsPreviewResponse } from '../../../api/checklists/dto/getAllChecklists.ts'
 import ChecklistEndpoints from '../../../api/checklists/endpoints.ts'
@@ -17,9 +16,10 @@ import StoreEndpoints from '../../../api/stores/endpoints.ts'
 import {
 	IUpdateStoreRequest,
 	IUpdateStoreResponse,
-	StoreCompositionData,
 } from '../../../api/stores/dto/updateStore.ts'
 import useVirtualStore from '../../../storage'
+import { Currencies } from '../../../api/enums.ts'
+import { useGetStore } from '../../../query/userPanel/useGetStore.ts'
 
 export const UserChecklistsPage = () => {
 	const { userId } = useVirtualStore()
@@ -54,60 +54,25 @@ export const UserChecklistsPage = () => {
 		retry: false,
 	})
 
-	const {
-		data: storeData,
-		error: storeError,
-		isLoading: isStoreDataLoading,
-	} = useQuery<
-		IGetStoreByUserIdResponse,
-		IErrorResponse,
-		IGetStoreByUserIdResponse,
-		['store']
-	>({
-		queryKey: ['store'],
-		queryFn: async () => {
-			try {
-				const result = await $api.get<
-					AxiosResponse<IErrorResponse>,
-					AxiosResponse<IGetStoreByUserIdResponse>
-				>(`${StoreEndpoints.BASE}${StoreEndpoints.GET_BY_ID}`, {
-					params: {
-						creatorId: +userId!,
-					},
-				})
-				return result.data
-			} catch (e) {
-				if (axios.isAxiosError(e)) throw e?.response?.data
-				throw e
-			}
-		},
-		refetchOnWindowFocus: false,
-		retry: false,
-	})
+	const { data: storeData } = useGetStore(userId)
 
 	const { mutateAsync: updateChecklist } = useMutation({
 		mutationFn: async ({
 			id,
 			isConfirmed,
-			checklistComposition,
-			checklistPrices,
 		}: {
 			id: number
 			isConfirmed: boolean | undefined
-			checklistComposition: undefined
-			checklistPrices: undefined
 		}) => {
 			try {
 				const result = await $api.patch<
-					IErrorResponse,
+					IUpdateChecklistResponse,
 					AxiosResponse<IUpdateChecklistResponse>,
 					IUpdateChecklistRequest
 				>(`${ChecklistEndpoints.BASE}${ChecklistEndpoints.UPDATE}`, {
 					checklistId: id,
 					creatorId: +userId!,
 					isConfirmed,
-					checklistComposition,
-					checklistPrices,
 				})
 				return result.data
 			} catch (e) {
@@ -126,11 +91,17 @@ export const UserChecklistsPage = () => {
 		mutationFn: async ({
 			newChecklistData,
 		}: {
-			newChecklistData: StoreCompositionData[]
+			newChecklistData: {
+				productId: number
+				quantity: number
+				expires: Date | undefined
+				price: number
+				currency: keyof typeof Currencies
+			}[]
 		}) => {
 			try {
 				const store = await $api.get<
-					AxiosResponse<IErrorResponse>,
+					IGetStoreByUserIdResponse,
 					AxiosResponse<IGetStoreByUserIdResponse>
 				>(`${StoreEndpoints.BASE}${StoreEndpoints.GET_BY_ID}`, {
 					params: {
@@ -138,8 +109,8 @@ export const UserChecklistsPage = () => {
 					},
 				})
 				const result = await $api.patch<
-					IUpdateStoreResponse | IErrorResponse,
-					AxiosResponse<IUpdateStoreResponse | IErrorResponse>,
+					IUpdateStoreResponse,
+					AxiosResponse<IUpdateStoreResponse>,
 					IUpdateStoreRequest
 				>(`${StoreEndpoints.BASE}${StoreEndpoints.UPDATE}`, {
 					id: store.data.id || -1,
@@ -159,22 +130,18 @@ export const UserChecklistsPage = () => {
 		},
 	})
 
-	const [search, setSearch] = useState('')
 	if (isLoading) return <h2>Loading...</h2>
 	if (error) return <p>Error</p>
 
 	return (
 		<>
-			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-				<div>
-					<p>Искать</p>
-					<input
-						type='text'
-						value={search}
-						onChange={e => setSearch(e.target.value)}
-					/>
-				</div>
-			</div>
+			<div
+				style={{
+					display: 'flex',
+					flexDirection: 'row',
+					justifyContent: 'center',
+					height: '40px',
+				}}></div>
 			<div className={styles.container}>
 				<div className={styles.cardsContainer}>
 					{data?.checklistsData.map(item => {
@@ -184,61 +151,46 @@ export const UserChecklistsPage = () => {
 									Дата создания: {new Date(item.createdAt).toLocaleString()}
 								</div>
 								<div>Покупка подтверждена: {item.isConfirmed ? 'да' : 'нет'}</div>
-								{/*<p>Цены:</p>*/}
-								{/*<div style={{ display: 'flex', justifyContent: 'space-evenly' }}>*/}
-								{/*	<div>Буны</div>*/}
-								{/*	<div>{item.checklistPrices.BYN}</div>*/}
-								{/*</div>*/}
-								{/*<div style={{ display: 'flex', justifyContent: 'space-evenly' }}>*/}
-								{/*	<div>Валюта</div>*/}
-								{/*	<div>{item.checklistPrices.USD}</div>*/}
-								{/*</div>*/}
-								{/*<div style={{ display: 'flex', justifyContent: 'space-evenly' }}>*/}
-								{/*	<div>Рубли</div>*/}
-								{/*	<div>{item.checklistPrices.RUB}</div>*/}
-								{/*</div>*/}
 								<button onClick={() => navigate(`/user/checklists/${item.id}`)}>
 									Посмотреть
 								</button>
 								<button
 									onClick={async () => {
-										const {
-											checklistComposition,
-											isConfirmed,
-											checklistPrices,
-										} = await updateChecklist({
-											id: item.id,
-											isConfirmed: !item.isConfirmed,
-										})
+										const { checklistComposition, isConfirmed } =
+											await updateChecklist({
+												id: item.id,
+												isConfirmed: !item.isConfirmed,
+											})
 
 										if (isConfirmed && storeData) {
-											const newProductsData =
-												checklistComposition.map<StoreCompositionData>(
-													product => {
-														const productInStore =
-															storeData.storeComposition.find(
-																item =>
-																	item.product?.id === product.productId
-															)
-														if (productInStore)
-															return {
-																quantity:
-																	productInStore.quantity +
-																	product.quantity,
-																expires: null,
-																productId: product.productId,
-																price: product.price,
-																currency: product.currency,
-															}
-														return {
-															quantity: product.quantity,
-															expires: null,
-															productId: product.productId,
-															price: product.price,
-															currency: product.currency,
-														}
+											const newProductsData = checklistComposition.map<{
+												productId: number
+												quantity: number
+												expires: Date | undefined
+												price: number
+												currency: keyof typeof Currencies
+											}>(product => {
+												const productInStore =
+													storeData.storeComposition.find(
+														item => item.product?.id === product.productId
+													)
+												if (productInStore)
+													return {
+														quantity:
+															productInStore.quantity + product.quantity,
+														expires: undefined,
+														productId: product.productId,
+														price: product.price,
+														currency: product.currency,
 													}
-												)
+												return {
+													quantity: product.quantity,
+													expires: undefined,
+													productId: product.productId,
+													price: product.price,
+													currency: product.currency,
+												}
+											})
 
 											const newStorageData = [
 												...newProductsData,
@@ -251,13 +203,12 @@ export const UserChecklistsPage = () => {
 													)
 													.map(product => ({
 														quantity: product.quantity,
-														expires: product.expires,
-														productId: product.product?.id,
+														expires: product.expires || undefined,
+														productId: product.product?.id || 1,
 														price: product.price,
 														currency: product.currency,
 													})),
 											]
-											console.log(newStorageData)
 											await updateStorage({
 												newChecklistData: newStorageData,
 											})

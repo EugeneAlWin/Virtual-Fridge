@@ -1,25 +1,25 @@
-import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { IErrorResponse } from '../../../api/errorResponse.ts'
 import $api from '../../../query/axios/base.ts'
-import axios, { AxiosResponse } from 'axios'
-import { useState } from 'react'
+import axios, { AxiosResponse, isAxiosError } from 'axios'
+import { useEffect, useState } from 'react'
 import styles from './checklistPage.module.scss'
 import { Currencies, Units } from '../../../api/enums.ts'
-import ProductEndpoints from '../../../api/products/endpoints.ts'
-import { IGetAllProductsResponse } from '../../../api/products/dto/getAllProducts.ts'
 import {
 	IGetChecklistByIdRequest,
 	IGetChecklistByIdResponse,
 } from '../../../api/checklists/dto/getChecklistById.ts'
 import ChecklistEndpoints from '../../../api/checklists/endpoints.ts'
 import { useParams } from 'react-router-dom'
-import { StoreCompositionData } from '../../../api/stores/dto/updateStore.ts'
 import queryClient from '../../../query/queryClient.ts'
 import {
 	IUpdateChecklistRequest,
 	IUpdateChecklistResponse,
 } from '../../../api/checklists/dto/updateChecklist.ts'
 import useVirtualStore from '../../../storage'
+import { useGetAllProducts } from '../../../query/adminPanel/useGetAllProducts.ts'
+import { SearchInput } from '../../../components/searchInput/SearchInput.tsx'
+import { toast, ToastContainer } from 'react-toastify'
 
 export const UserChecklistPage = () => {
 	const { userId } = useVirtualStore()
@@ -35,7 +35,7 @@ export const UserChecklistPage = () => {
 		queryFn: async () => {
 			try {
 				const result = await $api.get<
-					AxiosResponse<IErrorResponse>,
+					IGetChecklistByIdResponse,
 					AxiosResponse<IGetChecklistByIdResponse>
 				>(`${ChecklistEndpoints.BASE}${ChecklistEndpoints.GET_BY_ID}`, {
 					params: {
@@ -45,16 +45,16 @@ export const UserChecklistPage = () => {
 
 				setProductsModal(
 					result.data.checklistComposition.map(item => ({
-						productId: item.product.id,
-						title: item.product?.title,
+						productId: item?.product?.id || 1,
+						title: item.product?.title || '',
 						quantity: item.quantity,
-						units: item.units,
+						units: (item.product?.units as Units) || Units.GRAMS,
 					}))
 				)
 				return result.data
 			} catch (e) {
-				if (axios.isAxiosError(e)) throw e?.response?.data
-				throw e
+				if (isAxiosError(e)) return e?.response?.data
+				return e
 			}
 		},
 		refetchOnWindowFocus: false,
@@ -64,44 +64,7 @@ export const UserChecklistPage = () => {
 	const [search, setSearch] = useState('')
 
 	const [searchProduct, setSearchProduct] = useState('')
-	const { data: productsData } = useInfiniteQuery<
-		IGetAllProductsResponse,
-		IErrorResponse
-	>({
-		queryKey: ['products'],
-		queryFn: async ({ pageParam }) => {
-			try {
-				const result = await $api.get<
-					AxiosResponse<IErrorResponse>,
-					AxiosResponse<IGetAllProductsResponse>
-				>(`${ProductEndpoints.BASE}${ProductEndpoints.GET_ALL_PRODUCTS}`, {
-					params: {
-						skip: 0,
-						take: pageParam?.pageSize || 25,
-						cursor: pageParam?.cursor,
-						title: searchProduct,
-					},
-				})
-				return {
-					productsData: result.data?.productsData,
-					cursor: result.data?.cursor,
-				}
-			} catch (e) {
-				if (axios.isAxiosError(e)) throw e?.response?.data
-				throw e
-			}
-		},
-		refetchOnWindowFocus: false,
-		initialPageParam: { pageSize: 25, cursor: null },
-		getNextPageParam: lastPage => {
-			if (lastPage?.productsData?.length < 25) return
-			return {
-				cursor: lastPage?.cursor ? lastPage.cursor + 1 : null,
-				pageSize: 25,
-			}
-		},
-		enabled: !!searchProduct,
-	})
+	const { data: productsData } = useGetAllProducts(searchProduct)
 
 	const [productsModal, setProductsModal] = useState(
 		[] as {
@@ -112,35 +75,42 @@ export const UserChecklistPage = () => {
 		}[]
 	)
 
-	const { mutateAsync: updateChecklist } = useMutation({
+	const {
+		mutateAsync: updateChecklist,
+		isError,
+		isSuccess,
+		error: updateError,
+	} = useMutation<IUpdateChecklistResponse | void, IErrorResponse>({
 		mutationFn: async () => {
 			try {
-				if (!data) return
-				const productsFromModal: StoreCompositionData[] = productsModal.map(
-					value => ({
-						price: '0',
-						currency: Currencies.BYN,
-						unit: value.units,
-						expires: undefined,
-						quantity: value.quantity,
-						productId: value.productId,
-					})
-				)
+				const productsFromModal: {
+					productId: number
+					quantity: number
+					expires: Date | undefined
+					price: number
+					currency: keyof typeof Currencies
+				}[] = productsModal.map(value => ({
+					price: 0,
+					currency: Currencies.BYN,
+					unit: value.units,
+					expires: undefined,
+					quantity: value.quantity,
+					productId: value.productId,
+				}))
 				const result = await $api.patch<
-					IUpdateChecklistResponse | IErrorResponse,
-					AxiosResponse<IUpdateChecklistResponse | IErrorResponse>,
+					IUpdateChecklistResponse,
+					AxiosResponse<IUpdateChecklistResponse>,
 					IUpdateChecklistRequest
 				>(`${ChecklistEndpoints.BASE}${ChecklistEndpoints.UPDATE}`, {
-					checklistId: data.id || -1,
+					checklistId: data?.id || -1,
 					creatorId: +userId!, //TODO: fix id
 					checklistComposition: productsFromModal.map(product => ({
 						currency: product.currency,
 						price: product.price,
 						productId: product.productId,
 						quantity: product.quantity,
-						units: product.unit,
 					})),
-					checklistPrices: data.checklistPrices,
+					checklistPrices: data?.checklistPrices,
 				})
 				return result.data
 			} catch (e) {
@@ -155,20 +125,22 @@ export const UserChecklistPage = () => {
 		},
 	})
 
+	useEffect(() => {
+		if (isError)
+			toast(updateError?.field + ' ' + updateError?.message, {
+				type: 'error',
+				theme: 'dark',
+			})
+		if (isSuccess) toast('Хранилище обновлено!', { type: 'success' })
+	}, [updateError?.field, updateError?.message, isError, isSuccess])
+
 	if (isLoading) return <h2>Loading...</h2>
 	if (error) return <p>Error</p>
 	if (!data) return <p>Данных нету</p>
 	return (
 		<>
 			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-				<div>
-					<p>Искать</p>
-					<input
-						type='text'
-						value={search}
-						onChange={e => setSearch(e.target.value)}
-					/>
-				</div>
+				<SearchInput search={search} onChange={e => setSearch(e.target.value)} />
 			</div>
 			<div className={styles.container}>
 				<div className={styles.modal}>
@@ -230,12 +202,14 @@ export const UserChecklistPage = () => {
 											display: 'flex',
 											flexDirection: 'row',
 											justifyContent: 'space-around',
+											alignItems: 'center',
+											gap: '5%',
 										}}>
 										<p>{item.title}</p>
 										<input
 											type='number'
 											value={item.quantity}
-											step={0.01}
+											step={1}
 											onChange={e =>
 												setProductsModal(prev =>
 													prev.map(product => {
@@ -249,25 +223,7 @@ export const UserChecklistPage = () => {
 												)
 											}
 										/>
-										<select
-											name='units'
-											value={item.units}
-											onChange={e =>
-												setProductsModal(prev =>
-													prev.map(product => {
-														if (product.productId !== item.productId)
-															return product
-														return {
-															...product,
-															units: e.target.value as Units,
-														}
-													})
-												)
-											}>
-											{Object.values(Units).map(val => (
-												<option value={val}>{val}</option>
-											))}
-										</select>
+										<p>{item.units}</p>
 										<div
 											onClick={() =>
 												setProductsModal(prev =>
@@ -294,25 +250,30 @@ export const UserChecklistPage = () => {
 					</>
 				</div>
 				<div className={styles.cardsContainer}>
-					{data?.checklistComposition.map(item => (
-						<div className={styles.card} key={item.product?.id}>
-							<p>{item.product?.title}</p>
-							<div>
+					{data?.checklistComposition
+						.filter(
+							item =>
+								item.product?.title.toLowerCase().includes(search.toLowerCase())
+						)
+						.map(item => (
+							<div className={styles.card} key={item.product?.id}>
+								<p>{item.product?.title}</p>
 								<div>
-									<p>Ккал: {item.product?.calories}</p>
-									<p>Б: {item.product?.protein}</p>
-									<p>Ж: {item.product?.fats}</p>
-									<p>У: {item.product?.carbohydrates}</p>
-								</div>
-								<div>
-									<p>Количество: {item.quantity}</p>
-									<p>Единицы: {item.units}</p>
+									<div>
+										<p>Ккал: {item.product?.calories}</p>
+										<p>Б: {item.product?.protein}</p>
+										<p>Ж: {item.product?.fats}</p>
+										<p>У: {item.product?.carbohydrates}</p>
+									</div>
+									<div>
+										<p>Количество: {item.quantity}</p>
+									</div>
 								</div>
 							</div>
-						</div>
-					))}
+						))}
 				</div>
 			</div>
+			<ToastContainer />
 		</>
 	)
 }

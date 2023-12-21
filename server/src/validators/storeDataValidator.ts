@@ -29,8 +29,8 @@ export default class StoreDataValidator extends BasicValidator {
 			BasicValidator.isArray(location, 'storeComposition'),
 			BasicValidator.id(location, 'storeComposition[*].productId'),
 			location('storeComposition[*].quantity')
-				.isInt({ min: 0 })
-				.withMessage('SHOULD BE NUMERIC > 0')
+				.isInt({ max: 30000, min: 0 })
+				.withMessage('SHOULD BE INT >= 0 AND <= 30000')
 				.toInt(),
 			BasicValidator.decimal(location, 'storeComposition[*].price'),
 			location('storeComposition[*].currency')

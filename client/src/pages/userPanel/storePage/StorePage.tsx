@@ -1,103 +1,42 @@
-import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { IErrorResponse } from '../../../api/errorResponse.ts'
 import $api from '../../../query/axios/base.ts'
 import axios, { AxiosResponse } from 'axios'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styles from './storePage.module.scss'
-import { IGetStoreByUserIdResponse } from '../../../api/stores/dto/getStoreByUserId.ts'
 import StoreEndpoints from '../../../api/stores/endpoints.ts'
 import { Currencies, Units } from '../../../api/enums.ts'
 import queryClient from '../../../query/queryClient.ts'
 import {
 	IUpdateStoreRequest,
 	IUpdateStoreResponse,
-	StoreCompositionData,
 } from '../../../api/stores/dto/updateStore.ts'
-import ProductEndpoints from '../../../api/products/endpoints.ts'
-import { IGetAllProductsResponse } from '../../../api/products/dto/getAllProducts.ts'
 import useVirtualStore from '../../../storage'
+import { useGetAllProducts } from '../../../query/adminPanel/useGetAllProducts.ts'
+import { useGetStore } from '../../../query/userPanel/useGetStore.ts'
+import { ProductData } from '../../../api/products/common.ts'
+import { SearchInput } from '../../../components/searchInput/SearchInput.tsx'
 
 export const UserStorePage = () => {
 	const { userId } = useVirtualStore()
 
-	const { data, error, isLoading } = useQuery<
-		IGetStoreByUserIdResponse,
-		IErrorResponse,
-		IGetStoreByUserIdResponse,
-		['store']
-	>({
-		queryKey: ['store'],
-		queryFn: async () => {
-			try {
-				const result = await $api.get<
-					AxiosResponse<IErrorResponse>,
-					AxiosResponse<IGetStoreByUserIdResponse>
-				>(`${StoreEndpoints.BASE}${StoreEndpoints.GET_BY_ID}`, {
-					params: {
-						creatorId: +userId!,
-					},
-				})
-				return result.data
-			} catch (e) {
-				if (axios.isAxiosError(e)) throw e?.response?.data
-				throw e
-			}
-		},
-		refetchOnWindowFocus: true,
-		retry: false,
-	})
-	const [selectedProduct, setSelectedProduct] = useState<{
-		title: string
-		productId: number
-		expires: Date | null
-		quantity: number
-		units: keyof typeof Units
-	} | null>(null)
 	const [search, setSearch] = useState('')
-
 	const [searchProduct, setSearchProduct] = useState('')
-	const { data: productsData } = useInfiniteQuery<
-		IGetAllProductsResponse,
-		IErrorResponse
-	>({
-		queryKey: ['products'],
-		queryFn: async ({ pageParam }) => {
-			try {
-				const result = await $api.get<
-					AxiosResponse<IErrorResponse>,
-					AxiosResponse<IGetAllProductsResponse>
-				>(`${ProductEndpoints.BASE}${ProductEndpoints.GET_ALL_PRODUCTS}`, {
-					params: {
-						skip: 0,
-						take: pageParam?.pageSize || 25,
-						cursor: pageParam?.cursor,
-						title: searchProduct,
-					},
-				})
-				return {
-					productsData: result.data?.productsData,
-					cursor: result.data?.cursor,
-				}
-			} catch (e) {
-				if (axios.isAxiosError(e)) throw e?.response?.data
-				throw e
-			}
-		},
-		refetchOnWindowFocus: true,
-		initialPageParam: { pageSize: 25, cursor: null },
-		getNextPageParam: lastPage => {
-			if (lastPage?.productsData?.length < 25) return
-			return {
-				cursor: lastPage?.cursor ? lastPage.cursor + 1 : null,
-				pageSize: 25,
-			}
-		},
-		enabled: !!searchProduct,
-	})
+
+	const { data, error, isLoading } = useGetStore(userId)
+
+	const [selectedProduct, setSelectedProduct] = useState<{
+		title?: string
+		productId?: number
+		expires?: Date | undefined
+		quantity?: number
+	} | null>(null)
+
+	const { data: productsData, refetch } = useGetAllProducts(searchProduct)
 
 	const [productsModal, setProductsModal] = useState(
 		[] as {
-			productId: number
+			product: ProductData
 			title: string
 			quantity: number
 			units: Units
@@ -108,25 +47,34 @@ export const UserStorePage = () => {
 		mutationFn: async () => {
 			try {
 				if (!data) return
-				const storageComposition: StoreCompositionData[] =
-					data?.storeComposition.map<StoreCompositionData>(item => ({
-						productId: item.product?.id || 1,
-						quantity: item.quantity,
-						expires: item.expires || undefined,
-						price: item.price.toString(),
-						currency: item.currency,
-					}))
+				const storageComposition = data?.storeComposition.map<{
+					productId: number
+					quantity: number
+					expires: Date | undefined
+					price: number
+					currency: keyof typeof Currencies
+				}>(item => ({
+					productId: item.product?.id || 1,
+					quantity: item.quantity,
+					expires: item.expires || undefined,
+					price: item.price,
+					currency: item.currency,
+				}))
 
-				const productsFromModal: StoreCompositionData[] = productsModal.map(
-					value => ({
-						price: '0',
-						currency: Currencies.BYN,
-						unit: value.units,
-						expires: undefined,
-						quantity: value.quantity,
-						productId: value.productId,
-					})
-				)
+				const productsFromModal = productsModal.map<{
+					productId: number
+					quantity: number
+					expires: Date | undefined
+					price: number
+					currency: keyof typeof Currencies
+				}>(value => ({
+					price: 0,
+					currency: Currencies.BYN,
+					unit: value.units,
+					expires: undefined,
+					quantity: value.quantity,
+					productId: value.product.id,
+				}))
 
 				const result = await $api.patch<
 					IUpdateStoreResponse | IErrorResponse,
@@ -143,11 +91,11 @@ export const UserStorePage = () => {
 							? [
 									{
 										productId: selectedProduct.productId || 1,
-										quantity: selectedProduct.quantity,
+										quantity: selectedProduct.quantity || 0,
 										expires: selectedProduct.expires
 											? new Date(selectedProduct.expires)
 											: undefined,
-										price: '0.0',
+										price: 0,
 										currency: Currencies.BYN,
 									},
 							  ]
@@ -168,26 +116,32 @@ export const UserStorePage = () => {
 	})
 
 	const { mutateAsync: dropProductFromStorage } = useMutation({
-		mutationFn: async (id: number) => {
+		mutationFn: async (id: number | undefined) => {
 			try {
-				const storageComposition: StoreCompositionData[] =
-					data?.storeComposition.map<StoreCompositionData>(item => ({
-						productId: item.product?.id || 1,
-						quantity: item.quantity,
-						expires: item.expires ?? undefined,
-						unit: item.unit,
-						price: item.price.toString(),
-						currency: item.currency,
-					}))
+				if (!id) return
+				const storageComposition = data?.storeComposition.map<{
+					productId: number
+					quantity: number
+					expires: Date | undefined
+					price: number
+					currency: keyof typeof Currencies
+				}>(item => ({
+					productId: id,
+					quantity: item.quantity,
+					expires: item.expires ?? undefined,
+					price: item.price,
+					currency: item.currency,
+				}))
 
 				const result = await $api.patch<
 					IUpdateStoreResponse | IErrorResponse,
 					AxiosResponse<IUpdateStoreResponse | IErrorResponse>,
 					IUpdateStoreRequest
 				>(`${StoreEndpoints.BASE}${StoreEndpoints.UPDATE}`, {
-					id: data?.id,
-					creatorId: data?.creatorId,
-					storeComposition: storageComposition.filter(item => item.productId !== id),
+					id: data?.id || 1,
+					creatorId: data?.creatorId || 1,
+					storeComposition:
+						storageComposition?.filter(item => item.productId !== id) || [],
 				})
 				return result.data
 			} catch (e) {
@@ -202,20 +156,17 @@ export const UserStorePage = () => {
 		},
 	})
 
+	useEffect(() => {
+		refetch().finally()
+	}, [refetch, searchProduct])
+
 	if (isLoading) return <h2>Loading...</h2>
 	if (error) return <p>Error</p>
 
 	return (
 		<>
 			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-				<div>
-					<p>Искать</p>
-					<input
-						type='text'
-						value={search}
-						onChange={e => setSearch(e.target.value)}
-					/>
-				</div>
+				<SearchInput search={search} onChange={e => setSearch(e.target.value)} />
 			</div>
 			<div className={styles.container}>
 				<div className={styles.modal}>
@@ -225,19 +176,19 @@ export const UserStorePage = () => {
 							<div>
 								<p>Продукт: {selectedProduct.title}</p>
 							</div>
-							<div>
-								<p>Срок годности до:</p>
+							<div className={styles.div}>
+								<p>Годен до:</p>
 								<input
 									type='date'
 									onChange={e =>
 										setSelectedProduct(prev => ({
 											...prev,
-											expires: e.target.value,
+											expires: new Date(e.target.value),
 										}))
 									}
 								/>
 							</div>
-							<div>
+							<div className={styles.div}>
 								<p>Количество:</p>
 								<input
 									type='number'
@@ -245,28 +196,11 @@ export const UserStorePage = () => {
 									onChange={e =>
 										setSelectedProduct(prev => ({
 											...prev,
-											quantity: e.target.value,
+											quantity: +e.target.value,
 										}))
 									}
 									value={selectedProduct.quantity}
 								/>
-							</div>
-							<div>
-								<p>Единицы:</p>
-								<select
-									name='productSelect'
-									id='productSelect'
-									value={selectedProduct.units}
-									onChange={e =>
-										setSelectedProduct(prev => ({
-											...prev,
-											units: e.target.value,
-										}))
-									}>
-									{Object.values(Units).map(unit => (
-										<option value={unit}>{unit}</option>
-									))}
-								</select>
 							</div>
 							<div>
 								<button
@@ -299,14 +233,14 @@ export const UserStorePage = () => {
 														setProductsModal(prev => {
 															if (
 																prev.find(
-																	item => item.productId === product.id
+																	item => item.product.id === product.id
 																)
 															)
 																return prev
 															return [
 																...prev,
 																{
-																	productId: product.id,
+																	product: product,
 																	units: Units.GRAMS,
 																	quantity: 0,
 																	title: product.title,
@@ -334,11 +268,13 @@ export const UserStorePage = () => {
 									</div>
 									{productsModal.map(item => (
 										<div
-											key={item.productId}
+											key={item.product.id}
 											style={{
 												display: 'flex',
 												flexDirection: 'row',
+												alignItems: 'center',
 												justifyContent: 'space-around',
+												gap: '5%',
 											}}>
 											<p>{item.title}</p>
 											<input
@@ -348,7 +284,7 @@ export const UserStorePage = () => {
 												onChange={e =>
 													setProductsModal(prev =>
 														prev.map(product => {
-															if (product.productId !== item.productId)
+															if (product.product.id !== item.product.id)
 																return product
 															return {
 																...product,
@@ -358,31 +294,13 @@ export const UserStorePage = () => {
 													)
 												}
 											/>
-											<select
-												name='units'
-												value={item.units}
-												onChange={e =>
-													setProductsModal(prev =>
-														prev.map(product => {
-															if (product.productId !== item.productId)
-																return product
-															return {
-																...product,
-																units: e.target.value as Units,
-															}
-														})
-													)
-												}>
-												{Object.values(Units).map(val => (
-													<option value={val}>{val}</option>
-												))}
-											</select>
+											<p>{item.units}</p>
 											<div
 												onClick={() =>
 													setProductsModal(prev =>
 														prev.filter(
 															product =>
-																product.productId !== item.productId
+																product.product.id !== item.product.id
 														)
 													)
 												}>
@@ -426,16 +344,13 @@ export const UserStorePage = () => {
 												justifyContent: 'space-evenly',
 											}}>
 											<div> Кол-во: {item.quantity}</div>
-											<div>Единицы: {item.unit}</div>
 										</div>
-										{/*<div*/}
-										{/*	style={{*/}
-										{/*		display: 'flex',*/}
-										{/*		justifyContent: 'space-evenly',*/}
-										{/*	}}>*/}
-										{/*	<div>{item.price}</div>*/}
-										{/*	<div>{item.currency}</div>*/}
-										{/*</div>*/}
+										<div>
+											<p>Ккал: {item.product?.calories}</p>
+											<p>Б: {item.product?.protein}</p>
+											<p>Ж: {item.product?.fats}</p>
+											<p>У: {item.product?.carbohydrates}</p>
+										</div>
 										<div>
 											{item.expires && (
 												<p>
@@ -449,8 +364,7 @@ export const UserStorePage = () => {
 												setSelectedProduct({
 													productId: item.product?.id,
 													quantity: item.quantity,
-													expires: item.expires,
-													units: item.unit,
+													expires: item.expires || undefined,
 													title: item.product?.title,
 												})
 											}}>
