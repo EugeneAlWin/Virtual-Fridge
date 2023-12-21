@@ -19,7 +19,7 @@ export function NavBar() {
 					<Link to='/admin/recipes'>Рецепты</Link>
 				</div>
 			) : role === Roles.DEFAULT ? (
-				<div>
+				<div className={styles.linksContainer}>
 					<Link to='/user/recipes'>Рецепты </Link>
 					<Link to='/user/store'>Хранилище</Link>
 					<Link to='/user/checklists'>Чек-листы</Link>
@@ -37,7 +37,7 @@ export function NavBar() {
 				}}>
 				Logout
 			</button>
-			<div className={`${styles.cube}`}></div>
+			<div className={`${styles.cube_reverse}`}></div>
 		</div>
 	)
 }

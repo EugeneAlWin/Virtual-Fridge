@@ -30,7 +30,7 @@ export interface IGetAllRecipesResponse {
 			createdAt: Date
 			isVisible: boolean
 			isApproved: boolean
-			products: ProductData[]
+			products: (ProductData & { quantity: number })[]
 		}
 	}[]
 }

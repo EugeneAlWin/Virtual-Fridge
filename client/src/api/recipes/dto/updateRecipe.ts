@@ -9,7 +9,6 @@ export interface IUpdateRecipeRequest {
 	isApproved?: boolean
 	recipeComposition?: {
 		productId: number
-		recipeId: number
 		quantity: number
 	}[]
 }

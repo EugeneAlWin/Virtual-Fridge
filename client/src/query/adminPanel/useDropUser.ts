@@ -10,7 +10,7 @@ import queryClient from '../queryClient.ts'
 import { IErrorResponse } from '../../api/errorResponse.ts'
 
 export function useDropUser() {
-	const data = useMutation<IDeleteUsersResponse, IErrorResponse, number>({
+	return useMutation<IDeleteUsersResponse, IErrorResponse, number>({
 		mutationFn: async id => {
 			try {
 				const result = await $api.delete<
@@ -34,6 +34,4 @@ export function useDropUser() {
 			})
 		},
 	})
-
-	return data
 }

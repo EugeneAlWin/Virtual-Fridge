@@ -9,17 +9,17 @@ const storeRouter = Router()
 
 storeRouter.get(
 	StoreEndpoints.GET_BY_ID,
-	StoreDataValidator.creatorId(query),
 	authMiddleware,
+	StoreDataValidator.creatorId(query),
 	StoreController.getStoreById
 )
 
 storeRouter.patch(
 	StoreEndpoints.UPDATE,
+	authMiddleware,
 	StoreDataValidator.id(body),
 	StoreDataValidator.title(body, true, { max: 50 }),
 	StoreDataValidator.StoreCompositionArrayEntries(body),
-	authMiddleware,
 	StoreController.updateStoreData
 )
 

@@ -34,10 +34,7 @@ export default class RecipeService {
 			take,
 			cursor: cursor
 				? {
-						productId_recipeId: {
-							productId: cursor?.productId,
-							recipeId: cursor?.recipeId,
-						},
+						productId_recipeId: cursor,
 				  }
 				: undefined,
 			where: {
@@ -52,6 +49,7 @@ export default class RecipeService {
 				},
 			},
 		})
+
 		const params = recipesComposition.reduce(
 			(prev, curr) => {
 				prev.productsId.add(curr.productId)
@@ -86,6 +84,7 @@ export default class RecipeService {
 		const recipes = await prismaClient.recipe.findMany({
 			where: { id: { in: [...params.recipesId] } },
 		})
+		console.log(recipes.length)
 		return {
 			recipes,
 			products,

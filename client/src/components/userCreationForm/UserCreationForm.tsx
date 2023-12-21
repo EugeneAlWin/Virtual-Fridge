@@ -1,9 +1,10 @@
 import { Roles } from '../../api/enums.ts'
-import { Dispatch, SetStateAction, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { SelectedUser, useUpdateUser } from '../../query/adminPanel/useUpdateUser.ts'
 import { ICreateUserRequest } from '../../api/users/dto/createUser.ts'
 import { useCreateUser } from '../../query/adminPanel/useCreateUser.ts'
 import styles from './userCreationForm.module.scss'
+import { toast, ToastContainer } from 'react-toastify'
 
 interface UserCreationFormProps {
 	selectedUser: SelectedUser
@@ -27,8 +28,18 @@ export function UserCreationForm({
 }: UserCreationFormProps) {
 	const [validData, setValidData] = useState({ login: true, password: true })
 
-	const { mutateAsync: createUser } = useCreateUser()
-	const { mutateAsync: updateUser } = useUpdateUser()
+	const { mutateAsync: createUser, isError, error } = useCreateUser()
+	const {
+		mutateAsync: updateUser,
+		isError: isUpdateError,
+		error: updateError,
+	} = useUpdateUser()
+
+	useEffect(() => {
+		if (isError) toast(error?.message, { type: 'error', theme: 'dark' })
+		if (isUpdateError) toast(updateError?.message, { type: 'error', theme: 'dark' })
+	}, [isUpdateError, isError, error?.message, updateError?.message])
+
 	return (
 		<div className={styles.modal}>
 			{selectedUser ? (
@@ -104,8 +115,7 @@ export function UserCreationForm({
 								!selectedUser ||
 								!validData.login ||
 								!validData.password ||
-								selectedUser.login === '' ||
-								selectedUser.password === ''
+								selectedUser.login === ''
 							}
 							onClick={async () => {
 								await updateUser(selectedUser)
@@ -204,6 +214,7 @@ export function UserCreationForm({
 					</div>
 				</>
 			)}
+			<ToastContainer />
 		</div>
 	)
 }

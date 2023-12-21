@@ -5,12 +5,12 @@ import axios, { AxiosResponse } from 'axios'
 import ProductEndpoints from '../../api/products/endpoints.ts'
 import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query'
 
-export function useGetAllProducts() {
-	const { data, hasNextPage, fetchNextPage } = useInfiniteQuery<
+export function useGetAllProducts(title?: string) {
+	return useInfiniteQuery<
 		IGetAllProductsResponse,
 		IErrorResponse,
 		InfiniteData<IGetAllProductsResponse>,
-		string[],
+		(string | undefined)[],
 		{ pageSize: number | undefined; cursor: number | null }
 	>({
 		queryKey: ['products'],
@@ -24,6 +24,7 @@ export function useGetAllProducts() {
 						skip: 0,
 						take: pageParam?.pageSize || 25,
 						cursor: pageParam?.cursor,
+						title,
 					},
 				})
 				return {
@@ -46,9 +47,4 @@ export function useGetAllProducts() {
 		},
 		retry: false,
 	})
-	return {
-		data,
-		hasNextPage,
-		fetchNextPage,
-	}
 }

@@ -4,6 +4,11 @@
   width: 100%;
 }
 
+.redButton {
+  background: red;
+  margin: 2%;
+}
+
 .modal {
   width: 40%;
   display: flex;
@@ -44,6 +49,10 @@
   height: 30px;
   align-items: center;
   margin-bottom: 5px;
+
+  > input {
+    border-radius: 8px;
+  }
 }
 
 .modal {

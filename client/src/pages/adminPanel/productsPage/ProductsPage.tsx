@@ -1,29 +1,16 @@
-import { useMutation } from '@tanstack/react-query'
-import $api from '../../../query/axios/base.ts'
-import ProductEndpoints from '../../../api/products/endpoints.ts'
-import axios, { AxiosResponse } from 'axios'
 import styles from './productPage.module.scss'
 import { useEffect, useState } from 'react'
-import queryClient from '../../../query/queryClient.ts'
-import {
-	ICreateProductRequest,
-	ICreateProductResponse,
-} from '../../../api/products/dto/createProduct.ts'
-import {
-	IUpdateProductRequest,
-	IUpdateProductResponse,
-} from '../../../api/products/dto/updateProduct.ts'
-import { IErrorResponse } from '../../../api/errorResponse.ts'
-import useVirtualStore from '../../../storage'
+import { ICreateProductRequest } from '../../../api/products/dto/createProduct.ts'
+import { IUpdateProductRequest } from '../../../api/products/dto/updateProduct.ts'
 import { useGetAllProducts } from '../../../query/adminPanel/useGetAllProducts.ts'
 import { useDropProduct } from '../../../query/adminPanel/useDropProduct.ts'
 import { SearchInput } from '../../../components/searchInput/SearchInput.tsx'
 import { Units } from '../../../api/enums.ts'
 import { toast, ToastContainer } from 'react-toastify'
+import { useCreateProduct } from '../../../query/adminPanel/useCreateProduct.ts'
+import { useUpdateProduct } from '../../../query/adminPanel/useUpdateProduct.ts'
 
 export const ProductsPage = () => {
-	const { userId } = useVirtualStore()
-
 	const [selectedProduct, setSelectedProduct] = useState<IUpdateProductRequest>(
 		{} as IUpdateProductRequest
 	)
@@ -37,6 +24,7 @@ export const ProductsPage = () => {
 		protein: 0,
 		units: 'GRAMS',
 	}
+
 	const [newProduct, setNewProduct] =
 		useState<ICreateProductRequest>(newProductInitState)
 
@@ -49,79 +37,27 @@ export const ProductsPage = () => {
 		mutateAsync: createProduct,
 		isError: isCreateError,
 		error: createError,
-	} = useMutation<ICreateProductResponse, IErrorResponse>({
-		mutationFn: async () => {
-			try {
-				const result = await $api.post<
-					ICreateProductResponse,
-					AxiosResponse<ICreateProductResponse>,
-					ICreateProductRequest
-				>(`${ProductEndpoints.BASE}${ProductEndpoints.CREATE_PRODUCT}`, {
-					calories: newProduct.calories,
-					fats: newProduct.fats,
-					carbohydrates: newProduct.carbohydrates,
-					protein: newProduct.protein,
-					title: newProduct.title,
-					creatorId: +userId!,
-					units: newProduct.units,
-				})
-				return result.data
-			} catch (e) {
-				if (axios.isAxiosError(e)) throw e?.response?.data
-				throw e
-			}
-		},
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({
-				queryKey: ['products'],
-			})
-			await queryClient.invalidateQueries({
-				queryKey: ['recipes'],
-			})
-		},
-	})
+	} = useCreateProduct()
 
 	const {
 		mutateAsync: updateProduct,
 		isError: isUpdateError,
 		error: updateError,
-	} = useMutation<IUpdateProductResponse, IErrorResponse, IUpdateProductRequest>({
-		mutationFn: async selectedProduct => {
-			try {
-				const result = await $api.patch<
-					IUpdateProductResponse,
-					AxiosResponse<IUpdateProductResponse>,
-					IUpdateProductRequest
-				>(`${ProductEndpoints.BASE}${ProductEndpoints.UPDATE_PRODUCT}`, {
-					calories: selectedProduct?.calories,
-					fats: selectedProduct?.fats,
-					carbohydrates: selectedProduct?.carbohydrates,
-					protein: selectedProduct?.protein,
-					title: selectedProduct?.title,
-					id: selectedProduct.id,
-					units: selectedProduct?.units,
-				})
-				return result.data
-			} catch (e) {
-				if (axios.isAxiosError(e)) throw e?.response?.data
-				throw e
-			}
-		},
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({
-				queryKey: ['products'],
-			})
-			await queryClient.invalidateQueries({
-				queryKey: ['recipes'],
-			})
-		},
-	})
+	} = useUpdateProduct()
+
 	useEffect(() => {
 		if (isCreateError)
 			toast(createError?.field + ' ' + createError.message, { type: 'error' })
 		if (isUpdateError)
 			toast(updateError?.field + ' ' + updateError.message, { type: 'error' })
-	}, [isCreateError, isUpdateError])
+	}, [
+		createError?.field,
+		createError?.message,
+		isCreateError,
+		isUpdateError,
+		updateError?.field,
+		updateError?.message,
+	])
 
 	return (
 		<>
@@ -152,8 +88,8 @@ export const ProductsPage = () => {
 								<p>Белки</p>
 								<input
 									type='number'
-									step={0.01}
-									max={30000}
+									step={1}
+									max={32767}
 									value={selectedProduct.protein}
 									onChange={e =>
 										setSelectedProduct(prev => ({
@@ -167,8 +103,8 @@ export const ProductsPage = () => {
 								<p>Жиры</p>
 								<input
 									type='number'
-									step={0.01}
-									max={30000}
+									step={1}
+									max={32767}
 									value={selectedProduct.fats}
 									onChange={e =>
 										setSelectedProduct(prev => ({
@@ -182,8 +118,8 @@ export const ProductsPage = () => {
 								<p>Углеводы</p>
 								<input
 									type='number'
-									step={0.01}
-									max={30000}
+									step={1}
+									max={32767}
 									value={selectedProduct.carbohydrates}
 									onChange={e =>
 										setSelectedProduct(prev => ({
@@ -199,7 +135,7 @@ export const ProductsPage = () => {
 									type='number'
 									step={1}
 									value={selectedProduct.calories}
-									max={30000}
+									max={32767}
 									onChange={e =>
 										setSelectedProduct(prev => ({
 											...prev,
@@ -263,8 +199,8 @@ export const ProductsPage = () => {
 								<p>Белки</p>
 								<input
 									type='number'
-									step={0.01}
-									max={30000}
+									step={1}
+									max={32767}
 									value={newProduct.protein}
 									onChange={e =>
 										setNewProduct(prev => ({
@@ -278,8 +214,8 @@ export const ProductsPage = () => {
 								<p>Жиры</p>
 								<input
 									type='number'
-									step={0.01}
-									max={30000}
+									step={1}
+									max={32767}
 									value={newProduct.fats}
 									onChange={e =>
 										setNewProduct(prev => ({
@@ -293,8 +229,8 @@ export const ProductsPage = () => {
 								<p>Углеводы</p>
 								<input
 									type='number'
-									step={0.01}
-									max={30000}
+									step={1}
+									max={32767}
 									value={newProduct.carbohydrates}
 									onChange={e =>
 										setNewProduct(prev => ({
@@ -308,8 +244,8 @@ export const ProductsPage = () => {
 								<p>Ккал</p>
 								<input
 									type='number'
-									max={30000}
-									step={0.01}
+									max={32767}
+									step={1}
 									value={newProduct.calories}
 									onChange={e =>
 										setNewProduct(prev => ({
@@ -340,7 +276,7 @@ export const ProductsPage = () => {
 								<button
 									disabled={newProduct.title === ''}
 									onClick={async () => {
-										await createProduct()
+										await createProduct(newProduct)
 										setNewProduct(newProductInitState)
 									}}>
 									Сохранить
@@ -382,7 +318,7 @@ export const ProductsPage = () => {
 														units: item.units,
 													})
 												}>
-												Edit
+												Редактировать
 											</button>
 											<button
 												className={styles.redButton}

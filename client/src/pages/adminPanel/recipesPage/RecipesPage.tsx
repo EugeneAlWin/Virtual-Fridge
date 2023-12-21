@@ -1,95 +1,19 @@
-import { useInfiniteQuery, useMutation } from '@tanstack/react-query'
-import $api from '../../../query/axios/base.ts'
-import axios, { AxiosResponse } from 'axios'
 import styles from './recipesPage.module.scss'
-import { useState } from 'react'
-import { IDeleteProductsResponse } from '../../../api/products/dto/deleteProduct.ts'
-import queryClient from '../../../query/queryClient.ts'
-import RecipeEndpoints from '../../../api/recipes/endpoints.ts'
-import { IGetAllRecipesResponse } from '../../../api/recipes/dto/getAllRecipes.ts'
-import { IErrorResponse } from '../../../api/errorResponse.ts'
+import { useEffect, useState } from 'react'
 import { RecipeTypes, Units } from '../../../api/enums.ts'
-import {
-	ICreateRecipeRequest,
-	ICreateRecipeResponse,
-} from '../../../api/recipes/dto/createRecipe.ts'
-import {
-	IUpdateRecipeRequest,
-	IUpdateRecipeResponse,
-} from '../../../api/recipes/dto/updateRecipe.ts'
-import { IGetAllProductsResponse } from '../../../api/products/dto/getAllProducts.ts'
-import ProductEndpoints from '../../../api/products/endpoints.ts'
+import { ICreateRecipeRequest } from '../../../api/recipes/dto/createRecipe.ts'
+import { IUpdateRecipeResponse } from '../../../api/recipes/dto/updateRecipe.ts'
 import useVirtualStore from '../../../storage'
+import { SearchInput } from '../../../components/searchInput/SearchInput.tsx'
+import { toast, ToastContainer } from 'react-toastify'
+import { useGetAllRecipes } from '../../../query/adminPanel/useGetAllRecipes.ts'
+import { useDropRecipe } from '../../../query/adminPanel/useDropRecipe.ts'
+import { useCreateRecipe } from '../../../query/adminPanel/useCreateRecipe.ts'
+import { useUpdateRecipe } from '../../../query/adminPanel/useUpdateRecipe.ts'
+import { useGetAllProducts } from '../../../query/adminPanel/useGetAllProducts.ts'
 
 export const RecipesPage = () => {
 	const { userId } = useVirtualStore()
-	const { data, error, isLoading } = useInfiniteQuery<
-		IGetAllRecipesResponse,
-		IErrorResponse,
-		unknown,
-		unknown[],
-		{
-			pageSize: number
-			cursor: { recipeId: number; productId: number } | null
-		}
-	>({
-		queryKey: ['recipes'],
-		queryFn: async ({ pageParam }) => {
-			try {
-				const result = await $api.get<
-					AxiosResponse<IErrorResponse>,
-					AxiosResponse<IGetAllRecipesResponse>
-				>(`${RecipeEndpoints.BASE}${RecipeEndpoints.GET_ALL}`, {
-					params: {
-						skip: 0,
-						take: pageParam?.pageSize || 25,
-						cursor: pageParam?.cursor,
-						isVisible: false,
-						isApproved: false,
-					},
-				})
-				return { recipesData: result.data?.recipesData, cursor: result.data?.cursor }
-			} catch (e) {
-				if (axios.isAxiosError(e)) throw e?.response?.data
-				throw e
-			}
-		},
-		refetchOnWindowFocus: false,
-		initialPageParam: { pageSize: 25, cursor: null },
-		getNextPageParam: lastPage => {
-			if (lastPage.recipesData?.length < 25) return
-			return {
-				cursor: lastPage?.cursor ? lastPage.cursor : null,
-				pageSize: 25,
-			}
-		},
-		retry: false,
-	})
-	const [search, setSearch] = useState('')
-
-	const { mutateAsync: dropRecipe } = useMutation({
-		mutationFn: async (id: number) => {
-			try {
-				const result = await $api.delete<IDeleteProductsResponse>(
-					`${RecipeEndpoints.BASE}${RecipeEndpoints.DELETE}`,
-					{
-						data: {
-							recipesId: [id],
-						},
-					}
-				)
-				return result.data.count
-			} catch (e) {
-				if (axios.isAxiosError(e)) throw e?.response?.data
-				throw e
-			}
-		},
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({
-				queryKey: ['recipes'],
-			})
-		},
-	})
 
 	const newRecipeInitState = {
 		recipeComposition: [],
@@ -98,115 +22,13 @@ export const RecipesPage = () => {
 		title: '',
 		creatorId: +userId!,
 	} satisfies ICreateRecipeRequest
-	const [newRecipe, setNewRecipe] = useState<ICreateRecipeRequest>(newRecipeInitState)
 
-	const [selectedRecipe, setSelectedRecipe] = useState<null | IUpdateRecipeRequest>(null)
-
-	const { mutateAsync: createRecipe } = useMutation({
-		mutationFn: async () => {
-			try {
-				const result = await $api.post<
-					ICreateRecipeResponse,
-					IErrorResponse,
-					ICreateRecipeRequest
-				>(`${RecipeEndpoints.BASE}${RecipeEndpoints.CREATE}`, {
-					description: newRecipe.description,
-					title: newRecipe.title,
-					type: newRecipe.type,
-					isVisible: newRecipe.isVisible,
-					recipeComposition: productsModal.map(item => ({
-						productId: item.productId,
-						quantity: item.quantity,
-						units: item.units,
-					})),
-					creatorId: +userId!, //TODO
-				})
-				return result?.data
-			} catch (e) {
-				if (axios.isAxiosError(e)) throw e?.response?.data
-				throw e
-			}
-		},
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({
-				queryKey: ['recipes'],
-			})
-		},
-	})
-
-	const { mutateAsync: updateRecipe } = useMutation({
-		mutationFn: async () => {
-			try {
-				if (!selectedRecipe) return
-				const result = await $api.patch<
-					IUpdateRecipeResponse,
-					IErrorResponse,
-					IUpdateRecipeRequest
-				>(`${RecipeEndpoints.BASE}${RecipeEndpoints.UPDATE}`, {
-					description: selectedRecipe.description,
-					title: selectedRecipe.title,
-					id: selectedRecipe.id,
-					type: selectedRecipe.type,
-					isVisible: selectedRecipe.isVisible,
-					isApproved: selectedRecipe.isApproved,
-					recipeComposition: productsModal.map(item => ({
-						productId: item.productId,
-						quantity: item.quantity,
-						units: item.units,
-					})),
-				})
-				return result.data
-			} catch (e) {
-				if (axios.isAxiosError(e)) throw e?.response?.data
-				throw e
-			}
-		},
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({
-				queryKey: ['recipes'],
-			})
-		},
-	})
-
+	const [search, setSearch] = useState('')
 	const [searchProduct, setSearchProduct] = useState('')
-	const { data: productsData } = useInfiniteQuery<
-		IGetAllProductsResponse,
-		IErrorResponse
-	>({
-		queryKey: ['products'],
-		queryFn: async ({ pageParam }) => {
-			try {
-				const result = await $api.get<
-					AxiosResponse<IErrorResponse>,
-					AxiosResponse<IGetAllProductsResponse>
-				>(`${ProductEndpoints.BASE}${ProductEndpoints.GET_ALL_PRODUCTS}`, {
-					params: {
-						skip: 0,
-						take: pageParam?.pageSize || 25,
-						cursor: pageParam?.cursor,
-						title: searchProduct,
-					},
-				})
-				return {
-					productsData: result.data?.productsData,
-					cursor: result.data?.cursor,
-				}
-			} catch (e) {
-				if (axios.isAxiosError(e)) throw e?.response?.data
-				throw e
-			}
-		},
-		refetchOnWindowFocus: false,
-		initialPageParam: { pageSize: 25, cursor: null },
-		getNextPageParam: lastPage => {
-			if (lastPage?.productsData?.length < 25) return
-			return {
-				cursor: lastPage?.cursor ? lastPage.cursor + 1 : null,
-				pageSize: 25,
-			}
-		},
-		enabled: !!searchProduct,
-	})
+	const [newRecipe, setNewRecipe] = useState<ICreateRecipeRequest>(newRecipeInitState)
+	const [selectedRecipe, setSelectedRecipe] = useState<IUpdateRecipeResponse>(
+		{} as IUpdateRecipeResponse
+	)
 	const [productsModal, setProductsModal] = useState(
 		[] as {
 			productId: number
@@ -215,26 +37,53 @@ export const RecipesPage = () => {
 			units: Units
 		}[]
 	)
+
+	const { data: productsData, refetch } = useGetAllProducts(searchProduct)
+
+	const { data, error, isLoading } = useGetAllRecipes()
+	const { mutateAsync: dropRecipe } = useDropRecipe()
+	const {
+		mutateAsync: createRecipe,
+		isError: isCreateError,
+		error: createError,
+	} = useCreateRecipe()
+	const {
+		mutateAsync: updateRecipe,
+		isError: isUpdateError,
+		error: updateError,
+	} = useUpdateRecipe()
+
+	useEffect(() => {
+		if (isCreateError)
+			toast(createError?.field + ' ' + createError.message, { type: 'error' })
+		if (isUpdateError)
+			toast(updateError?.field + ' ' + updateError.message, { type: 'error' })
+	}, [
+		createError?.field,
+		createError?.message,
+		isCreateError,
+		isUpdateError,
+		updateError?.field,
+		updateError?.message,
+	])
+
+	useEffect(() => {
+		refetch().finally()
+	}, [refetch, searchProduct])
+
 	if (isLoading) return <h2>Loading...</h2>
 	if (error) return <p>Error</p>
 	return (
 		<>
 			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-				<div>
-					<p>Искать</p>
-					<input
-						type='text'
-						value={search}
-						onChange={e => setSearch(e.target.value)}
-					/>
-				</div>
+				<SearchInput search={search} onChange={e => setSearch(e.target.value)} />
 			</div>
 			<div className={styles.container}>
 				<div className={styles.modal}>
-					{selectedRecipe ? (
+					{Object.values(selectedRecipe).length ? (
 						<>
 							<p>Редактирование рецепта</p>
-							<div>
+							<div className={styles.div}>
 								<p>Название</p>
 								<input
 									type='text'
@@ -247,14 +96,14 @@ export const RecipesPage = () => {
 									}
 								/>
 							</div>
-							<div>
+							<div className={styles.div}>
 								<p>Тип</p>
 								<select
 									value={selectedRecipe.type}
 									onChange={e =>
 										setSelectedRecipe(prev => ({
 											...prev,
-											type: e.target.value,
+											type: e.target.value as RecipeTypes,
 										}))
 									}>
 									{Object.values(RecipeTypes).map(item => (
@@ -264,7 +113,7 @@ export const RecipesPage = () => {
 									))}
 								</select>
 							</div>
-							<div>
+							<div className={styles.div}>
 								<p>Видимый</p>
 								<input
 									type='checkbox'
@@ -277,7 +126,7 @@ export const RecipesPage = () => {
 									}
 								/>
 							</div>
-							<div>
+							<div className={styles.div}>
 								<p>Подтвержден</p>
 								<input
 									type='checkbox'
@@ -290,10 +139,10 @@ export const RecipesPage = () => {
 									}
 								/>
 							</div>
-							<div>
+							<div className={styles.div} style={{ zIndex: 3 }}>
 								<p>Описание</p>
 								<textarea
-									value={selectedRecipe.description}
+									value={selectedRecipe.description || ''}
 									onChange={e =>
 										setSelectedRecipe(prev => ({
 											...prev,
@@ -303,6 +152,7 @@ export const RecipesPage = () => {
 								/>
 							</div>
 							<div>
+								<p>Поиск продуктов</p>
 								<input
 									type='text'
 									value={searchProduct}
@@ -357,13 +207,15 @@ export const RecipesPage = () => {
 											style={{
 												display: 'flex',
 												flexDirection: 'row',
-												justifyContent: 'space-around',
+												justifyContent: 'space-evenly',
+												alignItems: 'center',
+												gap: '5px',
 											}}>
 											<p>{item.title}</p>
 											<input
 												type='number'
 												value={item.quantity}
-												step={0.01}
+												step={1}
 												onChange={e =>
 													setProductsModal(prev =>
 														prev.map(product => {
@@ -377,26 +229,9 @@ export const RecipesPage = () => {
 													)
 												}
 											/>
-											<select
-												name='units'
-												value={item.units}
-												onChange={e =>
-													setProductsModal(prev =>
-														prev.map(product => {
-															if (product.productId !== item.productId)
-																return product
-															return {
-																...product,
-																units: e.target.value as Units,
-															}
-														})
-													)
-												}>
-												{Object.values(Units).map(val => (
-													<option value={val}>{val}</option>
-												))}
-											</select>
+											<p>{item.units}</p>
 											<div
+												className={styles.delete}
 												onClick={() =>
 													setProductsModal(prev =>
 														prev.filter(
@@ -413,16 +248,17 @@ export const RecipesPage = () => {
 							</div>
 							<div>
 								<button
+									disabled={selectedRecipe.title === '' || !productsModal.length}
 									onClick={async () => {
-										await updateRecipe()
-										setSelectedRecipe(null)
+										await updateRecipe({ selectedRecipe, productsModal })
+										setSelectedRecipe({} as IUpdateRecipeResponse)
 										setProductsModal([])
 									}}>
 									Сохранить
 								</button>
 								<button
 									onClick={() => {
-										setSelectedRecipe(null)
+										setSelectedRecipe({} as IUpdateRecipeResponse)
 										setProductsModal([])
 									}}>
 									Отменить
@@ -432,7 +268,7 @@ export const RecipesPage = () => {
 					) : (
 						<>
 							<p>Создание рецепта</p>
-							<div>
+							<div className={styles.div}>
 								<p>Название</p>
 								<input
 									type='text'
@@ -445,7 +281,7 @@ export const RecipesPage = () => {
 									}
 								/>
 							</div>
-							<div>
+							<div className={styles.div}>
 								<p>Тип</p>
 								<select
 									value={newRecipe.type}
@@ -462,7 +298,7 @@ export const RecipesPage = () => {
 									))}
 								</select>
 							</div>
-							<div>
+							<div className={styles.div}>
 								<p>Видимый</p>
 								<input
 									type='checkbox'
@@ -475,7 +311,7 @@ export const RecipesPage = () => {
 									}
 								/>
 							</div>
-							<div>
+							<div className={styles.div}>
 								<p>Описание</p>
 								<textarea
 									value={newRecipe.description}
@@ -488,6 +324,7 @@ export const RecipesPage = () => {
 								/>
 							</div>
 							<div>
+								<p>Поиск продуктов</p>
 								<input
 									type='text'
 									value={searchProduct}
@@ -548,7 +385,7 @@ export const RecipesPage = () => {
 											<input
 												type='number'
 												value={item.quantity}
-												step={0.01}
+												step={1}
 												onChange={e =>
 													setProductsModal(prev =>
 														prev.map(product => {
@@ -562,24 +399,7 @@ export const RecipesPage = () => {
 													)
 												}
 											/>
-											<select
-												name='units'
-												onChange={e =>
-													setProductsModal(prev =>
-														prev.map(product => {
-															if (product.productId !== item.productId)
-																return product
-															return {
-																...product,
-																units: e.target.value as Units,
-															}
-														})
-													)
-												}>
-												{Object.values(Units).map(val => (
-													<option value={val}>{val}</option>
-												))}
-											</select>
+											<p>{item.units}</p>
 											<div
 												onClick={() =>
 													setProductsModal(prev =>
@@ -597,8 +417,9 @@ export const RecipesPage = () => {
 							</div>
 							<div>
 								<button
+									disabled={newRecipe.title === '' || !productsModal.length}
 									onClick={async () => {
-										await createRecipe()
+										await createRecipe({ newRecipe, productsModal })
 										setProductsModal([])
 									}}>
 									Сохранить
@@ -634,23 +455,33 @@ export const RecipesPage = () => {
 												Подтвержден: {item.recipe.isApproved ? 'да' : 'нет'}
 											</p>
 											<p>Видимый: {item.recipe.isVisible ? 'да' : 'нет'}</p>
-											<p>ID создателя: {item.recipe.creatorId}</p>
-											<p>Описание: {item.recipe.description}</p>
+											{item.recipe.description && (
+												<p>Описание: {item.recipe.description}</p>
+											)}
 											{item.recipe.products.map(product => (
 												<div
 													style={{
 														display: 'flex',
-														flexDirection: 'row',
+														flexDirection: 'column',
 														justifyContent: 'space-around',
 													}}
 													key={product.id}>
-													<p>{product.title} </p>
-													<p>{product.protein} </p>
-													<p>{product.fats} </p>
-													<p>{product.carbohydrates} </p>
-													<p>{product.calories} </p>
-													<p>{product.quantity}</p>
-													<p>{product.units}</p>
+													<h4>{product.title} </h4>
+													<div
+														style={{
+															display: 'flex',
+															flexDirection: 'row',
+															justifyContent: 'center',
+															gap: '2%',
+														}}>
+														<p>Б: {product.protein}</p>
+														<p>Ж: {product.fats} </p>
+														<p>У: {product.carbohydrates} </p>
+														<p>Кал: {product.calories} </p>
+													</div>
+													<p>
+														Кол-во: {product.quantity} {product.units}
+													</p>
 												</div>
 											))}
 										</div>
@@ -664,9 +495,8 @@ export const RecipesPage = () => {
 														isVisible: item.recipe.isVisible,
 														isApproved: item.recipe.isApproved,
 														id: item.recipe.id,
-														description:
-															item.recipe.description || undefined,
-													})
+														description: item.recipe.description || '',
+													} as IUpdateRecipeResponse) //TODO: types
 
 													setProductsModal(
 														item.recipe.products.map(product => ({
@@ -692,6 +522,7 @@ export const RecipesPage = () => {
 							))
 					)}
 				</div>
+				<ToastContainer />
 			</div>
 		</>
 	)

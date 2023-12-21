@@ -93,29 +93,31 @@ export default class RecipeController {
 		try {
 			const { recipes, products, recipesComposition, cursor } =
 				await RecipeService.getAllRecipes(req.query)
-
 			res.json({
 				recipesData: recipes.map(recipe => ({
 					recipe: {
 						...recipe,
-						products: products.reduce((prev, curr) => {
-							if (
-								!recipesComposition[recipe.id].find(
-									item => item.productId === curr.id
+						products: products.reduce(
+							(prev, curr) => {
+								if (
+									!recipesComposition[recipe.id].find(
+										item => item.productId === curr.id
+									)
 								)
-							)
-								return prev
-							return [
-								...prev,
-								{
-									...curr,
-									quantity:
-										recipesComposition[recipe.id].find(
-											item => item.productId === curr.id
-										)?.quantity ?? 0,
-								},
-							]
-						}, [] as ProductData[]),
+									return prev
+								return [
+									...prev,
+									{
+										...curr,
+										quantity:
+											recipesComposition[recipe.id].find(
+												item => item.productId === curr.id
+											)?.quantity ?? 0,
+									},
+								]
+							},
+							[] as (ProductData & { quantity: number })[]
+						),
 					},
 				})),
 				cursor,

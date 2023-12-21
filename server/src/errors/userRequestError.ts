@@ -22,6 +22,10 @@ export default class UserRequestError extends Error {
 		return new UserRequestError({ code: 400, message })
 	}
 
+	static Forbidden(message: string) {
+		return new UserRequestError({ code: 403, message })
+	}
+
 	static UnprocessableEntity(error: Omit<IErrorResponse, 'code'>) {
 		return new UserRequestError({ code: 422, ...error })
 	}
