@@ -5,4 +5,6 @@ npm run apply_migrations
 npm start &
 
 cd /app/client || exit
-npm run dev
+
+npm run build
+npm run preview
