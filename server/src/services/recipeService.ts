@@ -84,7 +84,7 @@ export default class RecipeService {
 		const recipes = await prismaClient.recipe.findMany({
 			where: { id: { in: [...params.recipesId] } },
 		})
-		console.log(recipes.length)
+
 		return {
 			recipes,
 			products,

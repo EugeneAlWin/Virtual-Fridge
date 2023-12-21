@@ -1,155 +1,51 @@
-import {
-	InfiniteData,
-	useInfiniteQuery,
-	useMutation,
-	useQuery,
-} from '@tanstack/react-query'
-import { IGetAllRecipesResponse } from '../../../api/recipes/dto/getAllRecipes.ts'
-import { IErrorResponse } from '../../../api/errorResponse.ts'
-import $api from '../../../query/axios/base.ts'
-import axios, { AxiosResponse } from 'axios'
-import RecipeEndpoints from '../../../api/recipes/endpoints.ts'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styles from './recipesPage.module.scss'
-import { Currencies } from '../../../api/enums.ts'
-import { IGetStoreByUserIdResponse } from '../../../api/stores/dto/getStoreByUserId.ts'
-import StoreEndpoints from '../../../api/stores/endpoints.ts'
-import ChecklistEndpoints from '../../../api/checklists/endpoints.ts'
-import queryClient from '../../../query/queryClient.ts'
-import {
-	ICreateChecklistRequest,
-	ICreateChecklistResponse,
-} from '../../../api/checklists/dto/createChecklist.ts'
 import useVirtualStore from '../../../storage'
+import { useGetAllRecipes } from '../../../query/adminPanel/useGetAllRecipes.ts'
+import { useGetStore } from '../../../query/useGetStore.ts'
+import { ChecklistCompositionData } from '../../../api/checklists/common.ts'
+import { ProductData } from '../../../api/products/common.ts'
+import { useCreateChecklist } from '../../../query/userPanel/useCreateCheckList.ts'
+import { SearchInput } from '../../../components/searchInput/SearchInput.tsx'
+import { toast, ToastContainer } from 'react-toastify'
 
 export const UserRecipesPage = () => {
 	const { userId } = useVirtualStore()
 
+	const [search, setSearch] = useState('')
 	const [selectedRecipes, setSelectedRecipes] = useState<{
 		[recipeId: number]: boolean
 	}>({})
-	const { data, error, isLoading } = useInfiniteQuery<
-		IGetAllRecipesResponse,
-		IErrorResponse,
-		InfiniteData<IGetAllRecipesResponse>,
-		['recipes'],
-		{
-			pageSize: number
-			cursor: {
-				recipeId: number
-				productId: number
-			} | null
-		}
-	>({
-		queryKey: ['recipes'],
-		queryFn: async ({ pageParam }) => {
-			try {
-				const result = await $api.get<
-					AxiosResponse<IErrorResponse>,
-					AxiosResponse<IGetAllRecipesResponse>
-				>(`${RecipeEndpoints.BASE}${RecipeEndpoints.GET_ALL}`, {
-					params: {
-						skip: 0,
-						take: pageParam?.pageSize || 25,
-						cursor: pageParam?.cursor,
-					},
-				})
-				return { recipesData: result.data?.recipesData, cursor: result.data?.cursor }
-			} catch (e) {
-				if (axios.isAxiosError(e)) throw e?.response?.data
-				throw e
-			}
-		},
-		refetchOnWindowFocus: false,
-		initialPageParam: { pageSize: 25, cursor: null },
-		getNextPageParam: lastPage => {
-			if (lastPage.recipesData?.length < 25) return
-			return {
-				cursor: lastPage?.cursor ? lastPage.cursor : null,
-				pageSize: 25,
-			}
-		},
-		retry: false,
-	})
-	const [search, setSearch] = useState('')
 
-	const { data: storeData } = useQuery<
-		IGetStoreByUserIdResponse,
-		IErrorResponse,
-		IGetStoreByUserIdResponse,
-		['store']
-	>({
-		queryKey: ['store'],
-		queryFn: async () => {
-			try {
-				const result = await $api.get<
-					AxiosResponse<IErrorResponse>,
-					AxiosResponse<IGetStoreByUserIdResponse>
-				>(`${StoreEndpoints.BASE}${StoreEndpoints.GET_BY_ID}`, {
-					params: {
-						creatorId: +userId!,
-					},
-				})
-				return result.data
-			} catch (e) {
-				if (axios.isAxiosError(e)) throw e?.response?.data
-				throw e
-			}
-		},
-		refetchOnWindowFocus: true,
-		retry: false,
-	})
+	const { data, error, isLoading } = useGetAllRecipes(true)
 
-	const { mutateAsync: createCheckList } = useMutation({
-		mutationFn: async (
-			data: {
-				productId: number
-				quantity: number
-				price: string
-				currency: keyof typeof Currencies
-			}[]
-		) => {
-			try {
-				const result = await $api.post<
-					ICreateChecklistResponse | IErrorResponse,
-					AxiosResponse<ICreateChecklistResponse | IErrorResponse>,
-					ICreateChecklistRequest
-				>(`${ChecklistEndpoints.BASE}${ChecklistEndpoints.CREATE}`, {
-					creatorId: +userId!,
-					checklistComposition: data,
-					checklistPrices: {
-						BYN: '3',
-						RUB: '3',
-						USD: '3',
-					},
-				})
-				return result.data
-			} catch (e) {
-				if (axios.isAxiosError(e)) throw e?.response?.data
-				throw e
-			}
-		},
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({
-				queryKey: ['checklist'],
+	const { data: storeData } = useGetStore(userId)
+
+	const { mutateAsync: createCheckList, isSuccess, isError } = useCreateChecklist(userId)
+
+	useEffect(() => {
+		if (isSuccess)
+			toast('Список сформирован! Посмотреть можно на вкладке "Чек-листы"', {
+				type: 'success',
+				theme: 'dark',
 			})
-		},
-	})
+		if (isError)
+			toast('Не удалось сформировать список :(', { type: 'error', theme: 'dark' })
+	}, [isSuccess, isError])
 
 	if (isLoading) return <h2>Loading...</h2>
 	if (error) return <p>Error</p>
 	return (
 		<>
 			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-				<div>
-					<p>Искать</p>
-					<input
-						type='text'
-						value={search}
-						onChange={e => setSearch(e.target.value)}
-					/>
-				</div>
-				<div>
+				<div
+					style={{
+						display: 'flex',
+						alignItems: 'center',
+						flexDirection: 'row',
+						gap: '5%',
+					}}>
+					<SearchInput search={search} onChange={e => setSearch(e.target.value)} />
 					<button
 						disabled={Object.values(selectedRecipes).every(val => !val)}
 						onClick={async () => {
@@ -161,33 +57,27 @@ export const UserRecipesPage = () => {
 								?.map(recipe => recipe.recipe.products)
 								.flat(1)
 							let uniqueProducts: {
-								[title: string]: {
-									productId: number
-									quantity: number
-									price: string
-									currency: keyof typeof Currencies
-								}
+								[title: string]: ProductData & { quantity: number }
 							} = {}
-							uniqueProducts = products?.reduce((prev, curr) => {
-								const quantity = curr?.quantity
-								const obj = {
-									...curr,
-									quantity: prev[curr.title]
-										? (prev[curr.title].quantity += quantity)
-										: quantity,
-								}
+							uniqueProducts =
+								products?.reduce((prev, curr) => {
+									const quantity = curr?.quantity
+									const obj = {
+										...curr,
+										quantity: prev[curr.title]
+											? (prev[curr.title].quantity += quantity)
+											: quantity,
+									}
 
-								return {
-									...prev,
-									[curr.title]: obj,
-								}
-							}, uniqueProducts)
-							const checklist = Object.keys(uniqueProducts).map<{
-								productId: number
-								quantity: number
-								price: string
-								currency: keyof typeof Currencies
-							}>(title => {
+									return {
+										...prev,
+										[curr.title]: obj,
+									}
+								}, uniqueProducts) || {}
+
+							const checklist = Object.keys(
+								uniqueProducts
+							).map<ChecklistCompositionData | null>(title => {
 								const productFromStore = storeData?.storeComposition.find(
 									i => i.product?.title === title
 								)
@@ -197,7 +87,7 @@ export const UserRecipesPage = () => {
 										0
 										? {
 												currency: 'BYN',
-												price: '3',
+												price: 3,
 												productId: uniqueProducts[title]?.id,
 												quantity: Math.abs(
 													productFromStore.quantity -
@@ -209,15 +99,19 @@ export const UserRecipesPage = () => {
 								return {
 									quantity: uniqueProducts[title].quantity,
 									currency: 'BYN',
-									price: '3',
+									price: 3,
 									productId: uniqueProducts[title]?.id,
 								}
 							})
 							if (checklist.every(item => !item))
-								return alert(
-									'В вашем хранилище достаточно продуктов для выбранных рецептов'
+								return toast(
+									'В вашем хранилище достаточно продуктов для выбранных рецептов',
+									{ type: 'info', theme: 'dark' }
 								)
-							await createCheckList(checklist.filter(item => !!item))
+
+							await createCheckList(
+								checklist.filter(item => !!item) as ChecklistCompositionData[]
+							)
 						}}>
 						Сформировать список продуктов
 					</button>
@@ -256,9 +150,9 @@ export const UserRecipesPage = () => {
 											<p>
 												Подтвержден: {item.recipe.isApproved ? 'да' : 'нет'}
 											</p>
-											<p>Видимый: {item.recipe.isVisible ? 'да' : 'нет'}</p>
-											<p>ID создателя: {item.recipe.creatorId}</p>
-											<p>Описание: {item.recipe.description}</p>
+											{item.recipe.description && (
+												<p>Описание: {item.recipe.description}</p>
+											)}
 											{item.recipe.products.map(product => (
 												<div
 													style={{
@@ -306,6 +200,7 @@ export const UserRecipesPage = () => {
 					)}
 				</div>
 			</div>
+			<ToastContainer />
 		</>
 	)
 }

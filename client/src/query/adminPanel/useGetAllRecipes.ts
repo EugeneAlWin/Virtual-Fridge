@@ -5,7 +5,7 @@ import axios, { AxiosResponse } from 'axios'
 import RecipeEndpoints from '../../api/recipes/endpoints.ts'
 import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query'
 
-export function useGetAllRecipes() {
+export function useGetAllRecipes(isVisible = false, isApproved = false) {
 	return useInfiniteQuery<
 		IGetAllRecipesResponse,
 		IErrorResponse,
@@ -27,8 +27,8 @@ export function useGetAllRecipes() {
 						skip: 0,
 						take: pageParam?.pageSize || 25,
 						cursor: pageParam?.cursor,
-						isVisible: false,
-						isApproved: false,
+						isVisible,
+						isApproved,
 					},
 				})
 				return { recipesData: result.data?.recipesData, cursor: result.data?.cursor }

@@ -35,7 +35,7 @@ export function NavBar() {
 					localStorage.clear()
 					navigate('/auth')
 				}}>
-				Logout
+				Выйти
 			</button>
 			<div className={`${styles.cube_reverse}`}></div>
 		</div>
