@@ -216,6 +216,7 @@ export const RecipesPage = () => {
 												type='number'
 												value={item.quantity}
 												step={1}
+												min={0}
 												onChange={e =>
 													setProductsModal(prev =>
 														prev.map(product => {
@@ -386,6 +387,7 @@ export const RecipesPage = () => {
 												type='number'
 												value={item.quantity}
 												step={1}
+												min={0}
 												onChange={e =>
 													setProductsModal(prev =>
 														prev.map(product => {

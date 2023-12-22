@@ -112,7 +112,7 @@ export function UserCreationForm({
 					<div>
 						<button
 							disabled={
-								!selectedUser ||
+								!selectedUser.userId ||
 								!validData.login ||
 								!validData.password ||
 								selectedUser.login === ''

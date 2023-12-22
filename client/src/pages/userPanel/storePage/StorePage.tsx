@@ -5,7 +5,7 @@ import axios, { AxiosResponse } from 'axios'
 import { useEffect, useState } from 'react'
 import styles from './storePage.module.scss'
 import StoreEndpoints from '../../../api/stores/endpoints.ts'
-import { Currencies, Units } from '../../../api/enums.ts'
+import { Currencies } from '../../../api/enums.ts'
 import queryClient from '../../../query/queryClient.ts'
 import {
 	IUpdateStoreRequest,
@@ -16,6 +16,7 @@ import { useGetAllProducts } from '../../../query/adminPanel/useGetAllProducts.t
 import { useGetStore } from '../../../query/userPanel/useGetStore.ts'
 import { ProductData } from '../../../api/products/common.ts'
 import { SearchInput } from '../../../components/searchInput/SearchInput.tsx'
+import { toast, ToastContainer } from 'react-toastify'
 
 export const UserStorePage = () => {
 	const { userId } = useVirtualStore()
@@ -39,11 +40,14 @@ export const UserStorePage = () => {
 			product: ProductData
 			title: string
 			quantity: number
-			units: Units
 		}[]
 	)
 
-	const { mutateAsync: updateStorage } = useMutation({
+	const {
+		mutateAsync: updateStorage,
+		error: updateStoreError,
+		isError: isUpdateError,
+	} = useMutation<IUpdateStoreResponse | void, IErrorResponse>({
 		mutationFn: async () => {
 			try {
 				if (!data) return
@@ -70,15 +74,14 @@ export const UserStorePage = () => {
 				}>(value => ({
 					price: 0,
 					currency: Currencies.BYN,
-					unit: value.units,
 					expires: undefined,
 					quantity: value.quantity,
 					productId: value.product.id,
 				}))
 
 				const result = await $api.patch<
-					IUpdateStoreResponse | IErrorResponse,
-					AxiosResponse<IUpdateStoreResponse | IErrorResponse>,
+					IUpdateStoreResponse,
+					AxiosResponse<IUpdateStoreResponse>,
 					IUpdateStoreRequest
 				>(`${StoreEndpoints.BASE}${StoreEndpoints.UPDATE}`, {
 					id: data.id,
@@ -115,8 +118,12 @@ export const UserStorePage = () => {
 		},
 	})
 
-	const { mutateAsync: dropProductFromStorage } = useMutation({
-		mutationFn: async (id: number | undefined) => {
+	const {
+		mutateAsync: dropProductFromStorage,
+		error: dropProductError,
+		isError: isDropError,
+	} = useMutation<IUpdateStoreResponse | void, IErrorResponse, number | undefined>({
+		mutationFn: async id => {
 			try {
 				if (!id) return
 				const storageComposition = data?.storeComposition.map<{
@@ -126,7 +133,7 @@ export const UserStorePage = () => {
 					price: number
 					currency: keyof typeof Currencies
 				}>(item => ({
-					productId: id,
+					productId: item.product?.id || 1,
 					quantity: item.quantity,
 					expires: item.expires ?? undefined,
 					price: item.price,
@@ -134,14 +141,14 @@ export const UserStorePage = () => {
 				}))
 
 				const result = await $api.patch<
-					IUpdateStoreResponse | IErrorResponse,
-					AxiosResponse<IUpdateStoreResponse | IErrorResponse>,
+					IUpdateStoreResponse,
+					AxiosResponse<IUpdateStoreResponse>,
 					IUpdateStoreRequest
 				>(`${StoreEndpoints.BASE}${StoreEndpoints.UPDATE}`, {
 					id: data?.id || 1,
 					creatorId: data?.creatorId || 1,
 					storeComposition:
-						storageComposition?.filter(item => item.productId !== id) || [],
+						storageComposition?.filter(item => item?.productId !== id) || [],
 				})
 				return result.data
 			} catch (e) {
@@ -155,6 +162,19 @@ export const UserStorePage = () => {
 			})
 		},
 	})
+
+	useEffect(() => {
+		if (isUpdateError)
+			toast(updateStoreError?.field ?? '' + ' ' + updateStoreError?.message, {
+				type: 'error',
+				theme: 'dark',
+			})
+		if (isDropError)
+			toast(dropProductError?.field ?? '' + ' ' + dropProductError?.message, {
+				type: 'error',
+				theme: 'dark',
+			})
+	}, [isUpdateError, isDropError])
 
 	useEffect(() => {
 		refetch().finally()
@@ -241,7 +261,7 @@ export const UserStorePage = () => {
 																...prev,
 																{
 																	product: product,
-																	units: Units.GRAMS,
+																	// units: Units.GRAMS,
 																	quantity: 0,
 																	title: product.title,
 																},
@@ -280,7 +300,9 @@ export const UserStorePage = () => {
 											<input
 												type='number'
 												value={item.quantity}
-												step={0.01}
+												step={1}
+												min={0}
+												max={30000}
 												onChange={e =>
 													setProductsModal(prev =>
 														prev.map(product => {
@@ -294,7 +316,6 @@ export const UserStorePage = () => {
 													)
 												}
 											/>
-											<p>{item.units}</p>
 											<div
 												onClick={() =>
 													setProductsModal(prev =>
@@ -343,7 +364,10 @@ export const UserStorePage = () => {
 												display: 'flex',
 												justifyContent: 'space-evenly',
 											}}>
-											<div> Кол-во: {item.quantity}</div>
+											<div>
+												{' '}
+												Кол-во: {item.quantity} {item.product?.units}
+											</div>
 										</div>
 										<div>
 											<p>Ккал: {item.product?.calories}</p>
@@ -381,6 +405,7 @@ export const UserStorePage = () => {
 							})
 					)}
 				</div>
+				<ToastContainer />
 			</div>
 		</>
 	)

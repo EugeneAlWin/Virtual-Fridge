@@ -64,7 +64,6 @@ export const UsersPage = () => {
 										<div>
 											<div>
 												<p>Роль: {item.role}</p>
-												<p>В бане: {item.isBanned ? 'да' : 'нет'}</p>
 												<p>В архиве: {item.isArchived ? 'да' : 'нет'}</p>
 												<p>
 													Дата создания:{' '}

@@ -88,6 +88,7 @@ export const ProductsPage = () => {
 								<p>Белки</p>
 								<input
 									type='number'
+									min={0}
 									step={1}
 									max={32767}
 									value={selectedProduct.protein}
@@ -103,6 +104,7 @@ export const ProductsPage = () => {
 								<p>Жиры</p>
 								<input
 									type='number'
+									min={0}
 									step={1}
 									max={32767}
 									value={selectedProduct.fats}
@@ -119,6 +121,7 @@ export const ProductsPage = () => {
 								<input
 									type='number'
 									step={1}
+									min={0}
 									max={32767}
 									value={selectedProduct.carbohydrates}
 									onChange={e =>
@@ -136,6 +139,7 @@ export const ProductsPage = () => {
 									step={1}
 									value={selectedProduct.calories}
 									max={32767}
+									min={0}
 									onChange={e =>
 										setSelectedProduct(prev => ({
 											...prev,
@@ -201,6 +205,7 @@ export const ProductsPage = () => {
 									type='number'
 									step={1}
 									max={32767}
+									min={0}
 									value={newProduct.protein}
 									onChange={e =>
 										setNewProduct(prev => ({
@@ -216,6 +221,7 @@ export const ProductsPage = () => {
 									type='number'
 									step={1}
 									max={32767}
+									min={0}
 									value={newProduct.fats}
 									onChange={e =>
 										setNewProduct(prev => ({
@@ -231,6 +237,7 @@ export const ProductsPage = () => {
 									type='number'
 									step={1}
 									max={32767}
+									min={0}
 									value={newProduct.carbohydrates}
 									onChange={e =>
 										setNewProduct(prev => ({
@@ -246,6 +253,7 @@ export const ProductsPage = () => {
 									type='number'
 									max={32767}
 									step={1}
+									min={0}
 									value={newProduct.calories}
 									onChange={e =>
 										setNewProduct(prev => ({
