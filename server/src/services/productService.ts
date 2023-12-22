@@ -94,7 +94,7 @@ export default class ProductService {
 			select: { title: true },
 		})
 
-		if (productTitle)
+		if (productTitle && productTitle.title !== title)
 			throw UserRequestError.BadRequest('PRODUCT TITLE ALREADY TAKEN')
 
 		return prismaClient.product.update({
