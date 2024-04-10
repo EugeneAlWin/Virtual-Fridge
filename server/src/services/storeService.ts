@@ -1,16 +1,10 @@
-import {
-	IGetStoreByUserIdRequest,
-	IGetStoreByUserIdResponse,
-} from '../api/stores/dto/getStoreByUserId'
 import { IUpdateStoreRequest } from '../api/stores/dto/updateStore'
 import UserRequestError from '../errors/userRequestError'
 import prismaClient from '../prismaClient'
 
 export default class StoreService {
 	//get
-	static getStoreById = async ({
-		creatorId,
-	}: IGetStoreByUserIdRequest): Promise<IGetStoreByUserIdResponse> => {
+	static getStoreById = async (creatorId: number) => {
 		const store = await prismaClient.store.findUnique({
 			where: { creatorId },
 			include: { storeComposition: true },

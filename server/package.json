@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
+    "dev": "bun run ./index.ts",
     "watch": "npx tsc -w",
     "server": "npx nodemon ./dist/index.js",
     "compile": "npx tsc",
@@ -30,11 +31,17 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "@elysiajs/cors": "^1.0.2",
+    "@elysiajs/eden": "^1.0.8",
+    "@elysiajs/jwt": "^1.0.2",
+    "@elysiajs/swagger": "^1.0.3",
     "@prisma/client": "^5.5.0",
     "bcrypt": "^5.1.1",
+    "bun-types": "^1.0.36",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
+    "elysia": "^1.0.10",
     "express": "^4.18.2",
     "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.2"

@@ -1,29 +1,30 @@
 version: '3.8'
 
 services:
-  web:
-    restart: always
-    build:
-      context: ./
-      dockerfile: Dockerfile
-    ports:
-      - '3000:3000'
-      - '3001:3001'
-    networks:
-      - mynetwork
-    depends_on:
-      - db
+
+  #web:
+  #  restart: always
+  #  build:
+  #    context: ./
+  #    dockerfile: Dockerfile
+  #  ports:
+  #   - '3000:3000'
+  #   - '3001:3001'
+  # networks:
+  #   - mynetwork
+  # depends_on:
+  #   - db
   db:
     image: postgres
     restart: always
     environment:
-      POSTGRES_USER: '${USER}'
-      POSTGRES_PASSWORD: '${PASSWORD}'
-      POSTGRES_DB: '${DATABASE}'
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
     ports:
       - '5432:5432'
     volumes:
-      - db_data:/var/lib/postgresql/db_data
+      - ./data/postgres:/var/lib/postgresql/data
     networks:
       - mynetwork
 

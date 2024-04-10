@@ -1,10 +1,6 @@
 import { RequestHandler } from 'express'
 import { IErrorResponse } from '../api/errorResponse'
 import {
-	IGetStoreByUserIdRequest,
-	IGetStoreByUserIdResponse,
-} from '../api/stores/dto/getStoreByUserId'
-import {
 	IUpdateStoreRequest,
 	IUpdateStoreResponse,
 } from '../api/stores/dto/updateStore'
@@ -14,22 +10,10 @@ import StoreService from '../services/storeService'
 
 export default class StoreController {
 	//get
-	static getStoreById: RequestHandler<
-		undefined,
-		IGetStoreByUserIdResponse | IErrorResponse,
-		undefined,
-		IGetStoreByUserIdRequest
-	> = async (req, res, next) => {
-		const errorData = getValidationResult(req)
-		if (errorData) return callUnprocessableEntity(next, errorData)
-
-		try {
-			const result = await StoreService.getStoreById(req.query)
-
-			res.json(result)
-		} catch (e) {
-			return next(e)
-		}
+	static getStoreById = async (creatorId: number) => {
+		const res = await StoreService.getStoreById(creatorId)
+		throw new Error('zalups')
+		return res.storeComposition
 	}
 
 	//update
