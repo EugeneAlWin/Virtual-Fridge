@@ -8,167 +8,206 @@ datasource db {
 }
 
 model User {
-  id             Int              @id @default(autoincrement())
-  login          String           @unique @db.VarChar(30)
-  password       String           @db.VarChar(128)
-  role           Roles            @default(DEFAULT)
-  createdAt      DateTime         @default(now()) @db.Timestamp(6)
-  isArchived     Boolean          @default(false)
-  isBanned       Boolean          @default(false)
-  chosenRecipe   ChosenRecipe[]
-  favoriteRecipe FavoriteRecipe[]
-  product        Product[]
-  recipe         Recipe[]
-  store          Store?
-  userToken      UserToken[]
+  id                 String                     @id @default(cuid())
+  login              String                     @unique @db.VarChar(30)
+  password           String                     @db.VarChar()
+  role               Roles?                     @default(DEFAULT)
+  createdAt          DateTime?                  @default(now()) @db.Timestamp(6)
+  isFrozen           Boolean?                   @default(false)
+  isBlocked          Boolean?                   @default(false)
+  UserToken          UserToken[]
+  Store              Store?
+  Product            Product[]
+  Recipe             Recipe[]
+  ChosenRecipe       SelectedRecipeForCooking[]
+  FavoriteRecipe     FavoriteRecipe[]
+  RecipePullRequest  RecipePullRequest[]
+  ProductPullRequest ProductPullRequest[]
+  Checklist          Checklist[]
+  UserGrade          UserGrade[]
+
+  @@index([login])
 }
 
 model UserToken {
+  userId       String
   deviceId     String
   refreshToken String
-  userId       Int
-  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastLoginAt  DateTime? @updatedAt @db.Timestamp(6)
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, deviceId])
+  @@index([lastLoginAt])
 }
 
 model Store {
-  id               Int                @id @default(autoincrement())
-  title            String?            @db.VarChar(50)
-  creatorId        Int                @unique
+  id               String             @id @default(cuid())
+  creatorId        String             @unique
+  title            String?            @db.VarChar(30)
   user             User               @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-  storeComposition StoreComposition[]
+  StoreComposition StoreComposition[]
+
+  @@index([creatorId], type: Hash)
 }
 
 model StoreComposition {
-  storeId   Int
-  productId Int
-  quantity  Int        @db.SmallInt
-  expires   DateTime?  @db.Timestamp(6)
-  price     Decimal    @db.Money
-  currency  Currencies @default(BYN)
-  product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
-  store     Store      @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  purchaseDate    DateTime? @db.Timestamp(6)
+  expireDate      DateTime  @db.Timestamp(6)
+  storeId         String
+  productId       String
+  productQuantity Int       @db.SmallInt
+  store           Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  product         Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  @@id([storeId, productId])
+  @@unique([expireDate, storeId, productId])
+  @@index([storeId], type: Hash)
+}
+
+model Checklist {
+  id                   String                 @id @default(cuid())
+  creatorId            String
+  createdAt            DateTime               @default(now()) @db.Timestamp(6)
+  isConfirmed          Boolean                @default(false)
+  lastUpdatedAt        DateTime               @default(now()) @updatedAt
+  ChecklistComposition ChecklistComposition[]
+  user                 User                   @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@index([creatorId], type: Hash)
+}
+
+model ChecklistComposition {
+  checklistId     String
+  productId       String
+  productQuantity Int        @db.SmallInt
+  price           Decimal    @default(0) @db.Money
+  currency        Currencies @default(BYN)
+  checklist       Checklist  @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+  product         Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([checklistId, productId])
 }
 
 model Product {
-  id                   Int                    @id @default(autoincrement())
+  id                   String                 @id @default(cuid())
+  creatorId            String?
   title                String                 @unique @db.VarChar(50)
   calories             Int                    @db.SmallInt
   protein              Int                    @db.SmallInt
   fats                 Int                    @db.SmallInt
   carbohydrates        Int                    @db.SmallInt
-  creatorId            Int?
-  isApproved           Boolean                @default(false)
-  units                Units                  @default(ITEMS)
-  checklistComposition ChecklistComposition[]
+  unit                 Units                  @default(GRAMS)
+  isOfficial           Boolean?               @default(false)
+  isFrozen             Boolean?               @default(false)
+  isRecipePossible     Boolean?               @default(false)
   user                 User?                  @relation(fields: [creatorId], references: [id], onDelete: SetNull)
-  recipeComposition    RecipeComposition[]
-  storeComposition     StoreComposition[]
+  StoreComposition     StoreComposition[]
+  ChecklistComposition ChecklistComposition[]
+  RecipeComposition    RecipeComposition[]
+  ProductPullRequest   ProductPullRequest[]
+  Recipe               Recipe[]
+
+  @@index([title])
 }
 
 model Recipe {
-  id                Int                 @id @default(autoincrement())
-  title             String              @db.VarChar(100)
+  id                String                     @id @default(cuid())
+  creatorId         String?
+  productId         String?
+  title             String                     @db.VarChar(100)
   type              RecipeTypes
-  description       String?             @db.VarChar(1000)
-  isVisible         Boolean             @default(false)
-  isApproved        Boolean             @default(false)
-  createdAt         DateTime            @default(now())
-  creatorId         Int?
-  favoriteRecipe    FavoriteRecipe[]
-  user              User?               @relation(fields: [creatorId], references: [id], onDelete: SetNull)
-  recipeComposition RecipeComposition[]
-  chosenRecipe      ChosenRecipe[]
+  description       String?                    @db.VarChar(10000)
+  createdAt         DateTime                   @default(now())
+  isPrivate         Boolean?                   @default(true)
+  isOfficial        Boolean?                   @default(false)
+  isFrozen          Boolean?                   @default(false)
+  user              User?                      @relation(fields: [creatorId], references: [id], onDelete: SetNull)
+  product           Product?                   @relation(fields: [productId], references: [id])
+  RecipeComposition RecipeComposition[]
+  ChosenRecipe      SelectedRecipeForCooking[]
+  FavoriteRecipe    FavoriteRecipe[]
+  RecipePullRequest RecipePullRequest[]
+  RecipeRating      RecipeRating[]
+  UserGrade         UserGrade[]
+
+  @@index([isOfficial, type, title])
 }
 
 model RecipeComposition {
-  recipeId  Int
-  productId Int
+  recipeId  String
+  productId String
   quantity  Int     @db.SmallInt
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   recipe    Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@id([productId, recipeId])
 }
 
-model ChosenRecipe {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  recipeId  Int
-  createdAt DateTime @default(now()) @db.Timestamp(6)
-  isCooked  Boolean  @default(false)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+model RecipeRating {
+  recipeId String @id @default(cuid())
+  rating   Float  @default(0)
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@index([rating])
 }
 
-model FavoriteRecipe {
-  id       Int    @id @default(autoincrement())
-  userId   Int
-  recipeId Int
+model UserGrade {
+  recipeId String
+  userId   String
+  grade    Int
   recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([recipeId, userId])
+  @@id([recipeId, userId])
 }
 
-model Checklist {
-  id                   Int                    @id @default(autoincrement())
-  createdAt            DateTime               @default(now()) @db.Timestamp(6)
-  isConfirmed          Boolean                @default(false)
-  creatorId            Int
-  checklistComposition ChecklistComposition[]
-  checklistPrices      ChecklistPrices?
+model FavoriteRecipe {
+  userId    String
+  recipeId  String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@id([recipeId, userId])
 }
 
-model ChecklistComposition {
-  checklistId Int
-  productId   Int
-  quantity    Int        @db.SmallInt
-  currency    Currencies @default(BYN)
-  price       Decimal    @default(0) @db.Money
-  checklist   Checklist  @relation(fields: [checklistId], references: [id], onDelete: Cascade)
-  product     Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+model SelectedRecipeForCooking {
+  userId        String
+  recipeId      String
+  selectedAt    DateTime @default(now()) @db.Timestamp(6)
+  isCooked      Boolean  @default(false)
+  lastUpdatedAt DateTime @default(now()) @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe        Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
-  @@id([checklistId, productId])
+  @@id([userId, recipeId])
 }
 
-model ChecklistPrices {
-  checklistId Int       @unique
-  USD         Decimal   @default(0) @db.Money
-  BYN         Decimal   @default(0) @db.Money
-  RUB         Decimal   @default(0) @db.Money
-  checklist   Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+model RecipePullRequest {
+  creatorId String
+  recipeId  String  @unique
+  status    Status  @default(PENDING)
+  comment   String? @db.Text
+  user      User    @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  product   Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@index([creatorId], type: Hash)
 }
 
-enum RecipeTypes {
-  VEGETARIAN
-  PASTRIES
-  GARNISHES
-  HOTDISHES
-  HOTAPPETIZERS
-  DESSERTS
-  HOMEMADE
-  BREAKFASTS
-  PRESERVES
-  CHARCOAL
-  BEVERAGES
-  SALADS
-  SAUCESPASTASDRESSINGS
-  SOUPSBROTHS
-  DOUGHS
-  BREAD
-  COLDAPPETIZERS
-  SHASHLIKS
+model ProductPullRequest {
+  creatorId String
+  productId String  @unique
+  status    Status  @default(PENDING)
+  comment   String? @db.Text
+  user      User    @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([creatorId], type: Hash)
 }
 
-enum Units {
-  GRAMS
-  KILOGRAMS
-  ITEMS
-  PIECES
+enum Roles {
+  ADMIN
+  DEFAULT
+  GOD
 }
 
 enum Currencies {
@@ -177,7 +216,41 @@ enum Currencies {
   RUB
 }
 
-enum Roles {
-  ADMIN
-  DEFAULT
+enum RecipeTypes {
+  VEGETARIAN_DISHES
+  BAKING
+  GARNISHES
+  HOT_DISHES
+  HOT_APPETIZERS
+  DESSERTS
+  HOME_MADE_FASTFOOD
+  BREAKFAST
+  PRESERVES
+  CHARCOAL
+  BEVERAGES
+  SALADS
+  SAUCES_PASTAS_AND_DRESSINGS
+  SOUPS_AND_BROTHS
+  DOUGH
+  BREAD
+  COLD_APPETIZERS
+  SHISHKEBABS
+  OTHER
+}
+
+enum Units {
+  GRAMS
+  KILOGRAMS
+  PIECES
+  TABLESPOON
+  TEASPOON
+  LITER
+  MILLILITER
+  PINCH
+}
+
+enum Status {
+  PENDING
+  REJECTED
+  ACCEPTED
 }

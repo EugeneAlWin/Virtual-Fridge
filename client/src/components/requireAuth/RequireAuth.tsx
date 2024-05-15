@@ -1,7 +1,6 @@
+import useVirtualStore from '@client/storage'
 import { ReactNode } from 'react'
-import useVirtualStore from '../../storage'
 import { Navigate } from 'react-router-dom'
-import { Roles } from '../../api/enums.ts'
 
 export const RequireAuth = ({
 	children,

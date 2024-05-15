@@ -7,12 +7,13 @@ import { useNavigate } from 'react-router-dom'
 import { Roles } from '../../api/enums.ts'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { AuthInput } from '../../components/authInput/AuthInput.tsx'
+import { AuthInput } from '@client/components/authInput/AuthInput.tsx'
 
 export const AuthPage = () => {
 	const navigate = useNavigate()
 
 	const { setCredentials } = useVirtualStore()
+
 
 	const [isRegistration, setIsRegistration] = useState(false)
 	const [userCreds, setUserCreds] = useState({
@@ -92,9 +93,8 @@ export const AuthPage = () => {
 									},
 								}))
 							}}
-							className={`${styles.input} ${
-								userCreds.login.isValid ? '' : styles.error
-							}`}
+							className={`${styles.input} ${userCreds.login.isValid ? '' : styles.error
+								}`}
 							errorText={
 								'Логин должен содержать 4-30 латинских символов. ' +
 								'Можно использовать числа'
@@ -119,9 +119,8 @@ export const AuthPage = () => {
 									},
 								}))
 							}}
-							className={`${styles.input} ${
-								userCreds.password.isValid ? undefined : styles.error
-							}`}
+							className={`${styles.input} ${userCreds.password.isValid ? undefined : styles.error
+								}`}
 							errorText={`Пароль должен содержать 8-120 латинских символов, включать символы !@#$%^&*, иметь Хотя бы одну заглавную букву`}
 							hasError={!userCreds.password.isValid}
 						/>
