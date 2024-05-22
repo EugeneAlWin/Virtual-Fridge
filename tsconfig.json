@@ -13,7 +13,7 @@
 		"rootDir": ".",
 		"baseUrl": ".",
 		"moduleResolution": "Bundler",
-		"allowImportingTsExtensions": true,
+		"allowImportingTsExtensions": false,
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"noEmit": true,
