@@ -52,7 +52,7 @@ model Store {
 
 model StoreComposition {
   purchaseDate    DateTime? @db.Timestamp(6)
-  expireDate      DateTime  @db.Timestamp(6)
+  expireDate      DateTime  @default("1970-01-01T00:00:00.00Z") @db.Timestamp(6)
   storeId         String
   productId       String
   productQuantity Int       @db.SmallInt
@@ -88,23 +88,24 @@ model ChecklistComposition {
 }
 
 model Product {
-  id                   String                 @id @default(cuid())
-  creatorId            String?
-  title                String                 @unique @db.VarChar(50)
-  calories             Int                    @db.SmallInt
-  protein              Int                    @db.SmallInt
-  fats                 Int                    @db.SmallInt
-  carbohydrates        Int                    @db.SmallInt
-  unit                 Units                  @default(GRAMS)
-  isOfficial           Boolean?               @default(false)
-  isFrozen             Boolean?               @default(false)
-  isRecipePossible     Boolean?               @default(false)
-  user                 User?                  @relation(fields: [creatorId], references: [id], onDelete: SetNull)
-  StoreComposition     StoreComposition[]
-  ChecklistComposition ChecklistComposition[]
-  RecipeComposition    RecipeComposition[]
-  ProductPullRequest   ProductPullRequest[]
-  Recipe               Recipe[]
+  id                     String                 @id @default(cuid())
+  creatorId              String?
+  title                  String                 @unique @db.VarChar(50)
+  calories               Int                    @db.SmallInt
+  protein                Int                    @db.SmallInt
+  fats                   Int                    @db.SmallInt
+  carbohydrates          Int                    @db.SmallInt
+  unit                   Units                  @default(GRAMS)
+  isOfficial             Boolean?               @default(false)
+  isFrozen               Boolean?               @default(false)
+  isRecipePossible       Boolean?               @default(false)
+  averageShelfLifeInDays Int                    @default(0)
+  user                   User?                  @relation(fields: [creatorId], references: [id], onDelete: SetNull)
+  StoreComposition       StoreComposition[]
+  ChecklistComposition   ChecklistComposition[]
+  RecipeComposition      RecipeComposition[]
+  ProductPullRequest     ProductPullRequest[]
+  Recipe                 Recipe[]
 
   @@index([title])
 }
