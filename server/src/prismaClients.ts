@@ -1,8 +1,6 @@
 import { PrismaClient } from 'prisma/prisma-client'
 
-const prismaClient = new PrismaClient({
+export const publicDBClient = new PrismaClient({
 	errorFormat: 'minimal',
 	log: ['info', 'warn', 'error'],
 })
-
-export default prismaClient
