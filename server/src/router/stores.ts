@@ -2,7 +2,7 @@ import { create } from '@server/services/product'
 import { getInfo, setProducts } from '@server/services/storage'
 import { Elysia, t } from 'elysia'
 
-export const storeRouter = (app: Elysia<'/store'>) =>
+export const stores = (app: Elysia<'/stores'>) =>
 	app
 		.get('/:creatorId', ({ params }) => getInfo(params.creatorId), {
 			params: t.Object({ creatorId: t.String() }),
