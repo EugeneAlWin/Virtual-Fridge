@@ -48,7 +48,7 @@ CREATE TABLE "Store" (
 -- CreateTable
 CREATE TABLE "StoreComposition" (
     "purchaseDate" TIMESTAMP(6),
-    "expireDate" TIMESTAMP(6) NOT NULL,
+    "expireDate" TIMESTAMP(6) NOT NULL DEFAULT '1970-01-01 00:00:00 +00:00',
     "storeId" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
     "productQuantity" SMALLINT NOT NULL
@@ -89,6 +89,7 @@ CREATE TABLE "Product" (
     "isOfficial" BOOLEAN DEFAULT false,
     "isFrozen" BOOLEAN DEFAULT false,
     "isRecipePossible" BOOLEAN DEFAULT false,
+    "averageShelfLifeInDays" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
 );
