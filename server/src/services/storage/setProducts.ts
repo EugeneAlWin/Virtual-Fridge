@@ -20,7 +20,6 @@ export const setProducts = async (
 			},
 			create: product,
 			update: product,
-			select: {},
 		})
 	)
 

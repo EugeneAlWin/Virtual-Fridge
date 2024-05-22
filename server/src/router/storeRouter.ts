@@ -1,48 +1,35 @@
+import { create } from '@server/services/product'
+import { getInfo, setProducts } from '@server/services/storage'
 import { Elysia, t } from 'elysia'
-import { Currencies } from '../api/enums'
-import StoreController from '../controllers/storeController'
 
-// const storeRouter = Router()
-//
-// storeRouter.get(
-// 	StoreEndpoints.GET_BY_ID,
-// 	authMiddleware,
-// 	StoreDataValidator.creatorId(query),
-// 	StoreController.getStoreById
-// )
-//
-// storeRouter.patch(
-// 	StoreEndpoints.UPDATE,
-// 	authMiddleware,
-// 	StoreDataValidator.id(body),
-// 	StoreDataValidator.title(body, true, { max: 50 }),
-// 	StoreDataValidator.StoreCompositionArrayEntries(body),
-// 	StoreController.updateStoreData
-// )
-export const storeRouter = (app: Elysia<'/stores'>) =>
+export const storeRouter = (app: Elysia<'/store'>) =>
 	app
-		.get(
-			'/:creatorId',
-			({ params }) => StoreController.getStoreById(params.creatorId),
-			{
-				params: t.Object({ creatorId: t.Numeric() }),
-			}
+		.get('/:creatorId', ({ params }) => getInfo(params.creatorId), {
+			params: t.Object({ creatorId: t.String() }),
+		})
+		//TODO remove test route
+		.post('/', () =>
+			create({
+				creatorId: 'fd',
+				title: 'sdf',
+				calories: 3,
+				fats: 3,
+				carbohydrates: 4,
+				isFrozen: false,
+				isOfficial: false,
+				protein: 5,
+				unit: 'GRAMS',
+				isRecipePossible: false,
+			})
 		)
-		.patch('/update', ({ body }) => body, {
-			body: t.Object({
-				id: t.Number(),
-				creatorId: t.Number(),
-				title: t.Optional(t.String()),
-				storeComposition: t.Array(
-					t.Object({
-						productId: t.Number(),
-						quantity: t.Number(),
-						expires: t.Optional(
-							t.Nullable(t.Date({ examples: new Date() }))
-						),
-						price: t.Number(),
-						currency: t.Enum(Currencies, { default: Currencies.BYN }),
-					})
-				),
-			}),
+		.patch('/patch', ({ body }) => setProducts(body), {
+			body: t.Array(
+				t.Object({
+					expireDate: t.Date({ examples: new Date() }),
+					storeId: t.String(),
+					productId: t.String(),
+					purchaseDate: t.Optional(t.Date({ examples: new Date() })),
+					productQuantity: t.Number(),
+				})
+			),
 		})

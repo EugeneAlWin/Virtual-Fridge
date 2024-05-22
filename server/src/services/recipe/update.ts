@@ -12,7 +12,7 @@ export const update = async (recipe: IUpdate) => {
 
 	await publicDBClient.recipe.update({
 		where: { id: recipe.id },
-		select: {},
+
 		data: recipe,
 	})
 

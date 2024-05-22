@@ -18,7 +18,6 @@ export const create = async (checklist: ICreate) => {
 			creatorId: checklist.info.creatorId,
 			isConfirmed: checklist.info.isConfirmed,
 		},
-		select: {},
 	})
 
 	return true

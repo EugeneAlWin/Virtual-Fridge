@@ -16,7 +16,6 @@ export const getAll = async ({
 		},
 		cursor: cursor ? { id: cursor } : undefined,
 		take,
-		select: {},
 	})
 
 	return { products: lists, cursor: lists.at(-1)?.id ?? null }

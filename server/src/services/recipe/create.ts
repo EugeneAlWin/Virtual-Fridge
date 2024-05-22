@@ -12,7 +12,6 @@ export const create = async (recipe: ICreate) => {
 
 	await publicDBClient.recipe.create({
 		data: {},
-		select: {},
 	})
 
 	return true

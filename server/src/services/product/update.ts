@@ -14,7 +14,7 @@ export const update = async (product: IUpdate) => {
 
 	await publicDBClient.product.update({
 		where: { id: product.id },
-		select: {},
+
 		data: product,
 	})
 

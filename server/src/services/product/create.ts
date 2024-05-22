@@ -19,7 +19,6 @@ export const create = async (product: ICreate) => {
 
 	await publicDBClient.product.create({
 		data: product,
-		select: {},
 	})
 
 	return true
@@ -32,7 +31,6 @@ interface ICreate {
 	protein: number
 	fats: number
 	carbohydrates: number
-	userId: string
 	isOfficial: boolean
 	isFrozen: boolean
 	isRecipePossible: boolean

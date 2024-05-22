@@ -27,7 +27,6 @@ export const update = async (checklist: IUpdate) => {
 					: undefined,
 				isConfirmed: checklist.info.isConfirmed,
 			},
-			select: {},
 		}),
 	]
 
