@@ -1,35 +1,49 @@
-import { Units } from '@prisma/client'
+import { RecipeTypes } from '@prisma/client'
 import { publicDBClient } from '@server/prismaClients'
 import { NotFoundError } from 'elysia'
+import { filter, isTruthy } from 'remeda'
 
 export const update = async (recipe: IUpdate) => {
 	const recipeInfo = await publicDBClient.recipe.findFirst({
-		where: { id: recipe.id },
+		where: { id: recipe.info.id },
 		select: { title: true },
 	})
 
 	if (!recipeInfo) throw new NotFoundError('Recipe not found')
 
-	await publicDBClient.recipe.update({
-		where: { id: recipe.id },
+	const ops = [
+		recipe.composition &&
+			publicDBClient.recipeComposition.deleteMany({
+				where: { recipeId: recipe.info.id },
+			}),
+		publicDBClient.recipe.update({
+			where: { id: recipe.info.id },
+			data: {
+				...recipe.info,
+				RecipeComposition: recipe.composition
+					? { createMany: { data: recipe.composition } }
+					: undefined,
+			},
+		}),
+	]
 
-		data: recipe,
-	})
-
+	await publicDBClient.$transaction(filter(ops, isTruthy))
 	return true
 }
 
 interface IUpdate {
-	creatorId: string
-	id: string
-	title?: string
-	calories?: number
-	protein?: number
-	fats?: number
-	carbohydrates?: number
-	isOfficial?: boolean
-	isFrozen?: boolean
-	isRecipePossible?: boolean
-	averageShelfLifeInDays?: number
-	unit?: Units
+	info: {
+		id: string
+		creatorId: string
+		title?: string
+		type?: RecipeTypes
+		description?: string
+		isPrivate?: boolean
+		isOfficial?: boolean
+		isFrozen?: boolean
+	}
+	composition?: {
+		productId: string
+		quantity: number
+	}
 }

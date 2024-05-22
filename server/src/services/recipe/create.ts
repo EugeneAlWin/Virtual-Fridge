@@ -1,33 +1,37 @@
-import { Units } from '@prisma/client'
+import { RecipeTypes } from '@prisma/client'
 import { publicDBClient } from '@server/prismaClients'
 import { NotFoundError } from 'elysia'
 
 export const create = async (recipe: ICreate) => {
 	const user = await publicDBClient.user.findUnique({
-		where: { id: recipe.creatorId },
+		where: { id: recipe.info.creatorId },
 		select: { id: true },
 	})
 	if (!user)
-		throw new NotFoundError(`USER WITH ID ${recipe.creatorId} NOT FOUND`)
+		throw new NotFoundError(`USER WITH ID ${recipe.info.creatorId} NOT FOUND`)
 
 	await publicDBClient.recipe.create({
-		data: {},
+		data: {
+			...recipe.info,
+			RecipeComposition: { createMany: { data: recipe.composition } },
+		},
 	})
 
 	return true
 }
 
 interface ICreate {
-	creatorId: string
-	title: string
-	calories: number
-	protein: number
-	fats: number
-	carbohydrates: number
-	userId: string
-	isOfficial: boolean
-	isFrozen: boolean
-	isRecipePossible: boolean
-	averageShelfLifeInDays?: number
-	unit: Units
+	info: {
+		creatorId: string
+		title: string
+		type: RecipeTypes
+		description?: string
+		isPrivate?: boolean
+		isOfficial?: boolean
+		isFrozen?: boolean
+	}
+	composition: {
+		productId: string
+		quantity: number
+	}[]
 }
