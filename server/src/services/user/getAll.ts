@@ -10,10 +10,11 @@ export const getAll = async ({
 	take?: number
 }) => {
 	const users = await publicDBClient.user.findMany({
+		skip: cursor ? 1 : 0,
 		take,
 		cursor: cursor ? { id: cursor } : undefined,
 		where: { login: { contains: login, mode: 'insensitive' } },
 	})
 
-	return { users, cursor: users.at(-1) ?? null }
+	return { users, cursor: users.at(-1)?.id ?? null }
 }

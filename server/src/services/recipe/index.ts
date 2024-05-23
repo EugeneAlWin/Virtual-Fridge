@@ -5,6 +5,5 @@ export * from './getAll'
 export * from './getMany'
 export * from './getOne'
 export * from './update'
-
-export * from './selected/tndex'
+export * from './selected/index'
 export * from './favorite/index'

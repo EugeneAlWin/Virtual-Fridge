@@ -8,10 +8,9 @@ export const checkRefs = async (id: string) => {
 		select: {
 			_count: {
 				select: {
-					StoreComposition: true,
+					StorageComposition: true,
 					ChecklistComposition: true,
 					RecipeComposition: true,
-					Recipe: true,
 					ProductPullRequest: true,
 				},
 			},
@@ -19,10 +18,9 @@ export const checkRefs = async (id: string) => {
 	})
 
 	return (
-		count?._count.StoreComposition ||
+		count?._count.StorageComposition ||
 		count?._count.ChecklistComposition ||
 		count?._count.RecipeComposition ||
-		count?._count.Recipe ||
 		count?._count.ProductPullRequest
 	)
 }

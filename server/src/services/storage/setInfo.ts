@@ -1,16 +1,16 @@
 import { publicDBClient } from '@server/prismaClients'
 import { NotFoundError } from 'elysia'
 
-export const setInfo = async (info: { storeId: string; title: string }) => {
-	const store = await publicDBClient.store.findUnique({
-		where: { id: info.storeId },
+export const setInfo = async (info: { storageId: string; title: string }) => {
+	const store = await publicDBClient.storage.findUnique({
+		where: { id: info.storageId },
 		select: { id: true },
 	})
 	if (!store)
-		throw new NotFoundError(`Store with id ${info.storeId} not found`)
+		throw new NotFoundError(`Storage with id ${info.storageId} not found`)
 
-	await publicDBClient.store.update({
-		where: { id: info.storeId },
+	await publicDBClient.storage.update({
+		where: { id: info.storageId },
 		data: { title: info.title },
 	})
 

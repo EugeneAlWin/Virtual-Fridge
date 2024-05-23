@@ -1,14 +1,24 @@
+import cookie from '@elysiajs/cookie'
+import cors from '@elysiajs/cors'
 import swagger from '@elysiajs/swagger'
 import { CONFIG } from '@server/config'
 import { publicDBClient } from '@server/prismaClients'
-import { stores } from '@server/router/stores'
+import { checklists } from '@server/router/checklists'
+import { products } from '@server/router/products'
+import { recipes } from '@server/router/recipes'
+import { storages } from '@server/router/storages'
 import { users } from '@server/router/users'
 import { Elysia } from 'elysia'
 
 const app = new Elysia()
 	.onError(e => console.log(e))
+	.use(cors({ credentials: true, origin: 'localhost:5173' }))
+	.use(cookie())
 	.group('/users', users)
-	.group('/stores', stores)
+	.group('/products', products)
+	.group('/recipes', recipes)
+	.group('/checklists', checklists)
+	.group('/storages', storages)
 	.use(swagger())
 
 await publicDBClient.$connect()

@@ -1,6 +1,7 @@
 import { publicDBClient } from '@server/prismaClients'
 import { CryptoHasher } from 'bun'
 import { NotFoundError } from 'elysia'
+import TokensCore from 'server/utils/tokensCore'
 
 export const signin = async ({
 	login,
@@ -21,14 +22,17 @@ export const signin = async ({
 	)
 		throw new Error('Wrong password')
 
-	//TODO: gen tokens
-	const refreshToken = ''
+	const { refreshToken, accessToken } = TokensCore.generateTokens({
+		login,
+		role: user.role,
+		deviceId,
+	})
 
-	publicDBClient.userToken.upsert({
+	await publicDBClient.userToken.upsert({
 		where: { userId_deviceId: { userId: user.id, deviceId } },
 		update: { userId: user.id, deviceId, refreshToken },
 		create: { userId: user.id, deviceId, refreshToken },
 	})
 
-	return { refreshToken }
+	return { refreshToken, accessToken, user: { ...user, deviceId } }
 }

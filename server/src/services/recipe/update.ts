@@ -45,5 +45,5 @@ interface IUpdate {
 	composition?: {
 		productId: string
 		quantity: number
-	}
+	}[]
 }

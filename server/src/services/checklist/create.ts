@@ -29,7 +29,7 @@ interface ICreate {
 		price: number
 		currency: Currencies
 		productQuantity: number
-	}
+	}[]
 	info: {
 		creatorId: string
 		isConfirmed?: boolean

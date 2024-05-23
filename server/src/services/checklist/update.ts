@@ -41,7 +41,7 @@ interface IUpdate {
 		price: number
 		currency: Currencies
 		productQuantity: number
-	}
+	}[]
 	info: {
 		creatorId: string
 		checklistId: string

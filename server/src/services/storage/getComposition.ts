@@ -7,14 +7,26 @@ export const getComposition = async ({
 	cursor: {
 		productId: string
 		expireDate: Date
-		storeId: string
+		storageId: string
 	}
 	take?: number
 }) => {
-	return publicDBClient.storeComposition.findMany({
-		where: { storeId: cursor.storeId },
+	const composition = await publicDBClient.storageComposition.findMany({
+		where: { storageId: cursor.storageId },
+		skip: cursor ? 1 : 0,
 		take,
-		cursor: cursor ? { expireDate_storeId_productId: cursor } : undefined,
+		cursor: cursor ? { expireDate_storageId_productId: cursor } : undefined,
 		include: { product: true },
 	})
+	const last = composition.at(-1)
+	return {
+		composition,
+		cursor: last
+			? {
+					productId: last.productId,
+					expireDate: last.expireDate,
+					storageId: last.storageId,
+				}
+			: null,
+	}
 }

@@ -6,7 +6,7 @@ export const getAllFavorites = async ({
 	title,
 }: {
 	title?: string
-	cursor: { userId: string; recipeId: string }
+	cursor: { userId: string; recipeId: string } | null
 	take?: number
 }) => {
 	const recipes = await publicDBClient.favoriteRecipe.findMany({
