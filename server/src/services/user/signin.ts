@@ -3,17 +3,17 @@ import { CryptoHasher } from 'bun'
 import { NotFoundError } from 'elysia'
 
 export const signin = async ({
-	userId,
+	login,
 	deviceId,
 	password,
 }: {
-	userId: string
+	login: string
 	deviceId: string
 	password: string
 }) => {
-	const user = await publicDBClient.user.findUnique({ where: { id: userId } })
+	const user = await publicDBClient.user.findUnique({ where: { login } })
 
-	if (!user) throw new NotFoundError(`User with id ${userId} not found`)
+	if (!user) throw new NotFoundError(`User with login ${login} not found`)
 	if (user.isFrozen) throw new Error('Profile frozen')
 	if (
 		user.password !==
@@ -25,9 +25,9 @@ export const signin = async ({
 	const refreshToken = ''
 
 	publicDBClient.userToken.upsert({
-		where: { userId_deviceId: { userId, deviceId } },
-		update: { userId, deviceId, refreshToken },
-		create: { userId, deviceId, refreshToken },
+		where: { userId_deviceId: { userId: user.id, deviceId } },
+		update: { userId: user.id, deviceId, refreshToken },
+		create: { userId: user.id, deviceId, refreshToken },
 	})
 
 	return { refreshToken }

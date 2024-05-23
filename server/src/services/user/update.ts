@@ -15,7 +15,7 @@ export const update = async ({
 	role?: Roles
 	isBlocked?: boolean
 	isFrozen?: boolean
-}) => {
+}) =>
 	publicDBClient.user.update({
 		where: { id },
 		data: {
@@ -28,4 +28,3 @@ export const update = async ({
 			isFrozen,
 		},
 	})
-}

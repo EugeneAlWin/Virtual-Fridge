@@ -5,8 +5,8 @@ export const getAll = async ({
 	cursor,
 	login,
 }: {
-	cursor: string
-	login: string
+	cursor?: string | null
+	login?: string
 	take?: number
 }) => {
 	const users = await publicDBClient.user.findMany({

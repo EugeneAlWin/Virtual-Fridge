@@ -2,10 +2,12 @@ import swagger from '@elysiajs/swagger'
 import { CONFIG } from '@server/config'
 import { publicDBClient } from '@server/prismaClients'
 import { stores } from '@server/router/stores'
+import { users } from '@server/router/users'
 import { Elysia } from 'elysia'
 
 const app = new Elysia()
 	.onError(e => console.log(e))
+	.group('/users', users)
 	.group('/stores', stores)
 	.use(swagger())
 

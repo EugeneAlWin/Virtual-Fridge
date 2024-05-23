@@ -15,7 +15,7 @@ export const create = async ({
 	isBlocked?: boolean
 	isFrozen?: boolean
 	deviceId: string
-}) => {
+}) =>
 	publicDBClient.user.create({
 		data: {
 			login,
@@ -29,4 +29,3 @@ export const create = async ({
 			Store: { create: {} },
 		},
 	})
-}
