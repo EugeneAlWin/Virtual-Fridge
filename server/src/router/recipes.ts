@@ -38,7 +38,7 @@ export const recipes = (app: RecipeRouterType) =>
 					creatorId: t.String(),
 					title: t.String(),
 					type: t.Enum(RecipeTypes),
-					description: t.String(),
+					description: t.Optional(t.String()),
 					isPrivate: t.Optional(t.Boolean()),
 					isOfficial: t.Optional(t.Boolean()),
 					isFrozen: t.Optional(t.Boolean()),

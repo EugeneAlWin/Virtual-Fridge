@@ -2,6 +2,7 @@ import cookie from '@elysiajs/cookie'
 import cors from '@elysiajs/cors'
 import { Roles } from '@prisma/client'
 import {
+	_delete,
 	create,
 	getAll,
 	getOne,
@@ -48,6 +49,9 @@ export const users = (app: UserRouterType) =>
 				isBlocked: t.Optional(t.Boolean({ default: false })),
 				isFrozen: t.Optional(t.Boolean({ default: false })),
 			}),
+		})
+		.delete('/:id', ({ params }) => _delete(params.id), {
+			params: t.Object({ id: t.String() }),
 		})
 		.post(
 			'/signin',
