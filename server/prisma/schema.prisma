@@ -99,7 +99,7 @@ model Product {
   isOfficial             Boolean?               @default(false)
   isFrozen               Boolean?               @default(false)
   isRecipePossible       Boolean?               @default(false)
-  averageShelfLifeInDays Int                    @default(0)
+  averageShelfLifeInDays Int?
   user                   User?                  @relation(fields: [creatorId], references: [id], onDelete: SetNull)
   StorageComposition     StorageComposition[]
   ChecklistComposition   ChecklistComposition[]
