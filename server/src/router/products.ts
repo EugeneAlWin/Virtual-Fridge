@@ -21,7 +21,7 @@ export const products = (app: ProductRouterType) =>
 		.get('/', ({ query }) => getAll(query), {
 			query: t.Object({
 				cursor: t.Nullable(t.String()),
-				createdAt: t.Optional(t.Date()),
+				title: t.Optional(t.String()),
 				take: t.Optional(t.Number()),
 			}),
 		})
@@ -43,7 +43,6 @@ export const products = (app: ProductRouterType) =>
 		.patch('/', ({ body }) => update(body), {
 			body: t.Object({
 				id: t.String(),
-				creatorId: t.String(),
 				title: t.Optional(t.String()),
 				calories: t.Optional(t.Number()),
 				protein: t.Optional(t.Number()),

@@ -14,7 +14,6 @@ export const update = async (product: IUpdate) => {
 
 	await publicDBClient.product.update({
 		where: { id: product.id },
-
 		data: product,
 	})
 
@@ -22,7 +21,6 @@ export const update = async (product: IUpdate) => {
 }
 
 interface IUpdate {
-	creatorId: string
 	id: string
 	title?: string
 	calories?: number

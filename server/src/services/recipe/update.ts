@@ -34,7 +34,6 @@ export const update = async (recipe: IUpdate) => {
 interface IUpdate {
 	info: {
 		id: string
-		creatorId: string
 		title?: string
 		type?: RecipeTypes
 		description?: string

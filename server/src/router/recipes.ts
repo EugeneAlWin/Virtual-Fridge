@@ -28,7 +28,7 @@ export const recipes = (app: RecipeRouterType) =>
 		.get('/', ({ query }) => getAll(query), {
 			query: t.Object({
 				cursor: t.Nullable(t.String()),
-				createdAt: t.Optional(t.Date()),
+				title: t.Optional(t.String()),
 				take: t.Optional(t.Number()),
 			}),
 		})
@@ -56,7 +56,6 @@ export const recipes = (app: RecipeRouterType) =>
 			body: t.Object({
 				info: t.Object({
 					id: t.String(),
-					creatorId: t.String(),
 					title: t.String(),
 					type: t.Enum(RecipeTypes),
 					description: t.String(),
