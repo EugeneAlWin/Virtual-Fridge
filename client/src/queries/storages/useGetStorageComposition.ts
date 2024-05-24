@@ -24,7 +24,7 @@ export function useGetStorageComposition(storageId: string | null) {
 			} | null
 		},
 		getNextPageParam: lastPage => {
-			if (lastPage?.composition.length ?? 0 < 25) return
+			if ((lastPage?.composition.length ?? 0) < 25) return
 			return {
 				cursor: lastPage?.cursor ?? null,
 				take: 25,

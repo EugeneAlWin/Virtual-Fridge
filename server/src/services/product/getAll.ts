@@ -5,8 +5,8 @@ export const getAll = async ({
 	cursor,
 	take = 25,
 }: {
-	title?: string
-	cursor: string | null
+	title?: string | null
+	cursor?: string | null
 	take?: number
 }) => {
 	const products = await publicDBClient.product.findMany({

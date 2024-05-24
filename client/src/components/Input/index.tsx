@@ -1,16 +1,15 @@
-import styles from './authInput.module.scss'
+import styles from '@client/src/components/Input/input.module.scss'
 import { ChangeEventHandler, InputHTMLAttributes } from 'react'
 
-interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface IInputProps extends InputHTMLAttributes<HTMLInputElement> {
 	value: string
 	onChange: ChangeEventHandler<HTMLInputElement> | undefined
 	id?: string
-	//Checks if an error message should be displayed
 	hasError: boolean
 	errorText: string
 }
 
-export function AuthInput(props: AuthInputProps) {
+export function Input(props: IInputProps) {
 	return (
 		<>
 			<input
@@ -22,7 +21,9 @@ export function AuthInput(props: AuthInputProps) {
 				onChange={props.onChange}
 				className={props.className}
 			/>
-			{props.hasError && <span className={styles.errorText}>{props.errorText}</span>}
+			{props.hasError && (
+				<span className={styles.errorText}>{props.errorText}</span>
+			)}
 		</>
 	)
 }

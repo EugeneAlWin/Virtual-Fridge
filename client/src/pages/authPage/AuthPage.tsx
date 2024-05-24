@@ -1,40 +1,37 @@
+import { useAuth } from '@client/queries/auth/useAuth'
+import { useRegistration } from '@client/queries/auth/useRegistration'
+import useVirtualStore from '@client/storage'
+import { Roles } from '@prisma/client'
 import { useEffect, useState } from 'react'
-import styles from './authPage.module.scss'
-import useVirtualStore from '../../storage'
-import { useAuth } from '../../query/auth/useAuth.ts'
-import { useRegistration } from '../../query/auth/useRegistration.ts'
 import { useNavigate } from 'react-router-dom'
-import { Roles } from '../../api/enums.ts'
 import { toast, ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import { AuthInput } from '@client/components/authInput/AuthInput.tsx'
+import styles from './authPage.module.scss'
 
 export const AuthPage = () => {
 	const navigate = useNavigate()
 
 	const { setCredentials } = useVirtualStore()
 
-
 	const [isRegistration, setIsRegistration] = useState(false)
-	const [userCreds, setUserCreds] = useState({
+	const [userCredentials, setUserCredentials] = useState({
 		login: { value: '', isValid: true },
 		password: { value: '', isValid: true },
 	})
 
 	const {
 		data: loggedUserData,
-		loginUser,
-		isLoginSuccess,
-		isLoginError,
+		mutateAsync: loginUser,
+		isSuccess: isLoginSuccess,
+		isError: isLoginError,
 		error: authError,
 	} = useAuth()
 
 	const {
 		data,
-		registerUser,
+		mutateAsync: registerUser,
 		error: registrationError,
-		isSuccessRegistration,
-		isRegistrationError,
+		isSuccess: isSuccessRegistration,
+		isError: isRegistrationError,
 	} = useRegistration()
 
 	useEffect(() => {
@@ -46,22 +43,27 @@ export const AuthPage = () => {
 	}, [isLoginError, isRegistrationError])
 
 	useEffect(() => {
+		//TODO: wtf
 		if (isSuccessRegistration || isLoginSuccess) {
 			const receivedData = data || loggedUserData
 			if (!receivedData) return
-			localStorage.setItem('accessToken', receivedData.accessToken)
-			localStorage.setItem('deviceId', receivedData.deviceId)
-			localStorage.setItem('userId', receivedData.userId.toString())
-			localStorage.setItem('role', receivedData.role)
-			localStorage.setItem('login', receivedData.login)
+			localStorage.setItem('refreshToken', receivedData.refreshToken)
+			localStorage.setItem('deviceId', receivedData.user.deviceId)
+			localStorage.setItem('userId', receivedData.user.id)
+			localStorage.setItem('role', receivedData.user.role)
+			localStorage.setItem('login', receivedData.user.login)
 			setCredentials({
-				login: receivedData.login,
-				role: receivedData?.role,
-				deviceId: receivedData.deviceId,
-				userId: receivedData.userId.toString(),
+				login: receivedData.user.login,
+				role: receivedData.user.role,
+				deviceId: receivedData.user.deviceId,
+				userId: receivedData.user.id,
 			})
 
-			navigate(receivedData.role === Roles.ADMIN ? '/admin/users/' : '/user/store')
+			navigate(
+				receivedData.user.role === Roles.ADMIN
+					? '/admin/users/'
+					: '/user/store'
+			)
 		}
 	}, [data, isLoginSuccess, isSuccessRegistration, loggedUserData])
 
@@ -76,14 +78,14 @@ export const AuthPage = () => {
 						{isRegistration ? 'Регистрация' : 'Авторизация'}
 					</p>
 					<div className={styles.inputsContainer}>
-						<AuthInput
+						<Input
 							id={'login'}
 							type='text'
 							placeholder={'Введите логин'}
 							maxLength={30}
-							value={userCreds.login.value}
+							value={userCredentials.login.value}
 							onChange={e => {
-								setUserCreds(prev => ({
+								setUserCredentials(prev => ({
 									...prev,
 									login: {
 										value: e.target.value,
@@ -93,23 +95,24 @@ export const AuthPage = () => {
 									},
 								}))
 							}}
-							className={`${styles.input} ${userCreds.login.isValid ? '' : styles.error
-								}`}
+							className={`${styles.input} ${
+								userCredentials.login.isValid ? '' : styles.error
+							}`}
 							errorText={
 								'Логин должен содержать 4-30 латинских символов. ' +
 								'Можно использовать числа'
 							}
-							hasError={!userCreds.login.isValid}
+							hasError={!userCredentials.login.isValid}
 						/>
 						<br />
-						<AuthInput
+						<Input
 							id={'password'}
 							type='password'
 							placeholder={'Введите пароль'}
 							maxLength={120}
-							value={userCreds.password.value}
+							value={userCredentials.password.value}
 							onChange={e => {
-								setUserCreds(prev => ({
+								setUserCredentials(prev => ({
 									...prev,
 									password: {
 										value: e.target.value,
@@ -119,10 +122,13 @@ export const AuthPage = () => {
 									},
 								}))
 							}}
-							className={`${styles.input} ${userCreds.password.isValid ? undefined : styles.error
-								}`}
+							className={`${styles.input} ${
+								userCredentials.password.isValid
+									? undefined
+									: styles.error
+							}`}
 							errorText={`Пароль должен содержать 8-120 латинских символов, включать символы !@#$%^&*, иметь Хотя бы одну заглавную букву`}
-							hasError={!userCreds.password.isValid}
+							hasError={!userCredentials.password.isValid}
 						/>
 					</div>
 					<br />
@@ -131,15 +137,18 @@ export const AuthPage = () => {
 						type={'button'}
 						className={styles.button}
 						disabled={
-							!(userCreds.login.isValid && userCreds.password.isValid) ||
-							!userCreds.login.value ||
-							!userCreds.password.value
+							!(
+								userCredentials.login.isValid &&
+								userCredentials.password.isValid
+							) ||
+							!userCredentials.login.value ||
+							!userCredentials.password.value
 						}
 						onClick={async () => {
 							const action = isRegistration ? registerUser : loginUser
 							await action({
-								login: userCreds.login.value,
-								password: userCreds.password.value,
+								login: userCredentials.login.value,
+								password: userCredentials.password.value,
 							})
 						}}>
 						Отправить

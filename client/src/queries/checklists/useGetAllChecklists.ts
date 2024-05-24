@@ -21,7 +21,7 @@ export function useGetAllChecklists({ createdAt }: { createdAt?: Date }) {
 			cursor: string | null
 		},
 		getNextPageParam: lastPage => {
-			if (lastPage?.products?.length ?? 0 < 25) return
+			if ((lastPage?.products?.length ?? 0) < 25) return
 			return {
 				cursor: lastPage?.cursor ?? null,
 				take: 25,

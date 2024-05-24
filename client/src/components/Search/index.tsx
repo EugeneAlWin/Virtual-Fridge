@@ -1,17 +1,23 @@
 import { ChangeEventHandler, ReactNode } from 'react'
-import styles from './searchInput.module.scss'
+import styles from './search.module.scss'
 
-interface SearchInputProps {
+interface ISearchInputProps {
 	search: string
 	onChange: ChangeEventHandler<HTMLInputElement> | undefined
 	children?: ReactNode
+	label: string
 }
 
-export function SearchInput({ search, onChange, children }: SearchInputProps) {
+export function Search({
+	label,
+	search,
+	onChange,
+	children,
+}: ISearchInputProps) {
 	return (
 		<div className={styles.container}>
 			<div>
-				<p className={styles.text}>Искать</p>
+				<p className={styles.text}>{label}</p>
 				<input
 					className={styles.input}
 					type='text'

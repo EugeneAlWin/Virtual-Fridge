@@ -1,8 +1,9 @@
 import useVirtualStore from '@client/storage'
+import { Roles } from '@prisma/client'
 import { ReactNode } from 'react'
 import { Navigate } from 'react-router-dom'
 
-export const RequireAuth = ({
+export const RequirePermissions = ({
 	children,
 	isRootRequire = false,
 }: {
@@ -10,18 +11,10 @@ export const RequireAuth = ({
 	isRootRequire?: boolean
 }) => {
 	const { checkStorageHealth, role } = useVirtualStore()
+	const health = checkStorageHealth()
 
-	return checkStorageHealth() ? (
-		isRootRequire ? (
-			role === Roles.ADMIN ? (
-				children
-			) : (
-				<Navigate to={'/auth'} />
-			)
-		) : (
-			children
-		)
-	) : (
-		<Navigate to={'/auth'} />
-	)
+	if (!health || (health && isRootRequire && role === Roles.DEFAULT))
+		return <Navigate to={'/auth'} />
+
+	return children
 }

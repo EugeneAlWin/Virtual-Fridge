@@ -25,7 +25,7 @@ export const users = (app: UserRouterType) =>
 		})
 		.get('/', ({ query }) => getAll(query), {
 			query: t.Object({
-				take: t.Optional(t.Number({ minimum: 1 })),
+				take: t.Optional(t.Numeric({ minimum: 1 })),
 				cursor: t.Optional(t.Nullable(t.String())),
 				login: t.Optional(t.String()),
 			}),

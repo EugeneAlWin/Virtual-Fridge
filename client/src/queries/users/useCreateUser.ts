@@ -7,8 +7,8 @@ import { useMutation } from '@tanstack/react-query'
 export function useCreateUser() {
 	return useMutation({
 		mutationFn: async (newUser: {
-			isFrozen?: boolean | undefined
-			isBlocked?: boolean | undefined
+			isFrozen?: boolean
+			isBlocked?: boolean
 			login: string
 			password: string
 			role: Roles

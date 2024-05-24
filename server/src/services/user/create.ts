@@ -26,6 +26,6 @@ export const create = async ({
 			isBlocked,
 			isFrozen,
 			UserToken: { create: { refreshToken: 'genTokenHere', deviceId } },
-			Store: { create: {} },
+			Storage: { create: {} },
 		},
 	})

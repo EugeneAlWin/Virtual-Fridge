@@ -12,7 +12,7 @@ model User {
   login              String                     @unique @db.VarChar(30)
   password           String                     @db.VarChar()
   role               Roles                      @default(DEFAULT)
-  createdAt          DateTime?                  @default(now()) @db.Timestamp(6)
+  createdAt          DateTime                   @default(now()) @db.Timestamp(6)
   isFrozen           Boolean?                   @default(false)
   isBlocked          Boolean?                   @default(false)
   UserToken          UserToken[]

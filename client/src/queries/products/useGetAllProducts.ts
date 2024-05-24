@@ -7,9 +7,9 @@ export function useGetAllProducts({ title }: { title?: string }) {
 		queryFn: async ({ pageParam }) => {
 			const { data, error } = await APIInstance.products.index.get({
 				query: {
-					cursor: pageParam.cursor,
+					...(pageParam.cursor && { cursor: pageParam.cursor }),
 					take: pageParam.take,
-					title,
+					...(title && { title }),
 				},
 			})
 			if (error) throw error

@@ -13,7 +13,9 @@ export const getAll = async ({
 		skip: cursor ? 1 : 0,
 		take,
 		cursor: cursor ? { id: cursor } : undefined,
-		where: { login: { contains: login, mode: 'insensitive' } },
+		where: {
+			login: login ? { contains: login, mode: 'insensitive' } : undefined,
+		},
 	})
 
 	return { users, cursor: users.at(-1)?.id ?? null }

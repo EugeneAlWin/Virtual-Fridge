@@ -1,68 +1,140 @@
-import styles from './productPage.module.scss'
+import { Search } from '@client/components/Search'
+import { useCreateProduct } from '@client/queries/products/useCreateProduct'
+import { useDropProduct } from '@client/queries/products/useDropProduct'
+import { useGetAllProducts } from '@client/queries/products/useGetAllProducts'
+import { useUpdateProduct } from '@client/queries/products/useUpdateProduct'
+import useVirtualStore from '@client/storage'
+import { Units } from '@prisma/client'
 import { useEffect, useState } from 'react'
-import { ICreateProductRequest } from '../../../api/products/dto/createProduct.ts'
-import { IUpdateProductRequest } from '../../../api/products/dto/updateProduct.ts'
-import { useGetAllProducts } from '../../../query/adminPanel/useGetAllProducts.ts'
-import { useDropProduct } from '../../../query/adminPanel/useDropProduct.ts'
-import { SearchInput } from '../../../components/searchInput/SearchInput.tsx'
-import { Units } from '../../../api/enums.ts'
 import { toast, ToastContainer } from 'react-toastify'
-import { useCreateProduct } from '../../../query/adminPanel/useCreateProduct.ts'
-import { useUpdateProduct } from '../../../query/adminPanel/useUpdateProduct.ts'
+import styles from './productPage.module.scss'
 
 export const ProductsPage = () => {
-	const [selectedProduct, setSelectedProduct] = useState<IUpdateProductRequest>(
-		{} as IUpdateProductRequest
+	const { userId } = useVirtualStore()
+	const [selectedProduct, setSelectedProduct] = useState<{
+		id: string
+		creatorId: string | null
+		title: string
+		calories: number
+		protein: number
+		fats: number
+		carbohydrates: number
+		unit: Units
+		isOfficial: boolean | null
+		isFrozen: boolean | null
+		isRecipePossible: boolean | null
+		averageShelfLifeInDays: number | null
+	}>(
+		{} as {
+			id: string
+			creatorId: string | null
+			title: string
+			calories: number
+			protein: number
+			fats: number
+			carbohydrates: number
+			unit: Units
+			isOfficial: boolean | null
+			isFrozen: boolean | null
+			isRecipePossible: boolean | null
+			averageShelfLifeInDays: number | null
+		}
 	)
 
-	const newProductInitState: ICreateProductRequest = {
-		creatorId: 0,
+	const newProductInitState: {
+		averageShelfLifeInDays?: number
+		isFrozen: boolean
+		title: string
+		calories: number
+		protein: number
+		fats: number
+		carbohydrates: number
+		unit: Units
+		isOfficial: boolean
+		creatorId: string
+		isRecipePossible: boolean
+	} = {
 		title: '',
 		carbohydrates: 0,
 		calories: 0,
 		fats: 0,
 		protein: 0,
-		units: 'GRAMS',
+		unit: Units.GRAMS,
+		isOfficial: false,
+		isFrozen: false,
+		isRecipePossible: false,
+		creatorId: userId!,
 	}
 
-	const [newProduct, setNewProduct] =
-		useState<ICreateProductRequest>(newProductInitState)
+	const [newProduct, setNewProduct] = useState<{
+		averageShelfLifeInDays?: number
+		isFrozen: boolean
+		title: string
+		calories: number
+		protein: number
+		fats: number
+		carbohydrates: number
+		unit: Units
+		isOfficial: boolean
+		isRecipePossible: boolean
+		creatorId: string
+	}>(newProductInitState)
 
-	const { data, fetchNextPage, hasNextPage } = useGetAllProducts()
 	const [search, setSearch] = useState('')
+	const { data, fetchNextPage, hasNextPage } = useGetAllProducts({
+		title: search,
+	})
 
-	const { dropProduct } = useDropProduct()
+	const {
+		mutateAsync: dropProduct,
+		isError: isDropError,
+		isSuccess: isDropSuccess,
+	} = useDropProduct()
 
 	const {
 		mutateAsync: createProduct,
 		isError: isCreateError,
-		error: createError,
+		isSuccess: isCreateProductSuccess,
 	} = useCreateProduct()
 
 	const {
 		mutateAsync: updateProduct,
 		isError: isUpdateError,
-		error: updateError,
+		isSuccess: isUpdateProductSuccess,
 	} = useUpdateProduct()
 
 	useEffect(() => {
 		if (isCreateError)
-			toast(createError?.field + ' ' + createError.message, { type: 'error' })
+			toast('Ошибка создания продукта!', {
+				type: 'error',
+			})
 		if (isUpdateError)
-			toast(updateError?.field + ' ' + updateError.message, { type: 'error' })
+			toast('Ошибка обновления продукта!', {
+				type: 'error',
+			})
 	}, [
-		createError?.field,
-		createError?.message,
 		isCreateError,
 		isUpdateError,
-		updateError?.field,
-		updateError?.message,
+		isUpdateProductSuccess,
+		isCreateProductSuccess,
+		isDropError,
+		isDropSuccess,
 	])
-
+	if (!data) return <></>
+	const pages = data.pages.map(page => page.products).flat(1)
 	return (
 		<>
-			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-				<SearchInput search={search} onChange={e => setSearch(e.target.value)} />
+			<div
+				style={{
+					display: 'flex',
+					flexDirection: 'row',
+					justifyContent: 'center',
+				}}>
+				<Search
+					search={search}
+					onChange={e => setSearch(e.target.value)}
+					label={'Найти продукт'}
+				/>
 			</div>
 			<div className={styles.container}>
 				<div className={styles.modal}>
@@ -153,11 +225,11 @@ export const ProductsPage = () => {
 								<select
 									name='unitsselect'
 									id='unitsselectnew'
-									value={selectedProduct.units}
+									value={selectedProduct.unit}
 									onChange={e =>
 										setSelectedProduct(prev => ({
 											...prev,
-											units: e.target.value as Units,
+											unit: e.target.value as Units,
 										}))
 									}>
 									{Object.values(Units).map(unit => (
@@ -169,15 +241,20 @@ export const ProductsPage = () => {
 								<button
 									disabled={selectedProduct.title === ''}
 									onClick={async () => {
-										await updateProduct(selectedProduct)
-										setSelectedProduct({} as IUpdateProductRequest)
+										await updateProduct({
+											isFrozen: selectedProduct?.isFrozen,
+											title: selectedProduct?.title,
+											calories: selectedProduct?.calories,
+											protein: selectedProduct?.protein,
+											fats: selectedProduct?.fats,
+											carbohydrates: selectedProduct?.carbohydrates,
+											id: selectedProduct?.id,
+										})
+										setSelectedProduct({})
 									}}>
 									Сохранить
 								</button>
-								<button
-									onClick={() =>
-										setSelectedProduct({} as IUpdateProductRequest)
-									}>
+								<button onClick={() => setSelectedProduct({})}>
 									Отменить
 								</button>
 							</div>
@@ -268,11 +345,11 @@ export const ProductsPage = () => {
 								<select
 									name='unitsselect'
 									id='unitsselect'
-									value={newProduct.units}
+									value={newProduct.unit}
 									onChange={e =>
 										setNewProduct(prev => ({
 											...prev,
-											units: e.target.value as Units,
+											unit: e.target.value as Units,
 										}))
 									}>
 									{Object.values(Units).map(unit => (
@@ -289,7 +366,8 @@ export const ProductsPage = () => {
 									}}>
 									Сохранить
 								</button>
-								<button onClick={() => setNewProduct(newProductInitState)}>
+								<button
+									onClick={() => setNewProduct(newProductInitState)}>
 									Отменить
 								</button>
 							</div>
@@ -297,48 +375,33 @@ export const ProductsPage = () => {
 					)}
 				</div>
 				<div className={styles.cardsContainer}>
-					{data?.pages.map(page =>
-						page.productsData
-							.filter(item =>
-								item.title.toLowerCase().includes(search.toLowerCase())
-							)
-							.map(item => (
-								<div className={styles.card} key={item.id}>
-									<p>{item.title}</p>
-									<div>
-										<div>
-											<p>Ккал: {item.calories}</p>
-											<p>Б: {item.protein}</p>
-											<p>Ж: {item.fats}</p>
-											<p>У: {item.carbohydrates}</p>
-											<p>Единицы: {item.units}</p>
-										</div>
-										<div className={styles.cardEditBar}>
-											<button
-												onClick={() =>
-													setSelectedProduct({
-														calories: item.calories,
-														carbohydrates: item.carbohydrates,
-														fats: item.fats,
-														id: item.id,
-														protein: item.protein,
-														title: item.title,
-														units: item.units,
-													})
-												}>
-												Редактировать
-											</button>
-											<button
-												className={styles.redButton}
-												onClick={async () => await dropProduct(item.id)}>
-												Удалить навсегда
-											</button>
-										</div>
-									</div>
+					{pages.map(item => (
+						<div className={styles.card} key={item.id}>
+							<p>{item.title}</p>
+							<div>
+								<div>
+									<p>Ккал: {item.calories}</p>
+									<p>Б: {item.protein}</p>
+									<p>Ж: {item.fats}</p>
+									<p>У: {item.carbohydrates}</p>
+									<p>Единицы: {item.unit}</p>
 								</div>
-							))
+								<div className={styles.cardEditBar}>
+									<button onClick={() => setSelectedProduct(item)}>
+										Редактировать
+									</button>
+									<button
+										className={styles.redButton}
+										onClick={async () => await dropProduct(item.id)}>
+										Удалить навсегда
+									</button>
+								</div>
+							</div>
+						</div>
+					))}
+					{hasNextPage && (
+						<button onClick={() => fetchNextPage()}>Ещё</button>
 					)}
-					{hasNextPage && <button onClick={() => fetchNextPage()}>Ещё</button>}
 				</div>
 				<ToastContainer />
 			</div>

@@ -20,9 +20,9 @@ export const products = (app: ProductRouterType) =>
 		})
 		.get('/', ({ query }) => getAll(query), {
 			query: t.Object({
-				cursor: t.Nullable(t.String()),
+				cursor: t.Optional(t.Nullable(t.String())),
 				title: t.Optional(t.String()),
-				take: t.Optional(t.Number()),
+				take: t.Optional(t.Numeric()),
 			}),
 		})
 		.post('/', ({ body }) => create(body), {

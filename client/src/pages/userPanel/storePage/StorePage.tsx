@@ -1,22 +1,11 @@
-import { useMutation } from '@tanstack/react-query'
-import { IErrorResponse } from '../../../api/errorResponse.ts'
-import $api from '../../../query/axios/base.ts'
-import axios, { AxiosResponse } from 'axios'
+import { useGetStorageComposition } from '@client/query/userPanel/useGetStorageComposition.ts'
 import { useEffect, useState } from 'react'
-import styles from './storePage.module.scss'
-import StoreEndpoints from '../../../api/stores/endpoints.ts'
-import { Currencies } from '../../../api/enums.ts'
-import queryClient from '../../../query/queryClient.ts'
-import {
-	IUpdateStoreRequest,
-	IUpdateStoreResponse,
-} from '../../../api/stores/dto/updateStore.ts'
-import useVirtualStore from '../../../storage'
-import { useGetAllProducts } from '../../../query/adminPanel/useGetAllProducts.ts'
-import { useGetStore } from '../../../query/userPanel/useGetStore.ts'
+import { toast, ToastContainer } from 'react-toastify'
 import { ProductData } from '../../../api/products/common.ts'
 import { SearchInput } from '../../../components/searchInput/SearchInput.tsx'
-import { toast, ToastContainer } from 'react-toastify'
+import { useGetAllProducts } from '../../../query/adminPanel/useGetAllProducts.ts'
+import useVirtualStore from '../../../storage'
+import styles from './storePage.module.scss'
 
 export const UserStorePage = () => {
 	const { userId } = useVirtualStore()
@@ -24,7 +13,7 @@ export const UserStorePage = () => {
 	const [search, setSearch] = useState('')
 	const [searchProduct, setSearchProduct] = useState('')
 
-	const { data, error, isLoading } = useGetStore(userId)
+	const { data, error, isLoading } = useGetStorageComposition(userId)
 
 	const [selectedProduct, setSelectedProduct] = useState<{
 		title?: string
@@ -43,137 +32,23 @@ export const UserStorePage = () => {
 		}[]
 	)
 
-	const {
-		mutateAsync: updateStorage,
-		error: updateStoreError,
-		isError: isUpdateError,
-	} = useMutation<IUpdateStoreResponse | void, IErrorResponse>({
-		mutationFn: async () => {
-			try {
-				if (!data) return
-				const storageComposition = data?.storeComposition.map<{
-					productId: number
-					quantity: number
-					expires: Date | undefined
-					price: number
-					currency: keyof typeof Currencies
-				}>(item => ({
-					productId: item.product?.id || 1,
-					quantity: item.quantity,
-					expires: item.expires || undefined,
-					price: item.price,
-					currency: item.currency,
-				}))
-
-				const productsFromModal = productsModal.map<{
-					productId: number
-					quantity: number
-					expires: Date | undefined
-					price: number
-					currency: keyof typeof Currencies
-				}>(value => ({
-					price: 0,
-					currency: Currencies.BYN,
-					expires: undefined,
-					quantity: value.quantity,
-					productId: value.product.id,
-				}))
-
-				const result = await $api.patch<
-					IUpdateStoreResponse,
-					AxiosResponse<IUpdateStoreResponse>,
-					IUpdateStoreRequest
-				>(`${StoreEndpoints.BASE}${StoreEndpoints.UPDATE}`, {
-					id: data.id,
-					creatorId: +userId!,
-					storeComposition: [
-						...storageComposition.filter(
-							item => item.productId !== selectedProduct?.productId
-						),
-						...(selectedProduct
-							? [
-									{
-										productId: selectedProduct.productId || 1,
-										quantity: selectedProduct.quantity || 0,
-										expires: selectedProduct.expires
-											? new Date(selectedProduct.expires)
-											: undefined,
-										price: 0,
-										currency: Currencies.BYN,
-									},
-							  ]
-							: [...productsFromModal]),
-					],
-				})
-				return result.data
-			} catch (e) {
-				if (axios.isAxiosError(e)) throw e?.response?.data
-				throw e
-			}
-		},
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({
-				queryKey: ['store'],
-			})
-		},
-	})
-
-	const {
-		mutateAsync: dropProductFromStorage,
-		error: dropProductError,
-		isError: isDropError,
-	} = useMutation<IUpdateStoreResponse | void, IErrorResponse, number | undefined>({
-		mutationFn: async id => {
-			try {
-				if (!id) return
-				const storageComposition = data?.storeComposition.map<{
-					productId: number
-					quantity: number
-					expires: Date | undefined
-					price: number
-					currency: keyof typeof Currencies
-				}>(item => ({
-					productId: item.product?.id || 1,
-					quantity: item.quantity,
-					expires: item.expires ?? undefined,
-					price: item.price,
-					currency: item.currency,
-				}))
-
-				const result = await $api.patch<
-					IUpdateStoreResponse,
-					AxiosResponse<IUpdateStoreResponse>,
-					IUpdateStoreRequest
-				>(`${StoreEndpoints.BASE}${StoreEndpoints.UPDATE}`, {
-					id: data?.id || 1,
-					creatorId: data?.creatorId || 1,
-					storeComposition:
-						storageComposition?.filter(item => item?.productId !== id) || [],
-				})
-				return result.data
-			} catch (e) {
-				if (axios.isAxiosError(e)) throw e?.response?.data
-				throw e
-			}
-		},
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({
-				queryKey: ['store'],
-			})
-		},
-	})
-
 	useEffect(() => {
 		if (isUpdateError)
-			toast(updateStoreError?.field ?? '' + ' ' + updateStoreError?.message, {
-				type: 'error',
-				theme: 'dark',
-			})
+			toast(
+				updateStoreError?.field ?? '' + ' ' + updateStoreError?.message,
+				{
+					type: 'error',
+					theme: 'dark',
+				}
+			)
 		if (isDropError)
-			toast(dropProductError?.field ?? '' + ' ' + dropProductError?.message, {
-				type: 'error',
-				theme: 'dark',
-			})
+			toast(
+				dropProductError?.field ?? '' + ' ' + dropProductError?.message,
+				{
+					type: 'error',
+					theme: 'dark',
+				}
+			)
 	}, [isUpdateError, isDropError])
 
 	useEffect(() => {
@@ -185,8 +60,16 @@ export const UserStorePage = () => {
 
 	return (
 		<>
-			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-				<SearchInput search={search} onChange={e => setSearch(e.target.value)} />
+			<div
+				style={{
+					display: 'flex',
+					flexDirection: 'row',
+					justifyContent: 'center',
+				}}>
+				<SearchInput
+					search={search}
+					onChange={e => setSearch(e.target.value)}
+				/>
 			</div>
 			<div className={styles.container}>
 				<div className={styles.modal}>
@@ -231,7 +114,9 @@ export const UserStorePage = () => {
 									Сохранить
 								</button>
 
-								<button onClick={() => setSelectedProduct(null)}>Отменить</button>
+								<button onClick={() => setSelectedProduct(null)}>
+									Отменить
+								</button>
 							</div>
 						</>
 					) : (
@@ -253,7 +138,9 @@ export const UserStorePage = () => {
 														setProductsModal(prev => {
 															if (
 																prev.find(
-																	item => item.product.id === product.id
+																	item =>
+																		item.product.id ===
+																		product.id
 																)
 															)
 																return prev
@@ -306,7 +193,10 @@ export const UserStorePage = () => {
 												onChange={e =>
 													setProductsModal(prev =>
 														prev.map(product => {
-															if (product.product.id !== item.product.id)
+															if (
+																product.product.id !==
+																item.product.id
+															)
 																return product
 															return {
 																...product,
@@ -321,7 +211,8 @@ export const UserStorePage = () => {
 													setProductsModal(prev =>
 														prev.filter(
 															product =>
-																product.product.id !== item.product.id
+																product.product.id !==
+																item.product.id
 														)
 													)
 												}>
@@ -339,7 +230,9 @@ export const UserStorePage = () => {
 									}}>
 									Сохранить
 								</button>
-								<button onClick={() => setProductsModal([])}>Отменить</button>
+								<button onClick={() => setProductsModal([])}>
+									Отменить
+								</button>
 							</div>
 						</>
 					)}
@@ -349,11 +242,10 @@ export const UserStorePage = () => {
 						<p style={{ color: 'red' }}>Ничего нет</p>
 					) : (
 						data?.storeComposition
-							.filter(
-								item =>
-									item.product?.title
-										.toLowerCase()
-										.includes(search.toLowerCase())
+							.filter(item =>
+								item.product?.title
+									.toLowerCase()
+									.includes(search.toLowerCase())
 							)
 							.map(item => {
 								return (
@@ -366,7 +258,8 @@ export const UserStorePage = () => {
 											}}>
 											<div>
 												{' '}
-												Кол-во: {item.quantity} {item.product?.units}
+												Кол-во: {item.quantity}{' '}
+												{item.product?.units}
 											</div>
 										</div>
 										<div>
@@ -379,7 +272,9 @@ export const UserStorePage = () => {
 											{item.expires && (
 												<p>
 													Годен до:{' '}
-													{new Date(item.expires).toLocaleDateString()}
+													{new Date(
+														item.expires
+													).toLocaleDateString()}
 												</p>
 											)}
 										</div>
@@ -396,7 +291,9 @@ export const UserStorePage = () => {
 										</button>
 										<button
 											onClick={async () => {
-												await dropProductFromStorage(item.product?.id)
+												await dropProductFromStorage(
+													item.product?.id
+												)
 											}}>
 											X
 										</button>

@@ -1,7 +1,8 @@
 import './App.css'
-import { Navigate, Outlet } from 'react-router-dom'
+import { NavBar } from '@client/components/NavBar'
+import { ProductsPage } from '@client/pages/AdminPanel/productsPage/ProductsPage'
+import { Navigate } from 'react-router-dom'
 import useVirtualStore from './storage'
-import { NavBar } from './components/navBar/NavBar.tsx'
 
 function App() {
 	const { checkStorageHealth } = useVirtualStore()
@@ -10,7 +11,8 @@ function App() {
 	return (
 		<>
 			<NavBar />
-			<Outlet />
+			{/*<Outlet />*/}
+			<ProductsPage />
 		</>
 	)
 }

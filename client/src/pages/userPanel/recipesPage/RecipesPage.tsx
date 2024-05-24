@@ -1,13 +1,13 @@
+import { useGetStorageComposition } from '@client/query/userPanel/useGetStorageComposition.ts'
 import { useEffect, useState } from 'react'
-import styles from './recipesPage.module.scss'
-import useVirtualStore from '../../../storage'
-import { useGetAllRecipes } from '../../../query/adminPanel/useGetAllRecipes.ts'
+import { toast, ToastContainer } from 'react-toastify'
 import { ChecklistCompositionData } from '../../../api/checklists/common.ts'
 import { ProductData } from '../../../api/products/common.ts'
-import { useCreateChecklist } from '../../../query/userPanel/useCreateCheckList.ts'
 import { SearchInput } from '../../../components/searchInput/SearchInput.tsx'
-import { toast, ToastContainer } from 'react-toastify'
-import { useGetStore } from '../../../query/userPanel/useGetStore.ts'
+import { useGetAllRecipes } from '../../../query/adminPanel/useGetAllRecipes.ts'
+import { useCreateChecklist } from '../../../query/userPanel/useCreateCheckList.ts'
+import useVirtualStore from '../../../storage'
+import styles from './recipesPage.module.scss'
 
 export const UserRecipesPage = () => {
 	const { userId } = useVirtualStore()
@@ -19,9 +19,13 @@ export const UserRecipesPage = () => {
 
 	const { data, error, isLoading } = useGetAllRecipes(true)
 
-	const { data: storeData } = useGetStore(userId)
+	const { data: storeData } = useGetStorageComposition(userId)
 
-	const { mutateAsync: createCheckList, isSuccess, isError } = useCreateChecklist(userId)
+	const {
+		mutateAsync: createCheckList,
+		isSuccess,
+		isError,
+	} = useCreateChecklist(userId)
 
 	useEffect(() => {
 		if (isSuccess)
@@ -30,14 +34,22 @@ export const UserRecipesPage = () => {
 				theme: 'dark',
 			})
 		if (isError)
-			toast('Не удалось сформировать список :(', { type: 'error', theme: 'dark' })
+			toast('Не удалось сформировать список :(', {
+				type: 'error',
+				theme: 'dark',
+			})
 	}, [isSuccess, isError])
 
 	if (isLoading) return <h2>Loading...</h2>
 	if (error) return <p>Error</p>
 	return (
 		<>
-			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+			<div
+				style={{
+					display: 'flex',
+					flexDirection: 'row',
+					justifyContent: 'center',
+				}}>
 				<div
 					style={{
 						display: 'flex',
@@ -45,7 +57,10 @@ export const UserRecipesPage = () => {
 						flexDirection: 'row',
 						gap: '5%',
 					}}>
-					<SearchInput search={search} onChange={e => setSearch(e.target.value)} />
+					<SearchInput
+						search={search}
+						onChange={e => setSearch(e.target.value)}
+					/>
 					<button
 						disabled={Object.values(selectedRecipes).every(val => !val)}
 						onClick={async () => {
@@ -78,9 +93,10 @@ export const UserRecipesPage = () => {
 							const checklist = Object.keys(
 								uniqueProducts
 							).map<ChecklistCompositionData | null>(title => {
-								const productFromStore = storeData?.storeComposition.find(
-									i => i.product?.title === title
-								)
+								const productFromStore =
+									storeData?.storeComposition.find(
+										i => i.product?.title === title
+									)
 								if (productFromStore) {
 									return productFromStore.quantity -
 										uniqueProducts[title].quantity <
@@ -93,7 +109,7 @@ export const UserRecipesPage = () => {
 													productFromStore.quantity -
 														uniqueProducts[title].quantity
 												),
-										  }
+											}
 										: null
 								}
 								return {
@@ -110,7 +126,9 @@ export const UserRecipesPage = () => {
 								)
 
 							await createCheckList(
-								checklist.filter(item => !!item) as ChecklistCompositionData[]
+								checklist.filter(
+									item => !!item
+								) as ChecklistCompositionData[]
 							)
 						}}>
 						Сформировать список продуктов
@@ -122,14 +140,18 @@ export const UserRecipesPage = () => {
 					{data?.pages.map(page =>
 						page.recipesData
 							.filter(item =>
-								item.recipe.title.toLowerCase().includes(search.toLowerCase())
+								item.recipe.title
+									.toLowerCase()
+									.includes(search.toLowerCase())
 							)
 							.map(item => (
 								<div
 									className={styles.card}
 									style={{
 										border: `1px solid ${
-											selectedRecipes[item.recipe.id] ? 'red' : 'white'
+											selectedRecipes[item.recipe.id]
+												? 'red'
+												: 'white'
 										}`,
 									}}
 									key={item.recipe.id}
@@ -145,10 +167,13 @@ export const UserRecipesPage = () => {
 											<p>Тип: {item.recipe.type}</p>
 											<p>
 												Дата создания:{' '}
-												{new Date(item.recipe.createdAt).toLocaleDateString()}
+												{new Date(
+													item.recipe.createdAt
+												).toLocaleDateString()}
 											</p>
 											<p>
-												Подтвержден: {item.recipe.isApproved ? 'да' : 'нет'}
+												Подтвержден:{' '}
+												{item.recipe.isApproved ? 'да' : 'нет'}
 											</p>
 											{item.recipe.description && (
 												<p>Описание: {item.recipe.description}</p>
@@ -186,10 +211,15 @@ export const UserRecipesPage = () => {
 																border: '1px solid black',
 																gap: 10,
 															}}>
-															<p>Углеводы: {product.carbohydrates} </p>
+															<p>
+																Углеводы:{' '}
+																{product.carbohydrates}{' '}
+															</p>
 															<p>Калории: {product.calories} </p>
 														</div>
-														<div>Количество: {product.quantity}</div>
+														<div>
+															Количество: {product.quantity}
+														</div>
 													</div>
 												</div>
 											))}

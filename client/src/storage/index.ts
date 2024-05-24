@@ -1,15 +1,15 @@
+import { Roles } from '@prisma/client'
 import { create } from 'zustand'
-import { Roles } from '../api/enums.ts'
 
 const useVirtualStore = create<{
 	userId: string | null
 	deviceId: string | null
-	role: keyof typeof Roles
+	role: Roles
 	login: string | null
 	setCredentials: (params: {
 		userId: string | null
 		deviceId: string | null
-		role: keyof typeof Roles
+		role: Roles
 		login: string | null
 	}) => void
 	checkStorageHealth: () => boolean
