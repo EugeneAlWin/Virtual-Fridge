@@ -3,6 +3,7 @@ import { create } from 'zustand'
 
 const useVirtualStore = create<{
 	userId: string | null
+	storageId: string | null
 	deviceId: string | null
 	role: Roles
 	login: string | null
@@ -11,9 +12,11 @@ const useVirtualStore = create<{
 		deviceId: string | null
 		role: Roles
 		login: string | null
+		storageId: string
 	}) => void
 	checkStorageHealth: () => boolean
 }>((set, get) => ({
+	storageId: localStorage.getItem('storageId'),
 	deviceId: localStorage.getItem('deviceId'),
 	login: localStorage.getItem('login'),
 	role: localStorage.getItem('role') as Roles,

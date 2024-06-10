@@ -1,11 +1,12 @@
-import { APIInstance } from '@client/queries/API'
+import { APIInstance, STATIC_SERVER } from '@client/queries/API'
 import queryClient from '@client/queries/queryClient'
 import { Units } from '@prisma/client'
+import { EntityType } from '@static/types'
 import { useMutation } from '@tanstack/react-query'
 
-export function useCreateProduct() {
+export function useCreateProduct({ onSuccess, image }: ICreateProductProps) {
 	return useMutation({
-		mutationFn: async (newProduct: {
+		mutationFn: async (product: {
 			averageShelfLifeInDays?: number
 			isFrozen: boolean
 			title: string
@@ -18,11 +19,23 @@ export function useCreateProduct() {
 			isOfficial: boolean
 			isRecipePossible: boolean
 		}) => {
-			const { data, error } =
-				await APIInstance.products.index.post(newProduct)
-
+			const { data, error } = await APIInstance.products.index.post(product)
 			if (error) throw error
-			return data
+
+			if (image && data.id) {
+				const { error: photoError } = await STATIC_SERVER.index.post(
+					{ image },
+					{
+						query: {
+							type: EntityType.products,
+							entityId: data.id,
+						},
+					}
+				)
+				if (photoError) throw photoError
+			}
+
+			return { data, photoUploaded: image ? true : undefined }
 		},
 		onSuccess: async () => {
 			await queryClient.invalidateQueries({
@@ -31,6 +44,12 @@ export function useCreateProduct() {
 			await queryClient.invalidateQueries({
 				queryKey: ['recipes'],
 			})
+			onSuccess?.()
 		},
 	})
+}
+
+interface ICreateProductProps {
+	onSuccess?: () => void
+	image?: File
 }

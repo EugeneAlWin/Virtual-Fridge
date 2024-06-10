@@ -1,9 +1,9 @@
 import { APIInstance } from '@client/queries/API'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-export function useGetAllProducts({ title }: { title?: string }) {
+export function useGetAllProducts({ title, enabled = true }: IGetAllProducts) {
 	return useInfiniteQuery({
-		queryKey: ['products'],
+		queryKey: ['products', title],
 		queryFn: async ({ pageParam }) => {
 			const { data, error } = await APIInstance.products.index.get({
 				query: {
@@ -27,6 +27,12 @@ export function useGetAllProducts({ title }: { title?: string }) {
 				take: 25,
 			}
 		},
+		enabled,
 		retry: false,
 	})
+}
+
+interface IGetAllProducts {
+	title?: string
+	enabled?: boolean
 }

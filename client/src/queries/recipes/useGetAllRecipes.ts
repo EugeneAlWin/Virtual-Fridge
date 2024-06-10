@@ -3,13 +3,13 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 
 export function useGetAllRecipes({ title }: { title?: string }) {
 	return useInfiniteQuery({
-		queryKey: ['recipes'],
+		queryKey: ['recipes', title],
 		queryFn: async ({ pageParam }) => {
 			const { data, error } = await APIInstance.recipes.index.get({
 				query: {
-					cursor: pageParam.cursor,
+					...(pageParam.cursor && { cursor: pageParam.cursor }),
 					take: pageParam.take,
-					title,
+					...(title && { title }),
 				},
 			})
 			if (error) throw error
@@ -21,7 +21,7 @@ export function useGetAllRecipes({ title }: { title?: string }) {
 			cursor: string | null
 		},
 		getNextPageParam: lastPage => {
-			if (lastPage.products?.length < 25) return
+			if (lastPage.recipes?.length < 25) return
 			return {
 				cursor: lastPage?.cursor ? lastPage.cursor : null,
 				take: 25,

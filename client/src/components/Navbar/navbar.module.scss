@@ -1,0 +1,88 @@
+.container {
+	width: 300px;
+	border-right: 1px solid #c0bcbc;
+	height: 100%;
+	position: fixed;
+	background: rgb(22, 22, 22);
+	padding: 16px 24px;
+}
+
+.bunker {
+	color: #26d312;
+	text-align: left;
+	font-size: 34px;
+	padding: 16px 0;
+}
+
+.linksContainer {
+	gap: 8px;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+}
+.linkContainer {
+	width: 100%;
+	padding: 8px 8px;
+	display: flex;
+	align-items: center;
+	justify-content: left;
+	flex-direction: row;
+	gap: 8px;
+	border-radius: 5px;
+}
+.activeLink {
+	background: #1c6013;
+	color: white !important;
+}
+.link {
+	text-decoration: none;
+	font-size: 15px;
+	color: inherit;
+}
+
+.upperContainer {
+	height: 70%;
+	border-bottom: 1px solid white;
+}
+
+.accountContainer {
+	display: flex;
+	flex-direction: row;
+	gap: 8px;
+	align-items: center;
+	padding: 16px 4px;
+}
+
+.lowerContainer {
+	height: 30%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+.imageContainer {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background: blueviolet;
+	display: flex;
+	justify-content: center;
+	color: white;
+	align-items: center;
+}
+
+.logoutButton {
+	width: 60%;
+	margin: 0 auto;
+	background: #d50a0a;
+	border-radius: 8px;
+	padding: 8px;
+	color: #ded4d4;
+	cursor: pointer;
+	font-size: 16px;
+}
+
+.listIco {
+	padding: 1px;
+	border-radius: 8px;
+}

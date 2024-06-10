@@ -1,14 +1,14 @@
 import { APIInstance } from '@client/queries/API'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-export function useGetStorageComposition(storageId: string | null) {
+export function useGetStorageComposition(storageId?: string | null) {
 	return useInfiniteQuery({
-		queryKey: ['store'],
+		queryKey: ['storage', storageId],
 		queryFn: async ({ pageParam }) => {
 			const { data, error } = await APIInstance.storages.composition.get({
 				query: {
 					storageId: storageId!,
-					cursor: pageParam.cursor,
+					...(pageParam.cursor && { cursor: pageParam.cursor }),
 					take: pageParam.take,
 				},
 			})
@@ -24,13 +24,13 @@ export function useGetStorageComposition(storageId: string | null) {
 			} | null
 		},
 		getNextPageParam: lastPage => {
-			if ((lastPage?.composition.length ?? 0) < 25) return
+			if ((lastPage?.composition?.length ?? 0) < 25) return
 			return {
-				cursor: lastPage?.cursor ?? null,
+				cursor: null,
 				take: 25,
 			}
 		},
-		refetchOnWindowFocus: true,
+		refetchOnWindowFocus: false,
 		retry: false,
 		enabled: !!storageId,
 	})

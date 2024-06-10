@@ -1,0 +1,30 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	padding: 8px;
+}
+
+.productsContainer {
+	border: 1px solid white;
+	border-radius: 8px;
+	margin: 8px 0;
+	text-align: left;
+	padding: 8px;
+	max-height: 150px;
+	overflow-y: scroll;
+}
+
+.productElement {
+	padding: 2px;
+	&:hover {
+		background: rgba(38, 211, 18, 0.47);
+		border-radius: 4px;
+	}
+}
+
+.selectedProductsContainer {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	gap: 8px;
+}

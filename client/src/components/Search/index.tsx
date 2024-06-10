@@ -1,31 +1,34 @@
-import { ChangeEventHandler, ReactNode } from 'react'
-import styles from './search.module.scss'
+import cancelIcon from '@client/assets/cancel.svg'
+import searchIcon from '@client/assets/search.svg'
+import { Dispatch, ReactNode, SetStateAction, useState } from 'react'
+import s from './search.module.scss'
+
+export function Search({ search, onChange }: ISearchInputProps) {
+	const [isInputInFocus, setIsInputInFocus] = useState(false)
+	return (
+		<div className={`${s.container} ${isInputInFocus && s.activeContainer}`}>
+			<img src={searchIcon} alt={''} width={26} />
+			<input
+				onFocus={() => setIsInputInFocus(true)}
+				onBlur={() => setIsInputInFocus(false)}
+				className={s.input}
+				type='text'
+				onChange={e => onChange(e.target.value)}
+				value={search}
+			/>
+			{search ? (
+				<button className={s.cancelButton} onClick={() => onChange('')}>
+					<img src={cancelIcon} alt={'cancel'} width={24} />
+				</button>
+			) : (
+				<div style={{ width: 26 }} />
+			)}
+		</div>
+	)
+}
 
 interface ISearchInputProps {
 	search: string
-	onChange: ChangeEventHandler<HTMLInputElement> | undefined
+	onChange: Dispatch<SetStateAction<string>>
 	children?: ReactNode
-	label: string
-}
-
-export function Search({
-	label,
-	search,
-	onChange,
-	children,
-}: ISearchInputProps) {
-	return (
-		<div className={styles.container}>
-			<div>
-				<p className={styles.text}>{label}</p>
-				<input
-					className={styles.input}
-					type='text'
-					value={search}
-					onChange={onChange}
-				/>
-			</div>
-			<div>{children}</div>
-		</div>
-	)
 }

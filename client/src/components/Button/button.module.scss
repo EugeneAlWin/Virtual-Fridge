@@ -1,0 +1,15 @@
+.button {
+	display: flex;
+	justify-content: center;
+	background: transparent;
+	padding: 8px 6px;
+	color: white;
+	border-color: #26d312;
+	border-radius: 8px;
+	align-items: center;
+	&:focus {
+		padding: 12px 12px;
+		outline: 5px #1c6013;
+		background: #919191;
+	}
+}

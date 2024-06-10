@@ -23,7 +23,7 @@ export function useSetStorageComposition() {
 		},
 		onSuccess: async () => {
 			await queryClient.invalidateQueries({
-				queryKey: ['store'],
+				queryKey: ['storage'],
 			})
 		},
 	})

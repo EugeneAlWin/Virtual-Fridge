@@ -1,19 +1,19 @@
 import './App.css'
-import { NavBar } from '@client/components/NavBar'
-import { ProductsPage } from '@client/pages/AdminPanel/productsPage/ProductsPage'
-import { Navigate } from 'react-router-dom'
-import useVirtualStore from './storage'
+import { NavBar } from '@client/components/Navbar'
+import useVirtualStore from '@client/storage'
+import { Navigate, Outlet } from 'react-router-dom'
 
 function App() {
 	const { checkStorageHealth } = useVirtualStore()
 
 	if (!checkStorageHealth()) return <Navigate to={'/auth'} />
 	return (
-		<>
+		<div className={'main'}>
 			<NavBar />
-			{/*<Outlet />*/}
-			<ProductsPage />
-		</>
+			<div style={{ width: '100%', marginLeft: '300px', padding: '0 40px' }}>
+				<Outlet />
+			</div>
+		</div>
 	)
 }
 
