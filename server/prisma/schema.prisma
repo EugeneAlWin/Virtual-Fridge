@@ -96,15 +96,16 @@ model Product {
   fats                   Int                    @db.SmallInt
   carbohydrates          Int                    @db.SmallInt
   unit                   Units                  @default(GRAMS)
-  isOfficial             Boolean?               @default(false)
-  isFrozen               Boolean?               @default(false)
-  isRecipePossible       Boolean?               @default(false)
+  isOfficial             Boolean                @default(false)
+  isFrozen               Boolean                @default(false)
+  isRecipePossible       Boolean                @default(false)
   averageShelfLifeInDays Int?
   user                   User?                  @relation(fields: [creatorId], references: [id], onDelete: SetNull)
   StorageComposition     StorageComposition[]
   ChecklistComposition   ChecklistComposition[]
   RecipeComposition      RecipeComposition[]
   ProductPullRequest     ProductPullRequest[]
+  Recipe                 Recipe[]
 
   @@index([title])
 }
@@ -112,14 +113,16 @@ model Product {
 model Recipe {
   id                String                     @id @default(cuid())
   creatorId         String?
-  title             String                     @db.VarChar(100)
+  title             String                     @unique @db.VarChar(100)
   type              RecipeTypes
   description       String?                    @db.VarChar(10000)
   createdAt         DateTime                   @default(now())
-  isPrivate         Boolean?                   @default(true)
-  isOfficial        Boolean?                   @default(false)
-  isFrozen          Boolean?                   @default(false)
+  isPrivate         Boolean                    @default(true)
+  isOfficial        Boolean                    @default(false)
+  isFrozen          Boolean                    @default(false)
+  productRef        String?
   user              User?                      @relation(fields: [creatorId], references: [id], onDelete: SetNull)
+  Product           Product?                   @relation(fields: [productRef], references: [id], onDelete: SetNull)
   RecipeComposition RecipeComposition[]
   ChosenRecipe      SelectedRecipeForCooking[]
   FavoriteRecipe    FavoriteRecipe[]
@@ -237,6 +240,8 @@ enum RecipeTypes {
 }
 
 enum Units {
+  PORTION
+  ITEMS
   GRAMS
   KILOGRAMS
   PIECES
