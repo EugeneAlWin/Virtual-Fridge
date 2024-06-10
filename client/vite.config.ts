@@ -11,6 +11,12 @@ export default defineConfig({
 				find: '@client',
 				replacement: path.resolve(__dirname, 'src'),
 			},
+			{
+				find: '@static',
+				replacement: path.resolve(
+					path.join(__dirname, '..', '/server/static')
+				),
+			},
 		],
 	},
 })

@@ -1,17 +1,18 @@
 {
 	"compilerOptions": {
-		"target": "ES2020",
+		"target": "ESNext",
 		"useDefineForClassFields": true,
 		"lib": ["ES2020", "DOM", "DOM.Iterable"],
 		"module": "ESNext",
 		"skipLibCheck": true,
+		"baseUrl": ".",
 		"paths": {
-			"@server/*": ["./server/src/*"],
+			"@server/*": ["./server/core/*"],
+			"@static/*": ["./server/static/*"],
+			"@shared/*": ["./server/shared/*"],
 			"@client/*": ["./client/src/*"]
 		},
 		/* Bundler mode */
-		"rootDir": ".",
-		"baseUrl": ".",
 		"moduleResolution": "Bundler",
 		"allowImportingTsExtensions": false,
 		"resolveJsonModule": true,
