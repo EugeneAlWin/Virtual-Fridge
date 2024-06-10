@@ -1,7 +1,7 @@
 import { publicDBClient } from '@server/prismaClients'
+import TokensCore from '@shared/utils/tokensCore'
 import { CryptoHasher } from 'bun'
 import { NotFoundError } from 'elysia'
-import TokensCore from 'server/utils/tokensCore'
 
 export const signin = async ({
 	login,
@@ -12,7 +12,10 @@ export const signin = async ({
 	deviceId: string
 	password: string
 }) => {
-	const user = await publicDBClient.user.findUnique({ where: { login } })
+	const user = await publicDBClient.user.findUnique({
+		where: { login },
+		include: { Storage: { select: { id: true } } },
+	})
 
 	if (!user) throw new NotFoundError(`User with login ${login} not found`)
 	if (user.isFrozen) throw new Error('Profile frozen')

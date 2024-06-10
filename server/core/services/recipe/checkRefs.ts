@@ -3,7 +3,7 @@ import { publicDBClient } from '@server/prismaClients'
 //Experimental
 export const checkRefs = async (id: string) => {
 	//TODO: check method
-	const count = await publicDBClient.recipe.findFirst({
+	const count = await publicDBClient.recipe.findUnique({
 		where: { id },
 		select: {
 			_count: {

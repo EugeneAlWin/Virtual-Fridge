@@ -19,7 +19,7 @@ import { Elysia, t } from 'elysia'
 
 export const recipes = (app: RecipeRouterType) =>
 	app
-		.get('/:id', ({ params }) => getOne(params.id), {
+		.get('/one/:id', ({ params }) => getOne(params.id), {
 			params: t.Object({ id: t.String() }),
 		})
 		.get('/many', ({ query }) => getMany(query.ids), {
@@ -27,9 +27,9 @@ export const recipes = (app: RecipeRouterType) =>
 		})
 		.get('/', ({ query }) => getAll(query), {
 			query: t.Object({
-				cursor: t.Nullable(t.String()),
+				cursor: t.Optional(t.String()),
 				title: t.Optional(t.String()),
-				take: t.Optional(t.Number()),
+				take: t.Optional(t.Numeric()),
 			}),
 		})
 		.post('/', ({ body }) => create(body), {

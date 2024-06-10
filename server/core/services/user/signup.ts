@@ -1,7 +1,7 @@
 import { Roles } from '@prisma/client'
 import { publicDBClient } from '@server/prismaClients'
+import TokensCore from '@shared/utils/tokensCore'
 import { NotFoundError } from 'elysia'
-import TokensCore from 'server/utils/tokensCore'
 
 export const signup = async ({
 	login,
@@ -40,6 +40,7 @@ export const signup = async ({
 			UserToken: { create: { refreshToken, deviceId } },
 			Storage: { create: {} },
 		},
+		include: { Storage: { select: { id: true } } },
 	})
 
 	return {

@@ -17,11 +17,9 @@ export const create = async (product: ICreate) => {
 
 	if (productId) throw new Error('PRODUCT TITLE ALREADY TAKEN')
 
-	await publicDBClient.product.create({
+	return publicDBClient.product.create({
 		data: product,
 	})
-
-	return true
 }
 
 interface ICreate {

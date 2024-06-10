@@ -1,5 +1,5 @@
 import cookie from '@elysiajs/cookie'
-import cors from '@elysiajs/cors'
+import { cors } from '@elysiajs/cors'
 import swagger from '@elysiajs/swagger'
 import { CONFIG } from '@server/config'
 import { publicDBClient } from '@server/prismaClients'
@@ -12,7 +12,7 @@ import { Elysia } from 'elysia'
 
 const app = new Elysia()
 	.onError(e => console.log(e))
-	.use(cors({ credentials: true, origin: 'localhost:5173' }))
+	.use(cors({ credentials: true }))
 	.use(cookie())
 	.group('/users', users)
 	.group('/products', products)

@@ -6,7 +6,7 @@ export const getComposition = async ({
 	take = 25,
 }: {
 	storageId: string
-	cursor: {
+	cursor?: {
 		productId: string
 		expireDate: Date
 		storageId: string
