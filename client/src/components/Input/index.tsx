@@ -1,4 +1,9 @@
-import { ChangeEventHandler, HTMLInputTypeAttribute, useState } from 'react'
+import {
+	ChangeEventHandler,
+	HTMLInputTypeAttribute,
+	ReactNode,
+	useState,
+} from 'react'
 import s from './input.module.scss'
 
 export function Input(props: IInputProps) {
@@ -17,9 +22,9 @@ export function Input(props: IInputProps) {
 				className={`${s.input} ${isFocused && s.activeInput} ${props.hasError && s.errorInput}`}
 				min={0}
 			/>
-			<span className={s.errorText}>
+			<div className={s.errorText}>
 				{props.hasError ? props.errorText : ''}
-			</span>
+			</div>
 		</div>
 	)
 }
@@ -29,7 +34,7 @@ interface IInputProps {
 	label: string
 	onChange: ChangeEventHandler<HTMLInputElement> | undefined
 	hasError?: boolean
-	errorText?: string
+	errorText?: string | ReactNode
 	type?: HTMLInputTypeAttribute
 	placeholder: string
 	maxLength?: number

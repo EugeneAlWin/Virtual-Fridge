@@ -2,6 +2,7 @@
 	padding: 4px;
 	display: flex;
 	flex-direction: column;
+	width: 100%;
 }
 
 .label {
@@ -34,5 +35,5 @@
 	text-align: left;
 	margin-left: 5px;
 	font-size: 11pt;
-	height: 16px;
+	min-height: 16px;
 }

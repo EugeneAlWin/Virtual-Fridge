@@ -13,7 +13,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 		<QueryClientProvider client={queryClient}>
 			<ReactQueryDevtools initialIsOpen={false} />
 			<RouterProvider router={browserRouter} />
-			<ToastContainer />
+			<ToastContainer theme={'dark'} />
 		</QueryClientProvider>
 	</React.StrictMode>
 )

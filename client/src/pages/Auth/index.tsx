@@ -1,3 +1,4 @@
+import Button from '@client/components/Button'
 import { Input } from '@client/components/Input'
 import { useAuth } from '@client/queries/auth/useAuth'
 import { useRegistration } from '@client/queries/auth/useRegistration'
@@ -5,7 +6,6 @@ import useVirtualStore from '@client/storage'
 import { Roles } from '@prisma/client'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import styles from './authPage.module.scss'
 
 export const AuthPage = () => {
@@ -23,25 +23,13 @@ export const AuthPage = () => {
 		data: loggedUserData,
 		mutateAsync: loginUser,
 		isSuccess: isLoginSuccess,
-		isError: isLoginError,
-		error: authError,
 	} = useAuth()
 
 	const {
 		data,
 		mutateAsync: registerUser,
-		error: registrationError,
 		isSuccess: isSuccessRegistration,
-		isError: isRegistrationError,
 	} = useRegistration()
-
-	useEffect(() => {
-		if (isLoginError || isRegistrationError)
-			toast.error(authError?.message || registrationError?.message, {
-				autoClose: 5000,
-				theme: 'dark',
-			})
-	}, [isLoginError, isRegistrationError])
 
 	useEffect(() => {
 		//TODO: wtf
@@ -96,8 +84,7 @@ export const AuthPage = () => {
 							}}
 							label={'Логин'}
 							errorText={
-								'Логин должен содержать 4-30 латинских символов. ' +
-								'Можно использовать числа'
+								'Логин должен содержать 4-30 латинских символов'
 							}
 							hasError={!userCredentials.login.isValid}
 						/>
@@ -119,15 +106,36 @@ export const AuthPage = () => {
 									},
 								}))
 							}}
-							errorText={`Пароль должен содержать 8-120 латинских символов, включать символы !@#$%^&*, иметь Хотя бы одну заглавную букву`}
+							errorText={
+								<div
+									style={{
+										display: 'flex',
+										flexDirection: 'column',
+										padding: '2px',
+									}}>
+									<span style={{ color: 'red' }}>
+										Пароль должен содержать 8-120 латинских символов,
+									</span>
+									<span style={{ color: 'red' }}>
+										включать символы !@#$%^&*,
+									</span>
+									<span style={{ color: 'red' }}>
+										иметь хотя бы одну заглавную букву
+									</span>
+								</div>
+							}
 							hasError={!userCredentials.password.isValid}
 						/>
 					</div>
-					<br />
-					<br />
-					<button
-						type={'button'}
-						className={styles.button}
+					<Button
+						text={'Отправить'}
+						action={async () => {
+							const action = isRegistration ? registerUser : loginUser
+							await action({
+								login: userCredentials.login.value,
+								password: userCredentials.password.value,
+							})
+						}}
 						disabled={
 							!(
 								userCredentials.login.isValid &&
@@ -136,17 +144,8 @@ export const AuthPage = () => {
 							!userCredentials.login.value ||
 							!userCredentials.password.value
 						}
-						onClick={async () => {
-							const action = isRegistration ? registerUser : loginUser
-							await action({
-								login: userCredentials.login.value,
-								password: userCredentials.password.value,
-							})
-						}}>
-						Отправить
-					</button>
-					<br />
-					<div>
+					/>
+					<div style={{ padding: '16px', marginTop: '50px' }}>
 						{isRegistration ? (
 							<p>
 								Уже есть аккаунт? Попробуйте{' '}

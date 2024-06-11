@@ -1,6 +1,7 @@
 import { APIInstance } from '@client/queries/API'
 import cuid2 from '@paralleldrive/cuid2'
 import { useMutation } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
 
 export const useRegistration = () => {
 	return useMutation({
@@ -21,5 +22,8 @@ export const useRegistration = () => {
 			return data
 		},
 		retry: false,
+		onError() {
+			toast.error('Пользователь с таким логином уже существует')
+		},
 	})
 }

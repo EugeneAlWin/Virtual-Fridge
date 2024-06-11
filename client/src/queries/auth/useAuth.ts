@@ -1,6 +1,7 @@
 import { APIInstance } from '@client/queries/API'
 import cuid2 from '@paralleldrive/cuid2'
 import { useMutation } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
 
 export const useAuth = () => {
 	return useMutation({
@@ -19,6 +20,9 @@ export const useAuth = () => {
 			})
 			if (error) throw error
 			return data
+		},
+		onError() {
+			toast.error('Неверный логин или пароль')
 		},
 		retry: false,
 	})
