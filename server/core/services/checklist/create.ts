@@ -1,37 +1,74 @@
-import { Currencies } from '@prisma/client'
 import { publicDBClient } from '@server/prismaClients'
 import { NotFoundError } from 'elysia'
 
-export const create = async (checklist: ICreate) => {
+export const create = async ({
+	recipesId,
+	subtractStorage,
+	userId,
+}: ICreate) => {
 	const user = await publicDBClient.user.findUnique({
-		where: { id: checklist.info.creatorId },
+		where: { id: userId },
 		select: { id: true },
 	})
-	if (!user)
-		throw new NotFoundError(
-			`USER WITH ID ${checklist.info.creatorId} NOT FOUND`
-		)
+	if (!user) throw new NotFoundError(`USER WITH ID ${userId} NOT FOUND`)
 
-	await publicDBClient.checklist.create({
-		data: {
-			ChecklistComposition: { createMany: { data: checklist.composition } },
-			creatorId: checklist.info.creatorId,
-			isConfirmed: checklist.info.isConfirmed,
-		},
+	const recipes = await publicDBClient.recipeComposition.findMany({
+		where: { recipeId: { in: recipesId } },
+		select: { recipeId: true, productId: true, quantity: true },
 	})
 
-	return true
+	const productsFromOrigin = new Map(
+		recipes.map(i => [i.productId, i.quantity])
+	)
+	const originProductsId = [...productsFromOrigin.keys()]
+
+	const checklistComposition = productsFromOrigin
+
+	if (subtractStorage) {
+		const storageComposition = await publicDBClient.storage.findUnique({
+			where: { creatorId: userId },
+			select: {
+				StorageComposition: {
+					where: { productId: { in: originProductsId } },
+					select: { productQuantity: true, productId: true },
+				},
+			},
+		})
+
+		if (storageComposition) {
+			const productsFromStorage = new Map(
+				storageComposition.StorageComposition.map(i => [
+					i.productId,
+					i.productQuantity,
+				])
+			)
+			productsFromOrigin.forEach((value, key) => {
+				const productCount = productsFromStorage.has(key)
+					? value - productsFromStorage.get(key)!
+					: value
+				if (productCount <= 0) return
+				checklistComposition.set(key, productCount)
+			})
+		}
+	}
+
+	return publicDBClient.checklist.create({
+		data: {
+			creatorId: userId,
+			ChecklistComposition: {
+				createMany: {
+					data: [...checklistComposition.entries()].map(i => ({
+						productId: i[0],
+						productQuantity: i[1],
+					})),
+				},
+			},
+		},
+	})
 }
 
 interface ICreate {
-	composition: {
-		productId: string
-		price: number
-		currency: Currencies
-		productQuantity: number
-	}[]
-	info: {
-		creatorId: string
-		isConfirmed?: boolean
-	}
+	userId: string
+	subtractStorage: boolean
+	recipesId: string[]
 }

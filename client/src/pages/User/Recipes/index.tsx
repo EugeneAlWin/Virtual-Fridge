@@ -25,7 +25,6 @@ export default function RecipesUserPage() {
 	const [showFullRecipeModalOpen, setShowFullRecipeModalOpen] = useState(false)
 	const [addToChecklistModalOpen, setAddToChecklistModalOpen] = useState(false)
 	const [updateRecipeModalOpen, setUpdateRecipeModalOpen] = useState(false)
-
 	const [selectedRecipes, setSelectedRecipes] = useState<string[]>([])
 	const [selectedRecipeToEdit, setSelectedRecipeToEdit] = useState<{
 		title: string

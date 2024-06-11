@@ -5,7 +5,7 @@ import { RecipesPage } from '@client/pages/Admin/recipesPage/RecipesPage'
 import { UsersPage } from '@client/pages/Admin/UsersPage'
 import { AuthPage } from '@client/pages/Auth'
 import { UserChecklistPage } from '@client/pages/User/checklistPage/ChecklistPage'
-import { UserChecklistsPage } from '@client/pages/User/checklistsPage/ChecklistsPage'
+import ChecklistsUserPage from '@client/pages/User/Checklists'
 import ProductsUserPage from '@client/pages/User/Products'
 import RecipesUserPage from '@client/pages/User/Recipes'
 import StorageUserPage from '@client/pages/User/Storage'
@@ -44,7 +44,7 @@ export const browserRouter = createBrowserRouter([
 				path: 'user/checklists/',
 				element: (
 					<RequirePermissions>
-						<UserChecklistsPage />
+						<ChecklistsUserPage />
 					</RequirePermissions>
 				),
 			},

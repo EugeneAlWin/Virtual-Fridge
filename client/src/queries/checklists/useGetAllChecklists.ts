@@ -3,13 +3,13 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 
 export function useGetAllChecklists({ createdAt }: { createdAt?: Date }) {
 	return useInfiniteQuery({
-		queryKey: ['checklists'],
+		queryKey: ['checklists', createdAt],
 		queryFn: async ({ pageParam }) => {
 			const { data, error } = await APIInstance.checklists.index.get({
 				query: {
-					cursor: pageParam.cursor,
-					createdAt,
-					take: pageParam.take,
+					...(pageParam.cursor && { cursor: pageParam.cursor }),
+					...(createdAt && { createdAt }),
+					...(pageParam.take && { take: pageParam.take }),
 				},
 			})
 
@@ -21,7 +21,7 @@ export function useGetAllChecklists({ createdAt }: { createdAt?: Date }) {
 			cursor: string | null
 		},
 		getNextPageParam: lastPage => {
-			if ((lastPage?.products?.length ?? 0) < 25) return
+			if ((lastPage?.lists?.length ?? 0) < 25) return
 			return {
 				cursor: lastPage?.cursor ?? null,
 				take: 25,

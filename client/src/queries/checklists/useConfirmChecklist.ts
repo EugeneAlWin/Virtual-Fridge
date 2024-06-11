@@ -1,16 +1,16 @@
 import { APIInstance } from '@client/queries/API'
 import queryClient from '@client/queries/queryClient'
 import { useMutation } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
 
-export function useCreateChecklist({ onSuccess }: ICreateChecklistProps) {
+export function useConfirmChecklist({ onSuccess }: IConfirmChecklistProps) {
 	return useMutation({
 		mutationFn: async (checklist: {
 			userId: string
-			subtractStorage: boolean
-			recipesId: string[]
+			checklistId: string
 		}) => {
 			const { data, error } =
-				await APIInstance.checklists.index.post(checklist)
+				await APIInstance.checklists.confirm.patch(checklist)
 
 			if (error) throw error
 			return data
@@ -19,11 +19,12 @@ export function useCreateChecklist({ onSuccess }: ICreateChecklistProps) {
 			await queryClient.invalidateQueries({
 				queryKey: ['checklist'],
 			})
+			toast.success('Хранилище обновлено. Покупка подтверждена!')
 			onSuccess?.()
 		},
 	})
 }
 
-interface ICreateChecklistProps {
+interface IConfirmChecklistProps {
 	onSuccess?: () => void
 }

@@ -1,6 +1,7 @@
 import { Currencies } from '@prisma/client'
 import {
 	_delete,
+	confirm,
 	create,
 	getAll,
 	getMany,
@@ -19,25 +20,16 @@ export const checklists = (app: ChecklistRouterType) =>
 		})
 		.get('/', ({ query }) => getAll(query), {
 			query: t.Object({
-				cursor: t.Nullable(t.String()),
+				cursor: t.Optional(t.String()),
 				createdAt: t.Optional(t.Date()),
-				take: t.Optional(t.Number()),
+				take: t.Optional(t.Numeric()),
 			}),
 		})
 		.post('/', ({ body }) => create(body), {
 			body: t.Object({
-				composition: t.Array(
-					t.Object({
-						productId: t.String(),
-						price: t.Number(),
-						currency: t.Enum(Currencies, { default: Currencies.BYN }),
-						productQuantity: t.Number(),
-					})
-				),
-				info: t.Object({
-					creatorId: t.String(),
-					isConfirmed: t.Optional(t.Boolean()),
-				}),
+				userId: t.String(),
+				subtractStorage: t.Boolean(),
+				recipesId: t.Array(t.String()),
 			}),
 		})
 		.patch('/', ({ body }) => update(body), {
@@ -57,6 +49,12 @@ export const checklists = (app: ChecklistRouterType) =>
 					creatorId: t.String(),
 					isConfirmed: t.Optional(t.Boolean()),
 				}),
+			}),
+		})
+		.patch('/confirm', ({ body }) => confirm(body), {
+			body: t.Object({
+				userId: t.String(),
+				checklistId: t.String(),
 			}),
 		})
 		.delete('/:id', ({ params }) => _delete(params.id), {

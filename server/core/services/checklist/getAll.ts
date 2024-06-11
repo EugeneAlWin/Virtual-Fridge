@@ -6,7 +6,7 @@ export const getAll = async ({
 	take = 25,
 }: {
 	createdAt?: Date
-	cursor: string | null
+	cursor?: string | null
 	take?: number
 }) => {
 	const lists = await publicDBClient.checklist.findMany({
@@ -18,5 +18,5 @@ export const getAll = async ({
 		take,
 	})
 
-	return { products: lists, cursor: lists.at(-1)?.id ?? null }
+	return { lists, cursor: lists.at(-1)?.id ?? null }
 }
