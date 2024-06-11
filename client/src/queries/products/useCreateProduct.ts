@@ -3,6 +3,7 @@ import queryClient from '@client/queries/queryClient'
 import { Units } from '@prisma/client'
 import { EntityType } from '@static/types'
 import { useMutation } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
 
 export function useCreateProduct({ onSuccess, image }: ICreateProductProps) {
 	return useMutation({
@@ -45,6 +46,7 @@ export function useCreateProduct({ onSuccess, image }: ICreateProductProps) {
 				queryKey: ['recipes'],
 			})
 			onSuccess?.()
+			toast.success('Продукт успешно добавлен.')
 		},
 	})
 }

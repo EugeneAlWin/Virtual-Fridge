@@ -9,13 +9,18 @@ import s from './recipeCard.module.scss'
 export default function RecipeCard({
 	recipeInfo,
 	onEditPress,
-	onAddToStoragePress,
+	selected,
+	onShowFullRecipe,
+	onSelect,
 }: IProductCardProps) {
 	const { mutateAsync } = useDropProduct({})
 	const { userId } = useVirtualStore()
 	return (
 		<div>
-			<div className={s.container}>
+			<div
+				onClick={onSelect}
+				className={s.container}
+				style={{ borderColor: selected ? '#26d312' : undefined }}>
 				<img
 					src={`http://localhost:3005/${EntityType.recipes}/${recipeInfo.id}?t=${new Date().getTime()}`}
 					className={s.image}
@@ -30,7 +35,7 @@ export default function RecipeCard({
 					<p>{recipeInfo.type}</p>
 				</div>
 				<div className={s.controls}>
-					<Button text={'Приготовить...'} action={onAddToStoragePress} />
+					<Button text={'Подробнее...'} action={onShowFullRecipe} />
 					{userId === recipeInfo.creatorId && (
 						<>
 							<Button
@@ -52,7 +57,8 @@ export default function RecipeCard({
 
 interface IProductCardProps {
 	onEditPress: () => void
-	onAddToStoragePress: () => void
+	selected?: boolean
+	onShowFullRecipe: () => void
 	recipeInfo: {
 		id: string
 		creatorId: string | null
@@ -64,4 +70,5 @@ interface IProductCardProps {
 		isOfficial: boolean
 		isFrozen: boolean
 	}
+	onSelect?: () => void
 }

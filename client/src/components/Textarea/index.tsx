@@ -7,6 +7,7 @@ export default function Textarea(props: ITextAreaProps) {
 		<div>
 			<p className={s.label}>{props.label}</p>
 			<textarea
+				contentEditable={props.editable}
 				value={props.value}
 				onChange={props.onChange}
 				className={`${s.textarea} ${isFocused && s.areaActive}`}
@@ -21,4 +22,5 @@ interface ITextAreaProps {
 	label: string
 	onChange: ChangeEventHandler<HTMLTextAreaElement>
 	value: string
+	editable?: boolean
 }

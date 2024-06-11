@@ -12,11 +12,21 @@ const CreateRecipeModal = lazy(
 const UpdateRecipeModal = lazy(
 	() => import('@client/modals/recipes/UpdateRecipeModal')
 )
+const AddToChecklistModal = lazy(
+	() => import('@client/modals/recipes/AddToChecklistModal')
+)
+const ShowFullRecipeModal = lazy(
+	() => import('@client/modals/recipes/ShowFullRecipeModal')
+)
 
 export default function RecipesUserPage() {
 	const [search, setSearch] = useState('')
 	const [createRecipeModalOpen, setCreateRecipeModalOpen] = useState(false)
+	const [showFullRecipeModalOpen, setShowFullRecipeModalOpen] = useState(false)
+	const [addToChecklistModalOpen, setAddToChecklistModalOpen] = useState(false)
 	const [updateRecipeModalOpen, setUpdateRecipeModalOpen] = useState(false)
+
+	const [selectedRecipes, setSelectedRecipes] = useState<string[]>([])
 	const [selectedRecipeToEdit, setSelectedRecipeToEdit] = useState<{
 		title: string
 		isOfficial: boolean
@@ -41,6 +51,12 @@ export default function RecipesUserPage() {
 	return (
 		<>
 			<Header title={'Рецепты'}>
+				{selectedRecipes.length > 0 && (
+					<Button
+						text={'Создать список покупок'}
+						action={() => setAddToChecklistModalOpen(true)}
+					/>
+				)}
 				<Button
 					text={'Создать рецепт'}
 					action={() => setCreateRecipeModalOpen(true)}
@@ -54,14 +70,29 @@ export default function RecipesUserPage() {
 				}}>
 				{recipes?.map(recipe => (
 					<RecipeCard
-						// onAddToStoragePress={() => {
-						// 	setProductToAdd({
-						// 		title: recipe.title,
-						// 		productId: recipe.id,
-						// 		unit: recipe.unit,
-						// 	})
-						// 	setAddToStorageModalOpen(true)
-						// }}
+						//TODO: optimize
+						selected={selectedRecipes.includes(recipe.id)}
+						onSelect={() => {
+							setSelectedRecipes(prev =>
+								selectedRecipes.find(id => id === recipe.id)
+									? [...prev.filter(id => id !== recipe.id)]
+									: [...prev, recipe.id]
+							)
+						}}
+						onShowFullRecipe={() => {
+							setSelectedRecipeToEdit({
+								isFrozen: recipe.isFrozen,
+								title: recipe.title,
+								type: recipe.type,
+								description: recipe.description || '',
+								isOfficial: recipe.isOfficial,
+								isPrivate: recipe.isPrivate,
+								creatorId: recipe.creatorId,
+								id: recipe.id,
+								composition: recipe.RecipeComposition,
+							})
+							setShowFullRecipeModalOpen(true)
+						}}
 						onEditPress={() => {
 							setSelectedRecipeToEdit({
 								isFrozen: recipe.isFrozen,
@@ -93,6 +124,22 @@ export default function RecipesUserPage() {
 					<UpdateRecipeModal
 						initialState={selectedRecipeToEdit}
 						onCloseModal={() => setUpdateRecipeModalOpen(false)}
+					/>
+				</Suspense>
+			)}
+			{showFullRecipeModalOpen && selectedRecipeToEdit && (
+				<Suspense fallback={<div>Loading...</div>}>
+					<ShowFullRecipeModal
+						recipeInfo={selectedRecipeToEdit}
+						onCloseModal={() => setShowFullRecipeModalOpen(false)}
+					/>
+				</Suspense>
+			)}
+			{addToChecklistModalOpen && selectedRecipes && (
+				<Suspense fallback={<div>Loading...</div>}>
+					<AddToChecklistModal
+						recipesId={selectedRecipes}
+						onCloseModal={() => setAddToChecklistModalOpen(false)}
 					/>
 				</Suspense>
 			)}

@@ -109,7 +109,11 @@ export default function CreateRecipeModal({
 						{!!selectedProducts.size && (
 							<table
 								border={1}
-								style={{ borderColor: '#26d312', color: 'white' }}>
+								style={{
+									borderColor: '#26d312',
+									color: 'white',
+									borderCollapse: 'collapse',
+								}}>
 								<thead>
 									<tr>
 										<th>Название</th>
