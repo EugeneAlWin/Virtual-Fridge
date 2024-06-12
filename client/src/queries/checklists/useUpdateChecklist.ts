@@ -1,22 +1,14 @@
 import { APIInstance } from '@client/queries/API'
 import queryClient from '@client/queries/queryClient'
-import { Currencies } from '@prisma/client'
 import { useMutation } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
 
-export function useUpdateChecklist() {
+export function useUpdateChecklist({ onSuccess }: IUpdateChecklistProps) {
 	return useMutation({
 		mutationFn: async (checklist: {
-			composition?: {
-				productId: string
-				price: number
-				currency: Currencies
-				productQuantity: number
-			}[]
-			info: {
-				isConfirmed?: boolean
-				creatorId: string
-				checklistId: string
-			}
+			checklistId: string
+			userId: string
+			products: { id: string; quantity: number }[]
 		}) => {
 			const { data, error } =
 				await APIInstance.checklists.index.patch(checklist)
@@ -28,6 +20,12 @@ export function useUpdateChecklist() {
 			await queryClient.invalidateQueries({
 				queryKey: ['checklist'],
 			})
+			toast.success('Список обновлен успешно!')
+			onSuccess?.()
 		},
 	})
+}
+
+interface IUpdateChecklistProps {
+	onSuccess?: () => void
 }

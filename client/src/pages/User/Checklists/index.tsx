@@ -1,33 +1,51 @@
-import Button from '@client/components/Button'
 import ChecklistCard from '@client/components/ChecklistCard'
 import Header from '@client/components/Header'
-import { Search } from '@client/components/Search'
 import { useConfirmChecklist } from '@client/queries/checklists/useConfirmChecklist'
+import { useUpdateChecklist } from '@client/queries/checklists/useDropChecklist'
 import { useGetAllChecklists } from '@client/queries/checklists/useGetAllChecklists'
 import useVirtualStore from '@client/storage'
-import { useState } from 'react'
+import { Currencies, Units } from '@prisma/client'
+import { Decimal } from '@prisma/client/runtime/library'
+import { lazy, Suspense, useState } from 'react'
+
+const ShowFullChecklistModal = lazy(
+	() => import('@client/modals/checklists/ShowFullChecklistModal')
+)
+const UpdateChecklistModal = lazy(
+	() => import('@client/modals/checklists/UpdateChecklistModal')
+)
 
 export default function ChecklistsUserPage() {
-	const [search, setSearch] = useState('')
 	const { userId } = useVirtualStore()
-	// const [createProductModalOpen, setCreateProductModalOpen] = useState(false)
-
+	const [updateChecklistModalOpen, setUpdateChecklistModalOpen] =
+		useState(false)
+	const [showFullChecklistModalOpen, setShowFullChecklistModalOpen] =
+		useState(false)
+	const [selectedChecklist, setSelectedChecklist] = useState<{
+		id: string
+		creatorId: string
+		createdAt: Date
+		isConfirmed: boolean
+		lastUpdatedAt: Date
+		ChecklistComposition: {
+			product: { title: string; unit: Units }
+			checklistId: string
+			productId: string
+			productQuantity: number
+			price: Decimal
+			currency: Currencies
+		}[]
+	}>()
 	const { data: checkListPages } = useGetAllChecklists({})
 	const checklists = checkListPages?.pages.map(page => page.lists).flat()
-	// .filter(product =>
-	// 	product.title.toLowerCase().includes(search.toLowerCase())
-	// )
+
+	const { mutateAsync: dropChecklist } = useUpdateChecklist({})
 	const { mutateAsync } = useConfirmChecklist({})
+
 	return (
 		<>
-			<Header title={'Списки покупок'}>
-				<Button
-					text={'Создать список'}
-					// action={() => setCreateProductModalOpen(true)}
-				/>
-				<Search search={search} onChange={setSearch} />
-			</Header>
-
+			<Header title={'Списки покупок'}></Header>
+			{!checklists?.length && <h1>Пусто</h1>}
 			<div
 				style={{
 					flexWrap: 'wrap',
@@ -35,36 +53,42 @@ export default function ChecklistsUserPage() {
 				}}>
 				{checklists?.map(checklist => (
 					<ChecklistCard
+						onDrop={() => dropChecklist({ checklistId: checklist.id })}
 						onConfirm={async () => {
 							await mutateAsync({
 								userId: userId!,
 								checklistId: checklist.id,
 							})
 						}}
-						// onEditPress={() => {
-						// 	setProductToEdit(checklist)
-						// 	setUpdateProductModalOpen(true)
-						// }}
+						onShow={() => {
+							setSelectedChecklist(checklist)
+							setShowFullChecklistModalOpen(true)
+						}}
+						onEdit={() => {
+							setSelectedChecklist(checklist)
+							setUpdateChecklistModalOpen(true)
+						}}
 						checklistInfo={checklist}
 						key={checklist.id}
 					/>
 				))}
 			</div>
-			{/*{createProductModalOpen && (*/}
-			{/*	<Suspense fallback={<div>Loading...</div>}>*/}
-			{/*		<CreateProductModal*/}
-			{/*			onCloseModal={() => setCreateProductModalOpen(false)}*/}
-			{/*		/>*/}
-			{/*	</Suspense>*/}
-			{/*)}*/}
-			{/*{updateProductModalOpen && productToEdit && (*/}
-			{/*	<Suspense fallback={<div>Loading...</div>}>*/}
-			{/*		<UpdateProductModal*/}
-			{/*			initialState={productToEdit}*/}
-			{/*			onCloseModal={() => setUpdateProductModalOpen(false)}*/}
-			{/*		/>*/}
-			{/*	</Suspense>*/}
-			{/*)}*/}
+			{updateChecklistModalOpen && selectedChecklist && (
+				<Suspense fallback={<div>Loading...</div>}>
+					<UpdateChecklistModal
+						checklistInfo={selectedChecklist}
+						onCloseModal={() => setUpdateChecklistModalOpen(false)}
+					/>
+				</Suspense>
+			)}
+			{showFullChecklistModalOpen && selectedChecklist && (
+				<Suspense fallback={<div>Loading...</div>}>
+					<ShowFullChecklistModal
+						checklistInfo={selectedChecklist}
+						onCloseModal={() => setShowFullChecklistModalOpen(false)}
+					/>
+				</Suspense>
+			)}
 		</>
 	)
 }

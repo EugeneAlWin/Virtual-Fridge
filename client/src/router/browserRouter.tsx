@@ -1,10 +1,7 @@
 import App from '@client/App'
 import { RequirePermissions } from '@client/components/RequirePermissions'
-import { ProductsPage } from '@client/pages/Admin/productsPage/ProductsPage'
-import { RecipesPage } from '@client/pages/Admin/recipesPage/RecipesPage'
-import { UsersPage } from '@client/pages/Admin/UsersPage'
+import { UsersAdminPage } from '@client/pages/Admin/Users'
 import { AuthPage } from '@client/pages/Auth'
-import { UserChecklistPage } from '@client/pages/User/checklistPage/ChecklistPage'
 import ChecklistsUserPage from '@client/pages/User/Checklists'
 import ProductsUserPage from '@client/pages/User/Products'
 import RecipesUserPage from '@client/pages/User/Recipes'
@@ -20,7 +17,7 @@ export const browserRouter = createBrowserRouter([
 				path: 'admin/users/',
 				element: (
 					<RequirePermissions isRootRequire>
-						<UsersPage />
+						<UsersAdminPage />
 					</RequirePermissions>
 				),
 			},
@@ -28,7 +25,7 @@ export const browserRouter = createBrowserRouter([
 				path: 'admin/products/',
 				element: (
 					<RequirePermissions isRootRequire>
-						<ProductsPage />
+						<ProductsUserPage />
 					</RequirePermissions>
 				),
 			},
@@ -36,7 +33,7 @@ export const browserRouter = createBrowserRouter([
 				path: 'admin/recipes/',
 				element: (
 					<RequirePermissions isRootRequire>
-						<RecipesPage />
+						<RecipesUserPage />
 					</RequirePermissions>
 				),
 			},
@@ -45,14 +42,6 @@ export const browserRouter = createBrowserRouter([
 				element: (
 					<RequirePermissions>
 						<ChecklistsUserPage />
-					</RequirePermissions>
-				),
-			},
-			{
-				path: 'user/checklists/:checklistId',
-				element: (
-					<RequirePermissions>
-						<UserChecklistPage />
 					</RequirePermissions>
 				),
 			},

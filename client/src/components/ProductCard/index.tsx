@@ -1,9 +1,8 @@
 import noimage from '@client/assets/noimage.png'
 import Button from '@client/components/Button'
-import { useDropProduct } from '@client/queries/products/useDropProduct'
 import useVirtualStore from '@client/storage'
 import { unitsConverter } from '@client/utils/converters/units'
-import { Units } from '@prisma/client'
+import { Roles, Units } from '@prisma/client'
 import { EntityType } from '@static/types'
 import s from './productCard.module.scss'
 
@@ -12,9 +11,9 @@ export default function ProductCard({
 	onEditPress,
 	onAddToStoragePress,
 	inStoreInfo,
+	onDropPress,
 }: IProductCardProps) {
-	const { mutateAsync } = useDropProduct({})
-	const { userId } = useVirtualStore()
+	const { userId, role } = useVirtualStore()
 	return (
 		<div>
 			<div className={s.container}>
@@ -41,11 +40,14 @@ export default function ProductCard({
 					</div>
 				)}
 				<div className={s.controls}>
-					<Button
-						text={'Добавить в холодильник'}
-						action={onAddToStoragePress}
-					/>
-					{userId === productInfo.creatorId && (
+					{role === Roles.DEFAULT && (
+						<Button
+							text={'Добавить в холодильник'}
+							action={onAddToStoragePress}
+						/>
+					)}
+					{(userId === productInfo.creatorId ||
+						role !== Roles.DEFAULT) && (
 						<>
 							<Button
 								text={'Редактировать продукт'}
@@ -54,7 +56,7 @@ export default function ProductCard({
 							<Button
 								text={'Удалить продукт'}
 								style={{ borderColor: 'orangered' }}
-								action={async () => await mutateAsync(productInfo.id)}
+								action={onDropPress}
 							/>
 						</>
 					)}
@@ -67,6 +69,7 @@ export default function ProductCard({
 interface IProductCardProps {
 	onEditPress: () => void
 	onAddToStoragePress: () => void
+	onDropPress: () => void
 	productInfo: {
 		id: string
 		creatorId: string | null

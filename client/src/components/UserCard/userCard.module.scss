@@ -1,0 +1,55 @@
+.container {
+	width: 280px;
+	border-radius: 8px;
+	border: 2px solid #919191;
+	background: #161616;
+	max-height: 520px;
+	margin: 8px;
+}
+
+.imageContainer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 8px 0;
+}
+
+.image {
+	color: white;
+	padding: 8px;
+	width: 40px;
+	height: 40px;
+	background: blueviolet;
+	object-fit: contain;
+	margin: auto;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 50%;
+}
+
+.pfc {
+	display: flex;
+	justify-content: space-evenly;
+	padding: 8px 2px;
+}
+
+.quantity {
+	display: flex;
+	justify-content: center;
+	gap: 8px;
+}
+
+.counter {
+	width: 20%;
+}
+
+.controls {
+	padding: 5px 0;
+	display: flex;
+	justify-content: space-around;
+	flex-direction: column;
+	gap: 6px;
+	width: 60%;
+	margin: auto;
+}

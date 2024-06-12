@@ -1,35 +1,17 @@
 import Button from '@client/components/Button'
-import { Checkbox } from '@client/components/Checkbox'
 import { Input } from '@client/components/Input'
 import Modal from '@client/components/Modal'
-import PhotoInput from '@client/components/PhotoInput'
 import ProductsDropdown from '@client/components/ProductsDropdown'
-import Select from '@client/components/Select'
-import Textarea from '@client/components/Textarea'
-import { useCreateRecipe } from '@client/queries/recipes/useCreateRecipe'
-import useVirtualStore from '@client/storage'
-import { recipeTypesConverter } from '@client/utils/converters/recipeTypes'
+import { useSetStorageComposition } from '@client/queries/storages/useSetStorageComposition'
 import { unitsConverter } from '@client/utils/converters/units'
-import { regex } from '@client/utils/regex'
-import { RecipeTypes, Units } from '@prisma/client'
+import { Units } from '@prisma/client'
 import { useState } from 'react'
 
-export default function CreateRecipeModal({
+export default function UpdateStorageCompositionModal({
 	onCloseModal,
+	storageId,
 }: ICreateRecipeModalProps) {
 	const [search, setSearch] = useState('')
-	const { userId } = useVirtualStore()
-	const [image, setImage] = useState<File | undefined>()
-	const initialState = {
-		title: '',
-		isOfficial: true,
-		isFrozen: false,
-		isPrivate: false,
-		creatorId: userId!,
-		description: '',
-		type: RecipeTypes.BAKING as RecipeTypes,
-	}
-	const [recipeInfo, setRecipeInfo] = useState(initialState)
 
 	const [selectedProducts, setSelectedProducts] = useState(
 		new Map<
@@ -44,63 +26,20 @@ export default function CreateRecipeModal({
 		>()
 	)
 
-	const { mutateAsync, isPending } = useCreateRecipe({
+	const { mutateAsync } = useSetStorageComposition({
 		onSuccess: onCloseModal,
-		image,
 	})
+
 	return (
-		<Modal title={'Создание рецепта'} onCloseModal={onCloseModal}>
+		<Modal title={'Пополнение хранилища'} onCloseModal={onCloseModal}>
 			<div style={{ width: '100%' }}>
-				<div>
-					<PhotoInput image={image} setImage={setImage} />
-				</div>
 				<div
 					style={{
 						display: 'flex',
 						width: '100%',
-						justifyContent: 'space-between',
+						justifyContent: 'center',
 						gap: '16px',
 					}}>
-					<div>
-						<Input
-							value={recipeInfo.title}
-							label={'Название'}
-							placeholder={'Название рецепта'}
-							hasError={!regex.productName.test(recipeInfo.title)}
-							errorText={'Допустимы русские буквы и ()'}
-							onChange={e =>
-								setRecipeInfo(prev => ({
-									...prev,
-									title: e.target.value,
-								}))
-							}
-							maxLength={60}
-						/>
-						<Checkbox
-							value={recipeInfo.isPrivate}
-							label={'Рецепт видят все?'}
-							onChange={() =>
-								setRecipeInfo(prev => ({
-									...prev,
-									isPrivate: !prev.isPrivate,
-								}))
-							}
-						/>
-						<Select
-							label={'Тип рецепта'}
-							options={Object.values(RecipeTypes).map(type => ({
-								label: recipeTypesConverter[type],
-								value: type,
-							}))}
-							value={recipeInfo.type}
-							onChange={e =>
-								setRecipeInfo(prev => ({
-									...prev,
-									type: e.target.value as RecipeTypes,
-								}))
-							}
-						/>
-					</div>
 					<div>
 						<ProductsDropdown
 							search={search}
@@ -158,16 +97,6 @@ export default function CreateRecipeModal({
 							</table>
 						)}
 					</div>
-					<Textarea
-						label={'Как приготовить'}
-						value={recipeInfo.description}
-						onChange={e =>
-							setRecipeInfo(prev => ({
-								...prev,
-								description: e.target.value,
-							}))
-						}
-					/>
 				</div>
 				<div
 					style={{
@@ -177,19 +106,15 @@ export default function CreateRecipeModal({
 						justifyContent: 'center',
 					}}>
 					<Button
-						disabled={
-							!recipeInfo.title ||
-							isPending ||
-							!regex.productName.test(recipeInfo.title)
-						}
+						disabled={!selectedProducts.size}
 						text={'Сохранить'}
 						action={async () =>
 							mutateAsync({
-								info: recipeInfo,
-								composition: [...selectedProducts.values()].map(
+								storeComposition: [...selectedProducts.values()].map(
 									product => ({
+										storageId,
 										productId: product.id,
-										quantity: product.quantity,
+										productQuantity: product.quantity,
 									})
 								),
 							})
@@ -198,7 +123,7 @@ export default function CreateRecipeModal({
 					<Button
 						text={'Отмена'}
 						style={{ borderColor: 'orangered' }}
-						action={() => setRecipeInfo(initialState)}
+						action={() => setSelectedProducts(new Map())}
 					/>
 				</div>
 			</div>
@@ -208,4 +133,5 @@ export default function CreateRecipeModal({
 
 interface ICreateRecipeModalProps {
 	onCloseModal: () => void
+	storageId: string
 }

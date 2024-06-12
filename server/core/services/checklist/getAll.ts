@@ -14,6 +14,18 @@ export const getAll = async ({
 		where: {
 			createdAt: createdAt ? { equals: createdAt } : undefined,
 		},
+		include: {
+			ChecklistComposition: {
+				include: {
+					product: {
+						select: {
+							title: true,
+							unit: true,
+						},
+					},
+				},
+			},
+		},
 		cursor: cursor ? { id: cursor } : undefined,
 		take,
 	})

@@ -3,17 +3,23 @@ import queryClient from '@client/queries/queryClient'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 
-export function useDropProduct({ onSuccess }: IDropProductProps) {
+export function useDropProductFromStorage({
+	onSuccess,
+}: ISetStorageComposition) {
 	return useMutation({
-		mutationFn: async (id: string) => {
-			const { data, error } = await APIInstance.products({ id }).delete()
+		mutationFn: async (productToDrop: {
+			storageId: string
+			productId: string
+		}) => {
+			const { data, error } =
+				await APIInstance.storages.remove.delete(productToDrop)
 
 			if (error) throw error
 			return data
 		},
 		onSuccess: async () => {
 			await queryClient.invalidateQueries({
-				queryKey: ['products'],
+				queryKey: ['storage'],
 			})
 			toast.success('Продукт удален успешно!')
 			onSuccess?.()
@@ -21,6 +27,6 @@ export function useDropProduct({ onSuccess }: IDropProductProps) {
 	})
 }
 
-interface IDropProductProps {
+interface ISetStorageComposition {
 	onSuccess?: () => void
 }

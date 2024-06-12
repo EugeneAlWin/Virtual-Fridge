@@ -1,6 +1,7 @@
 import { APIInstance } from '@client/queries/API'
 import queryClient from '@client/queries/queryClient'
 import { useMutation } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
 
 export function useAddProductToStorage({
 	onSuccess,
@@ -29,6 +30,7 @@ export function useAddProductToStorage({
 			await queryClient.invalidateQueries({
 				queryKey: ['storage'],
 			})
+			toast.success('Продукт добавлен успешно!')
 			onSuccess?.()
 		},
 	})

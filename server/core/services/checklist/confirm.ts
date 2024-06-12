@@ -36,8 +36,8 @@ export const confirm = async ({ userId, checklistId }: IConfirm) => {
 		)
 	})
 
-	return publicDBClient.$transaction(
-		[...updatedStoreComposition.entries()].map(([key, value]) =>
+	return publicDBClient.$transaction([
+		...[...updatedStoreComposition.entries()].map(([key, value]) =>
 			publicDBClient.storageComposition.upsert({
 				where: {
 					productId: key,
@@ -54,8 +54,12 @@ export const confirm = async ({ userId, checklistId }: IConfirm) => {
 				},
 				update: { productQuantity: value, productId: key },
 			})
-		)
-	)
+		),
+		publicDBClient.checklist.update({
+			where: { id: checklistId },
+			data: { isConfirmed: true },
+		}),
+	])
 }
 
 interface IConfirm {

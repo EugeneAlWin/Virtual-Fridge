@@ -45,8 +45,8 @@ export function useCreateProduct({ onSuccess, image }: ICreateProductProps) {
 			await queryClient.invalidateQueries({
 				queryKey: ['recipes'],
 			})
+			toast.success('Продукт добавлен успешно!')
 			onSuccess?.()
-			toast.success('Продукт успешно добавлен.')
 		},
 	})
 }

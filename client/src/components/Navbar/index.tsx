@@ -2,6 +2,7 @@ import fridgeIco from '@client/assets/fridge.svg'
 import listIco from '@client/assets/list.svg'
 import productsIco from '@client/assets/products.svg'
 import recipeIco from '@client/assets/recipe.svg'
+import usersIco from '@client/assets/users.svg'
 import { useLogout } from '@client/queries/auth/useLogout'
 import useVirtualStore from '@client/storage'
 import { Roles } from '@prisma/client'
@@ -34,9 +35,7 @@ export function NavBar() {
 					</div>
 					<h3>{login}</h3>
 					{role !== Roles.DEFAULT && (
-						<h5>
-							{role === Roles.ADMIN ? 'Модератор' : 'Администратор'}
-						</h5>
+						<h5>{role === Roles.ADMIN ? '*' : '**'}</h5>
 					)}
 				</div>
 				<button
@@ -87,18 +86,18 @@ function GodsNav({ isAdmin }: { isAdmin: boolean }) {
 		<>
 			{isAdmin && (
 				<LinkElement
-					linkTo={'/user/storage'}
-					ico={fridgeIco}
+					linkTo={'/admin/users'}
+					ico={usersIco}
 					text={'Пользователи'}
 				/>
 			)}
 			<LinkElement
-				linkTo={'/user/recipes'}
+				linkTo={'/admin/recipes'}
 				ico={recipeIco}
 				text={'Рецепты'}
 			/>
 			<LinkElement
-				linkTo={'/user/products'}
+				linkTo={'/admin/products'}
 				ico={productsIco}
 				text={'Продукты'}
 			/>

@@ -1,6 +1,8 @@
+import Button from '@client/components/Button'
 import Header from '@client/components/Header'
 import ProductCard from '@client/components/ProductCard'
 import { Search } from '@client/components/Search'
+import { useDropProductFromStorage } from '@client/queries/storages/useDropProductFromStorage'
 import { useGetStorageComposition } from '@client/queries/storages/useGetStorageComposition'
 import { useGetStorageInfo } from '@client/queries/storages/useGetStorageInfo'
 import useVirtualStore from '@client/storage'
@@ -12,6 +14,9 @@ const UpdateProductModal = lazy(
 )
 const AddProductToStorageModal = lazy(
 	() => import('@client/modals/products/AddProductToStorageModal')
+)
+const UpdateStorageCompositionModal = lazy(
+	() => import('@client/modals/storage/UpdateStorageCompositionModal')
 )
 export default function StorageUserPage() {
 	const [search, setSearch] = useState('')
@@ -40,7 +45,10 @@ export default function StorageUserPage() {
 	}>()
 	const { data: storageInfo } = useGetStorageInfo(userId)
 	const { data: productsList } = useGetStorageComposition(storageInfo?.id)
+	const [updateStorageModalOpen, setUpdateStorageModalOpen] = useState(false)
 	const [addToStorageModalOpen, setAddToStorageModalOpen] = useState(false)
+
+	const { mutateAsync } = useDropProductFromStorage({})
 
 	const products = productsList?.pages
 		.map(page => page.composition)
@@ -48,11 +56,17 @@ export default function StorageUserPage() {
 		.filter(product =>
 			product?.product.title.toLowerCase().includes(search.toLowerCase())
 		)
+
 	return (
 		<>
 			<Header title={'Хранилище'}>
+				<Button
+					text={'Пополнить хранилище'}
+					action={() => setUpdateStorageModalOpen(true)}
+				/>
 				<Search search={search} onChange={setSearch} />
 			</Header>
+			{!products?.length && <h1>Пусто</h1>}
 			<div
 				style={{
 					flexWrap: 'wrap',
@@ -61,6 +75,12 @@ export default function StorageUserPage() {
 				}}>
 				{products?.map(composition => (
 					<ProductCard
+						onDropPress={() =>
+							mutateAsync({
+								productId: composition.productId,
+								storageId: composition.storageId,
+							})
+						}
 						inStoreInfo={{
 							unit: composition.product.unit,
 							quantity: composition.productQuantity,
@@ -96,6 +116,14 @@ export default function StorageUserPage() {
 					<UpdateProductModal
 						initialState={productToEdit}
 						onCloseModal={() => setUpdateProductModalOpen(false)}
+					/>
+				</Suspense>
+			)}
+			{updateStorageModalOpen && storageInfo && (
+				<Suspense fallback={<div>Loading...</div>}>
+					<UpdateStorageCompositionModal
+						storageId={storageInfo.id}
+						onCloseModal={() => setUpdateStorageModalOpen(false)}
 					/>
 				</Suspense>
 			)}

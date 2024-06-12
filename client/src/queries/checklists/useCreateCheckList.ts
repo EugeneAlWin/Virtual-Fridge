@@ -1,6 +1,7 @@
 import { APIInstance } from '@client/queries/API'
 import queryClient from '@client/queries/queryClient'
 import { useMutation } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
 
 export function useCreateChecklist({ onSuccess }: ICreateChecklistProps) {
 	return useMutation({
@@ -19,6 +20,7 @@ export function useCreateChecklist({ onSuccess }: ICreateChecklistProps) {
 			await queryClient.invalidateQueries({
 				queryKey: ['checklist'],
 			})
+			toast.success('Список создан успешно!')
 			onSuccess?.()
 		},
 	})

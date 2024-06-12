@@ -2,6 +2,7 @@ import Button from '@client/components/Button'
 import Header from '@client/components/Header'
 import ProductCard from '@client/components/ProductCard'
 import { Search } from '@client/components/Search'
+import { useDropProduct } from '@client/queries/products/useDropProduct'
 import { useGetAllProducts } from '@client/queries/products/useGetAllProducts'
 import { Units } from '@prisma/client'
 import { lazy, Suspense, useState } from 'react'
@@ -49,6 +50,9 @@ export default function ProductsUserPage() {
 		.filter(product =>
 			product.title.toLowerCase().includes(search.toLowerCase())
 		)
+
+	const { mutateAsync } = useDropProduct({})
+
 	return (
 		<>
 			<Header title={'Продукты'}>
@@ -58,7 +62,7 @@ export default function ProductsUserPage() {
 				/>
 				<Search search={search} onChange={setSearch} />
 			</Header>
-
+			{!products?.length && <h1>Пусто</h1>}
 			<div
 				style={{
 					flexWrap: 'wrap',
@@ -78,6 +82,7 @@ export default function ProductsUserPage() {
 							setProductToEdit(product)
 							setUpdateProductModalOpen(true)
 						}}
+						onDropPress={() => mutateAsync(product.id)}
 						productInfo={product}
 						key={product.id}
 					/>

@@ -1,14 +1,16 @@
 .button {
 	display: flex;
+	width: 100%;
 	justify-content: center;
 	background: transparent;
 	padding: 8px 6px;
 	color: white;
+	font-size: 11pt;
 	border-color: #26d312;
 	border-radius: 8px;
 	align-items: center;
 	&:focus {
-		padding: 12px 12px;
+		padding: 8px 6px;
 		outline: 5px #1c6013;
 		background: #919191;
 	}

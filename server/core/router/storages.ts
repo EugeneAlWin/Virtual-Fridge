@@ -56,10 +56,6 @@ export const storages = (app: StorageRouterType) =>
 			body: t.Object({
 				storageId: t.String(),
 				productId: t.String(),
-				productQuantity: t.Numeric({ minimum: 0 }),
-				expireDate: t.Date({
-					default: new Date('1970-01-01T00:00:00.00Z'),
-				}),
 			}),
 		})
 

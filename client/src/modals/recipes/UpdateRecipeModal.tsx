@@ -7,6 +7,7 @@ import ProductsDropdown from '@client/components/ProductsDropdown'
 import Select from '@client/components/Select'
 import Textarea from '@client/components/Textarea'
 import { useUpdateRecipe } from '@client/queries/recipes/useUpdateRecipe'
+import { recipeTypesConverter } from '@client/utils/converters/recipeTypes'
 import { unitsConverter } from '@client/utils/converters/units'
 import { regex } from '@client/utils/regex'
 import { RecipeTypes, Units } from '@prisma/client'
@@ -86,7 +87,7 @@ export default function UpdateRecipeModal({
 						<Select
 							label={'Тип рецепта'}
 							options={Object.values(RecipeTypes).map(type => ({
-								label: type,
+								label: recipeTypesConverter[type],
 								value: type,
 							}))}
 							value={recipeInfo.type}

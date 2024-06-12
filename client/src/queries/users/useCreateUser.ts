@@ -3,8 +3,9 @@ import queryClient from '@client/queries/queryClient'
 import cuid2 from '@paralleldrive/cuid2'
 import { Roles } from '@prisma/client'
 import { useMutation } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
 
-export function useCreateUser() {
+export function useCreateUser({ onSuccess }: ICreateUserProps) {
 	return useMutation({
 		mutationFn: async (newUser: {
 			isFrozen?: boolean
@@ -24,6 +25,12 @@ export function useCreateUser() {
 			await queryClient.invalidateQueries({
 				queryKey: ['users'],
 			})
+			toast.success('Пользователь создан успешно!')
+			onSuccess?.()
 		},
 	})
+}
+
+interface ICreateUserProps {
+	onSuccess?: () => void
 }

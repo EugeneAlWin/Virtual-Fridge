@@ -1,11 +1,5 @@
-import { ChangeEventHandler, useState } from 'react'
+import { useState } from 'react'
 import s from './checkbox.module.scss'
-
-interface ICheckboxProps {
-	value: boolean
-	label: string
-	onChange: ChangeEventHandler<HTMLInputElement> | undefined
-}
 
 export function Checkbox(props: ICheckboxProps) {
 	const [isFocused, setIsFocused] = useState(false)
@@ -14,7 +8,10 @@ export function Checkbox(props: ICheckboxProps) {
 		<div className={s.container}>
 			<p className={s.label}>{props.label}</p>
 			<button
-				onClick={() => setIsSelected(prev => !prev)}
+				onClick={() => {
+					setIsSelected(prev => !prev)
+					props.onChange?.()
+				}}
 				onFocus={() => setIsFocused(true)}
 				onBlur={() => setIsFocused(false)}
 				className={`${s.input} ${isFocused && s.inputActive}`}>
@@ -22,4 +19,10 @@ export function Checkbox(props: ICheckboxProps) {
 			</button>
 		</div>
 	)
+}
+
+interface ICheckboxProps {
+	value: boolean
+	label: string
+	onChange: () => void
 }

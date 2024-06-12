@@ -1,50 +1,37 @@
-import { Currencies } from '@prisma/client'
 import { publicDBClient } from '@server/prismaClients'
 import { NotFoundError } from 'elysia'
-import { filter, isTruthy } from 'remeda'
 
-export const update = async (checklist: IUpdate) => {
+export const update = async ({ userId, products, checklistId }: IUpdate) => {
 	const user = await publicDBClient.user.findUnique({
-		where: { id: checklist.info.creatorId },
+		where: { id: userId },
 		select: { id: true },
 	})
-	if (!user)
-		throw new NotFoundError(
-			`USER WITH ID ${checklist.info.creatorId} NOT FOUND`
+	if (!user) throw new NotFoundError(`USER WITH ID ${userId} NOT FOUND`)
+
+	return publicDBClient.$transaction(
+		products.map(product =>
+			publicDBClient.checklistComposition.upsert({
+				where: {
+					checklistId_productId: { checklistId, productId: product.id },
+				},
+				create: {
+					checklistId,
+					productId: product.id,
+					productQuantity: product.quantity,
+				},
+				update: {
+					productQuantity: product.quantity,
+				},
+			})
 		)
-
-	const ops = [
-		checklist.composition
-			? publicDBClient.checklistComposition.deleteMany({
-					where: { checklistId: checklist.info.checklistId },
-				})
-			: undefined,
-		publicDBClient.checklist.update({
-			where: { id: checklist.info.checklistId },
-			data: {
-				ChecklistComposition: checklist.composition
-					? { createMany: { data: checklist.composition } }
-					: undefined,
-				isConfirmed: checklist.info.isConfirmed,
-			},
-		}),
-	]
-
-	await publicDBClient.$transaction(filter(ops, isTruthy))
-
-	return true
+	)
 }
 
 interface IUpdate {
-	composition?: {
-		productId: string
-		price: number
-		currency: Currencies
-		productQuantity: number
+	userId: string
+	checklistId: string
+	products: {
+		id: string
+		quantity: number
 	}[]
-	info: {
-		creatorId: string
-		checklistId: string
-		isConfirmed?: boolean
-	}
 }

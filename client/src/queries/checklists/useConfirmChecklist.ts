@@ -17,7 +17,7 @@ export function useConfirmChecklist({ onSuccess }: IConfirmChecklistProps) {
 		},
 		onSuccess: async () => {
 			await queryClient.invalidateQueries({
-				queryKey: ['checklist'],
+				queryKey: ['checklists'],
 			})
 			toast.success('Хранилище обновлено. Покупка подтверждена!')
 			onSuccess?.()

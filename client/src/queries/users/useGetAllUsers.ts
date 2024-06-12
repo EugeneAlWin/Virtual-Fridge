@@ -1,7 +1,7 @@
 import { APIInstance } from '@client/queries/API'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-export function useGetAllUsers({ login }: { login: string }) {
+export function useGetAllUsers({ login }: { login?: string }) {
 	return useInfiniteQuery({
 		queryKey: ['users', login],
 		queryFn: async ({ pageParam }) => {

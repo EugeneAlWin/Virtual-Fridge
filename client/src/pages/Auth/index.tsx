@@ -51,8 +51,9 @@ export const AuthPage = () => {
 			})
 
 			navigate(
-				receivedData.user.role === Roles.ADMIN
-					? '/admin/users/'
+				receivedData.user.role === Roles.ADMIN ||
+					receivedData.user.role === Roles.GOD
+					? '/admin/recipes/'
 					: '/user/storage'
 			)
 		}
@@ -127,24 +128,26 @@ export const AuthPage = () => {
 							hasError={!userCredentials.password.isValid}
 						/>
 					</div>
-					<Button
-						text={'Отправить'}
-						action={async () => {
-							const action = isRegistration ? registerUser : loginUser
-							await action({
-								login: userCredentials.login.value,
-								password: userCredentials.password.value,
-							})
-						}}
-						disabled={
-							!(
-								userCredentials.login.isValid &&
-								userCredentials.password.isValid
-							) ||
-							!userCredentials.login.value ||
-							!userCredentials.password.value
-						}
-					/>
+					<div style={{ width: '40%' }}>
+						<Button
+							text={'Отправить'}
+							action={async () => {
+								const action = isRegistration ? registerUser : loginUser
+								await action({
+									login: userCredentials.login.value,
+									password: userCredentials.password.value,
+								})
+							}}
+							disabled={
+								!(
+									userCredentials.login.isValid &&
+									userCredentials.password.isValid
+								) ||
+								!userCredentials.login.value ||
+								!userCredentials.password.value
+							}
+						/>
+					</div>
 					<div style={{ padding: '16px', marginTop: '50px' }}>
 						{isRegistration ? (
 							<p>

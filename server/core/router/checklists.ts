@@ -1,4 +1,3 @@
-import { Currencies } from '@prisma/client'
 import {
 	_delete,
 	confirm,
@@ -34,21 +33,14 @@ export const checklists = (app: ChecklistRouterType) =>
 		})
 		.patch('/', ({ body }) => update(body), {
 			body: t.Object({
-				composition: t.Optional(
-					t.Array(
-						t.Object({
-							productId: t.String(),
-							price: t.Number(),
-							currency: t.Enum(Currencies, { default: Currencies.BYN }),
-							productQuantity: t.Number(),
-						})
-					)
+				userId: t.String(),
+				checklistId: t.String(),
+				products: t.Array(
+					t.Object({
+						id: t.String(),
+						quantity: t.Number(),
+					})
 				),
-				info: t.Object({
-					checklistId: t.String(),
-					creatorId: t.String(),
-					isConfirmed: t.Optional(t.Boolean()),
-				}),
 			}),
 		})
 		.patch('/confirm', ({ body }) => confirm(body), {
@@ -57,7 +49,7 @@ export const checklists = (app: ChecklistRouterType) =>
 				checklistId: t.String(),
 			}),
 		})
-		.delete('/:id', ({ params }) => _delete(params.id), {
+		.delete('/drop/:id', ({ params }) => _delete(params.id), {
 			params: t.Object({ id: t.String() }),
 		})
 

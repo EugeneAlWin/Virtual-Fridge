@@ -1,8 +1,9 @@
 import noimage from '@client/assets/noimage.png'
 import Button from '@client/components/Button'
-import { useDropProduct } from '@client/queries/products/useDropProduct'
+import { useDropRecipe } from '@client/queries/recipes/useDropRecipe'
 import useVirtualStore from '@client/storage'
-import { RecipeTypes } from '@prisma/client'
+import { recipeTypesConverter } from '@client/utils/converters/recipeTypes'
+import { RecipeTypes, Roles } from '@prisma/client'
 import { EntityType } from '@static/types'
 import s from './recipeCard.module.scss'
 
@@ -13,8 +14,8 @@ export default function RecipeCard({
 	onShowFullRecipe,
 	onSelect,
 }: IProductCardProps) {
-	const { mutateAsync } = useDropProduct({})
-	const { userId } = useVirtualStore()
+	const { mutateAsync } = useDropRecipe({})
+	const { userId, role } = useVirtualStore()
 	return (
 		<div>
 			<div
@@ -32,11 +33,11 @@ export default function RecipeCard({
 				/>
 				<h2>{recipeInfo.title}</h2>
 				<div className={s.pfc}>
-					<p>{recipeInfo.type}</p>
+					<p>{recipeTypesConverter[recipeInfo.type]}</p>
 				</div>
-				<div className={s.controls}>
+				<div className={s.controls} onClick={e => e.stopPropagation()}>
 					<Button text={'Подробнее...'} action={onShowFullRecipe} />
-					{userId === recipeInfo.creatorId && (
+					{(userId === recipeInfo.creatorId || role !== Roles.DEFAULT) && (
 						<>
 							<Button
 								text={'Редактировать рецепт'}
@@ -45,7 +46,7 @@ export default function RecipeCard({
 							<Button
 								text={'Удалить рецепт'}
 								style={{ borderColor: 'orangered' }}
-								action={async () => await mutateAsync(recipeInfo.id)}
+								action={async () => mutateAsync(recipeInfo.id)}
 							/>
 						</>
 					)}

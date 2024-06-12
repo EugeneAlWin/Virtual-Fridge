@@ -46,7 +46,11 @@ export default function RecipesUserPage() {
 		}[]
 	}>()
 	const { data: recipesList } = useGetAllRecipes({})
-	const recipes = recipesList?.pages.map(page => page.recipes).flat()
+	const recipes = recipesList?.pages
+		.map(page => page.recipes)
+		.flat()
+		.filter(i => i.title.toLowerCase().includes(search.toLowerCase()))
+
 	return (
 		<>
 			<Header title={'Рецепты'}>
@@ -62,6 +66,7 @@ export default function RecipesUserPage() {
 				/>
 				<Search search={search} onChange={setSearch} />
 			</Header>
+			{!recipes?.length && <h1>Пусто</h1>}
 			<div
 				style={{
 					flexWrap: 'wrap',

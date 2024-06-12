@@ -3,24 +3,26 @@ import queryClient from '@client/queries/queryClient'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 
-export function useDropProduct({ onSuccess }: IDropProductProps) {
+export function useUpdateChecklist({ onSuccess }: IDropChecklistProps) {
 	return useMutation({
-		mutationFn: async (id: string) => {
-			const { data, error } = await APIInstance.products({ id }).delete()
+		mutationFn: async ({ checklistId }: { checklistId: string }) => {
+			const { data, error } = await APIInstance.checklists
+				.drop({ id: checklistId })
+				.delete()
 
 			if (error) throw error
 			return data
 		},
 		onSuccess: async () => {
 			await queryClient.invalidateQueries({
-				queryKey: ['products'],
+				queryKey: ['checklists'],
 			})
-			toast.success('Продукт удален успешно!')
+			toast.success('Список удален успешно!')
 			onSuccess?.()
 		},
 	})
 }
 
-interface IDropProductProps {
+interface IDropChecklistProps {
 	onSuccess?: () => void
 }

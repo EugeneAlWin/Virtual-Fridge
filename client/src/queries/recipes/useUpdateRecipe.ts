@@ -3,6 +3,7 @@ import queryClient from '@client/queries/queryClient'
 import { RecipeTypes } from '@prisma/client'
 import { EntityType } from '@static/types'
 import { useMutation } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
 
 export function useUpdateRecipe({ onSuccess, image }: IUpdateRecipeProps) {
 	return useMutation({
@@ -41,6 +42,7 @@ export function useUpdateRecipe({ onSuccess, image }: IUpdateRecipeProps) {
 			await queryClient.invalidateQueries({
 				queryKey: ['recipes'],
 			})
+			toast.success('Рецепт обновлен успешно!')
 			onSuccess?.()
 		},
 	})

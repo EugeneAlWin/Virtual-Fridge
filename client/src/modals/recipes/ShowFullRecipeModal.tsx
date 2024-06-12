@@ -2,6 +2,7 @@ import noimage from '@client/assets/noimage.png'
 import Modal from '@client/components/Modal'
 import s from '@client/components/RecipeCard/recipeCard.module.scss'
 import Textarea from '@client/components/Textarea'
+import { recipeTypesConverter } from '@client/utils/converters/recipeTypes'
 import { unitsConverter } from '@client/utils/converters/units'
 import { RecipeTypes, Units } from '@prisma/client'
 import { EntityType } from '@static/types'
@@ -55,7 +56,7 @@ export default function ShowFullRecipeModal({
 						}}>
 						<div>
 							<h1 style={{ color: 'white' }}> {recipeInfo.title}</h1>
-							<h3>{recipeInfo.type}</h3>
+							<h3>{recipeTypesConverter[recipeInfo.type]}</h3>
 						</div>
 						{!!recipeComposition.size && (
 							<table
