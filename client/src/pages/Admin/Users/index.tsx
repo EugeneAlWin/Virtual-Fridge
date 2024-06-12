@@ -13,6 +13,7 @@ const UpdateUserModal = lazy(
 const CreateUserModal = lazy(
 	() => import('@client/modals/users/CreateUserModal')
 )
+
 export const UsersAdminPage = () => {
 	const { data, isLoading } = useGetAllUsers({})
 	const [search, setSearch] = useState('')
