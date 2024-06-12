@@ -1,24 +1,25 @@
 import { publicDBClient } from '@server/prismaClients'
 
 export const getAllFavorites = async ({
-	cursor,
-	take = 25,
 	title,
+	userId,
 }: {
 	title?: string
-	cursor: { userId: string; recipeId: string } | null
+	userId: string
 	take?: number
 }) => {
 	const recipes = await publicDBClient.favoriteRecipe.findMany({
-		skip: cursor ? 1 : 0,
 		where: {
+			userId,
 			recipe: {
 				title: title ? { contains: title, mode: 'insensitive' } : undefined,
 			},
 		},
-		cursor: cursor ? { recipeId_userId: cursor } : undefined,
-		take,
-		include: { recipe: true },
+		include: {
+			recipe: {
+				include: { RecipeComposition: { include: { product: true } } },
+			},
+		},
 	})
 	const lastElement = recipes.at(-1)
 	return {

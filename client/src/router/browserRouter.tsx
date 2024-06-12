@@ -3,8 +3,10 @@ import { RequirePermissions } from '@client/components/RequirePermissions'
 import { UsersAdminPage } from '@client/pages/Admin/Users'
 import { AuthPage } from '@client/pages/Auth'
 import ChecklistsUserPage from '@client/pages/User/Checklists'
+import FavoriteRecipesUserPage from '@client/pages/User/FavoriteRecipes'
 import ProductsUserPage from '@client/pages/User/Products'
 import RecipesUserPage from '@client/pages/User/Recipes'
+import SelectedRecipesUserPage from '@client/pages/User/SelectedRecipes'
 import StorageUserPage from '@client/pages/User/Storage'
 import { createBrowserRouter } from 'react-router-dom'
 
@@ -66,6 +68,22 @@ export const browserRouter = createBrowserRouter([
 				element: (
 					<RequirePermissions>
 						<ProductsUserPage />
+					</RequirePermissions>
+				),
+			},
+			{
+				path: 'user/selected/',
+				element: (
+					<RequirePermissions>
+						<SelectedRecipesUserPage />
+					</RequirePermissions>
+				),
+			},
+			{
+				path: 'user/favorite/',
+				element: (
+					<RequirePermissions>
+						<FavoriteRecipesUserPage />
 					</RequirePermissions>
 				),
 			},

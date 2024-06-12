@@ -1,7 +1,9 @@
 import fridgeIco from '@client/assets/fridge.svg'
+import heartIco from '@client/assets/heart.svg'
 import listIco from '@client/assets/list.svg'
 import productsIco from '@client/assets/products.svg'
 import recipeIco from '@client/assets/recipe.svg'
+import starIco from '@client/assets/star.svg'
 import usersIco from '@client/assets/users.svg'
 import { useLogout } from '@client/queries/auth/useLogout'
 import useVirtualStore from '@client/storage'
@@ -76,6 +78,16 @@ function UserNav() {
 				linkTo={'/user/products'}
 				ico={productsIco}
 				text={'Продукты'}
+			/>
+			<LinkElement
+				linkTo={'/user/selected'}
+				ico={starIco}
+				text={'Приготовить'}
+			/>
+			<LinkElement
+				linkTo={'/user/favorite'}
+				ico={heartIco}
+				text={'Избранное'}
 			/>
 		</>
 	)

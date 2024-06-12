@@ -52,19 +52,24 @@ export const create = async ({
 		}
 	}
 
-	return publicDBClient.checklist.create({
-		data: {
-			creatorId: userId,
-			ChecklistComposition: {
-				createMany: {
-					data: [...checklistComposition.entries()].map(i => ({
-						productId: i[0],
-						productQuantity: i[1],
-					})),
+	return publicDBClient.$transaction([
+		publicDBClient.selectedRecipeForCooking.createMany({
+			data: recipesId.map(i => ({ userId, recipeId: i })),
+		}),
+		publicDBClient.checklist.create({
+			data: {
+				creatorId: userId,
+				ChecklistComposition: {
+					createMany: {
+						data: [...checklistComposition.entries()].map(i => ({
+							productId: i[0],
+							productQuantity: i[1],
+						})),
+					},
 				},
 			},
-		},
-	})
+		}),
+	])
 }
 
 interface ICreate {

@@ -85,11 +85,14 @@ export const recipes = (app: RecipeRouterType) =>
 				.get('/', ({ query }) => getAllFavorites(query), {
 					query: t.Object({
 						title: t.Optional(t.String()),
-						cursor: t.Object({
-							userId: t.String(),
-							recipeId: t.String(),
-						}),
-						take: t.Optional(t.Number()),
+						userId: t.String(),
+						cursor: t.Optional(
+							t.Object({
+								userId: t.String(),
+								recipeId: t.String(),
+							})
+						),
+						take: t.Optional(t.Numeric()),
 					}),
 				})
 				.post('/', ({ query }) => addToFavorite(query), {
@@ -103,11 +106,9 @@ export const recipes = (app: RecipeRouterType) =>
 			app
 				.get('/', ({ query }) => getAllSelected(query), {
 					query: t.Object({
-						cursor: t.Object({
-							userId: t.String(),
-							recipeId: t.String(),
-						}),
-						take: t.Optional(t.Number()),
+						cursor: t.Optional(t.String()),
+						userId: t.String(),
+						take: t.Optional(t.Numeric()),
 					}),
 				})
 				.post('/', ({ body }) => addToSelected(body), {
@@ -124,8 +125,8 @@ export const recipes = (app: RecipeRouterType) =>
 						isCooked: t.Boolean(),
 					}),
 				})
-				.delete('/', ({ query }) => removeFromSelected(query), {
-					query: t.Object({ userId: t.String(), recipeId: t.String() }),
+				.delete('/', ({ body }) => removeFromSelected(body), {
+					body: t.Object({ userId: t.String(), recipeId: t.String() }),
 				})
 		)
 
