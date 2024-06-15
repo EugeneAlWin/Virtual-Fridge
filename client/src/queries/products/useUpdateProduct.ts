@@ -42,6 +42,9 @@ export function useUpdateProduct({ onSuccess, image }: IUpdateProductProps) {
 				queryKey: ['products'],
 			})
 			await queryClient.invalidateQueries({
+				queryKey: ['storage'],
+			})
+			await queryClient.invalidateQueries({
 				queryKey: ['recipes'],
 			})
 			toast.success('Продукт обновлен успешно!')

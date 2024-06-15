@@ -16,13 +16,13 @@ export const storages = (app: StorageRouterType) =>
 		.get('/composition', ({ query }) => getComposition(query), {
 			query: t.Object({
 				storageId: t.String(),
-				cursor: t.Optional(
-					t.Object({
-						productId: t.String(),
-						expireDate: t.Date(),
-						storageId: t.String(),
-					})
-				),
+				// cursor: t.Optional(
+				// 	t.Object({
+				// 		productId: t.String(),
+				// 		expireDate: t.Date(),
+				// 		storageId: t.String(),
+				// 	})
+				// ),
 				take: t.Optional(t.Numeric()),
 			}),
 		})

@@ -19,7 +19,7 @@ export default function UpdateUserModal({
 	})
 
 	return (
-		<Modal title={'Редактирование продукта'} onCloseModal={onCloseModal}>
+		<Modal title={'Редактирование пользователя'} onCloseModal={onCloseModal}>
 			<div style={{ width: '100%' }}>
 				<div
 					style={{

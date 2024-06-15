@@ -177,17 +177,7 @@ export default function CreateProductModal({
 							!regex.productName.test(productInfo.title)
 						}
 						text={'Сохранить'}
-						action={async () => {
-							await mutateAsync(productInfo)
-
-							// await STATIC_SERVER.index.post(formData, {
-							// 	query: { type: 'products', entityId: 'sdf' },
-							// 	headers: {
-							// 		'Content-Type': undefined,
-							// 		sdf: 'ddd',
-							// 	},
-							// })
-						}}
+						action={() => mutateAsync(productInfo)}
 					/>
 					<Button
 						text={'Отмена'}

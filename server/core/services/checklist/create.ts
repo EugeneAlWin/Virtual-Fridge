@@ -46,7 +46,7 @@ export const create = async ({
 				const productCount = productsFromStorage.has(key)
 					? value - productsFromStorage.get(key)!
 					: value
-				if (productCount <= 0) return
+				if (productCount <= 0) return checklistComposition.delete(key)
 				checklistComposition.set(key, productCount)
 			})
 		}
@@ -55,6 +55,7 @@ export const create = async ({
 	return publicDBClient.$transaction([
 		publicDBClient.selectedRecipeForCooking.createMany({
 			data: recipesId.map(i => ({ userId, recipeId: i })),
+			skipDuplicates: true,
 		}),
 		publicDBClient.checklist.create({
 			data: {

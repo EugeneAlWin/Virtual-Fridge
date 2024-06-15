@@ -23,7 +23,7 @@ export default function CreateUserModal({
 	})
 
 	return (
-		<Modal title={'Редактирование продукта'} onCloseModal={onCloseModal}>
+		<Modal title={'Создание пользователя'} onCloseModal={onCloseModal}>
 			<div style={{ width: '100%' }}>
 				<div
 					style={{
