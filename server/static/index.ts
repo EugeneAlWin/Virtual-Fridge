@@ -21,13 +21,13 @@ const app = new Elysia()
 			}
 
 			const fileExtension = image.name.split('.').pop()
-			if (fileExtension !== 'png') {
+			if (fileExtension !== 'jpg') {
 				set.status = 422
-				throw new Error('Not a png format')
+				throw new Error('Not a jpg format')
 			}
 
 			const result = await Bun.write(
-				`${__dirname}/data/${query.type}/${query.entityId}.png`,
+				`${__dirname}/data/${query.type}_${query.entityId}.jpg`,
 				image,
 				{ createPath: true }
 			)
@@ -47,7 +47,7 @@ const app = new Elysia()
 	.get(
 		':type/:entityId',
 		async ({ params }) =>
-			Bun.file(`${__dirname}/data/${params.type}/${params.entityId}.png`),
+			Bun.file(`${__dirname}/data/${params.type}_${params.entityId}.jpg`),
 		{
 			params: t.Object({
 				type: t.Enum(EntityType),

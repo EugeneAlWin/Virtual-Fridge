@@ -6,7 +6,7 @@ export default function PhotoInput({ image, setImage }: IPhotoInputProps) {
 		<div className={s.container}>
 			<input
 				type={'file'}
-				accept={'.png'}
+				accept={'.jpg'}
 				onChange={async e => {
 					setImage(e.target.files?.[0])
 				}}
