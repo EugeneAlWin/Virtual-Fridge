@@ -7,13 +7,13 @@ on:
     branches: [ "master","migrate-to-bun" ]
 
 jobs:
-  my-job:
-    name: my-job
+  server_build:
+    name: server build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
 
-      - run: bun install
-      - run: bun run build:server
-      - run: bun run prisma_gen
+      - run: sudo bun install
+      - run: sudo bun run build:server
+      - run: sudo bun run prisma_gen

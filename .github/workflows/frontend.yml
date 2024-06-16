@@ -1,31 +1,17 @@
-name: Client Vite CI
+name: VF-CLIENT
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master","migrate-to-bun" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "master","migrate-to-bun" ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: client
-    strategy:
-      matrix:
-        node-version: [ 21.x ]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: server
-      - run: sudo npm i
-      - run: sudo npm run build
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+
+      - run: sudo bun install
+      - run: sudo bun run build:client

@@ -10,7 +10,7 @@
 		"build:client": "vite build ./client",
 		"build:server": "bun build ./server/core/index.ts --outdir ./dist/server --target=bun --minify",
 		"build:static": "bun build ./server/static/index.ts --outdir ./dist/server/static --minify --target=bun",
-		"preview:client": "npx vite preview --host --port=3001 ./client",
+		"preview:client": "vite preview --host --port=3001 ./client",
 		"preview:server": "bun  --target=bun ./dist/server/index.js",
 		"preview:static": "bun --target=bun ./dist/server/static/index.js",
 		"apply_migrations": "bunx prisma migrate dev --schema=./server/prisma/schema.prisma",
