@@ -1,0 +1,24 @@
+.container {
+	padding: 4px;
+	display: flex;
+	flex-direction: column;
+}
+.label {
+	padding: 2px;
+	text-align: left;
+	margin: 2px 5px;
+	font-size: 11pt;
+}
+.textarea {
+	background: transparent;
+	border: 2px solid white;
+	border-radius: 8px;
+	min-width: 350px;
+	height: 400px;
+	padding: 8px;
+}
+
+.areaActive {
+	border-color: #26d312;
+	outline: 0;
+}

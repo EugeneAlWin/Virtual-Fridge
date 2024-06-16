@@ -1,0 +1,56 @@
+.container {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	min-height: inherit;
+	background: rgb(22, 22, 22);
+	height: 100vh;
+	align-items: center;
+	margin: auto;
+}
+
+.authorizationWindow {
+	align-items: center;
+	justify-content: center;
+	margin: auto;
+	padding: 50px;
+	min-height: 500px;
+	background: rgb(22, 22, 22);
+
+	border-radius: 25px;
+	border: 1px solid #26d312;
+	color: black;
+	display: flex;
+	flex-direction: column;
+}
+
+.regText {
+	font-size: 40pt;
+	width: 90%;
+	justify-content: center;
+	display: flex;
+	color: white;
+}
+
+.inputsContainer {
+	display: flex;
+	flex-direction: column;
+	width: 80%;
+	align-items: center;
+	justify-content: center;
+}
+
+.authorizationMark {
+	background: #1a1a1a;
+	color: #26d312;
+	border-radius: 8px;
+	padding: 4px;
+
+	&:hover {
+		cursor: pointer;
+	}
+
+	&:active {
+		font-size: 11pt;
+	}
+}

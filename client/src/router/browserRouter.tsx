@@ -1,14 +1,14 @@
+import App from '@client/App'
+import { RequirePermissions } from '@client/components/RequirePermissions'
+import { UsersAdminPage } from '@client/pages/Admin/Users'
+import { AuthPage } from '@client/pages/Auth'
+import ChecklistsUserPage from '@client/pages/User/Checklists'
+import FavoriteRecipesUserPage from '@client/pages/User/FavoriteRecipes'
+import ProductsUserPage from '@client/pages/User/Products'
+import RecipesUserPage from '@client/pages/User/Recipes'
+import SelectedRecipesUserPage from '@client/pages/User/SelectedRecipes'
+import StorageUserPage from '@client/pages/User/Storage'
 import { createBrowserRouter } from 'react-router-dom'
-import App from '../App.tsx'
-import { RequireAuth } from '../components/requireAuth/RequireAuth.tsx'
-import { UsersPage } from '../pages/adminPanel/usersPage/UsersPage.tsx'
-import { ProductsPage } from '../pages/adminPanel/productsPage/ProductsPage.tsx'
-import { RecipesPage } from '../pages/adminPanel/recipesPage/RecipesPage.tsx'
-import { UserChecklistsPage } from '../pages/userPanel/checklistsPage/ChecklistsPage.tsx'
-import { UserChecklistPage } from '../pages/userPanel/checklistPage/ChecklistPage.tsx'
-import { UserRecipesPage } from '../pages/userPanel/recipesPage/RecipesPage.tsx'
-import { UserStorePage } from '../pages/userPanel/storePage/StorePage.tsx'
-import { AuthPage } from '../pages/authPage/AuthPage.tsx'
 
 export const browserRouter = createBrowserRouter([
 	{
@@ -18,57 +18,73 @@ export const browserRouter = createBrowserRouter([
 			{
 				path: 'admin/users/',
 				element: (
-					<RequireAuth isRootRequire>
-						<UsersPage />
-					</RequireAuth>
+					<RequirePermissions isRootRequire>
+						<UsersAdminPage />
+					</RequirePermissions>
 				),
 			},
 			{
 				path: 'admin/products/',
 				element: (
-					<RequireAuth isRootRequire>
-						<ProductsPage />
-					</RequireAuth>
+					<RequirePermissions isRootRequire>
+						<ProductsUserPage />
+					</RequirePermissions>
 				),
 			},
 			{
 				path: 'admin/recipes/',
 				element: (
-					<RequireAuth isRootRequire>
-						<RecipesPage />
-					</RequireAuth>
+					<RequirePermissions isRootRequire>
+						<RecipesUserPage />
+					</RequirePermissions>
 				),
 			},
 			{
 				path: 'user/checklists/',
 				element: (
-					<RequireAuth>
-						<UserChecklistsPage />
-					</RequireAuth>
-				),
-			},
-			{
-				path: 'user/checklists/:checklistId',
-				element: (
-					<RequireAuth>
-						<UserChecklistPage />
-					</RequireAuth>
+					<RequirePermissions>
+						<ChecklistsUserPage />
+					</RequirePermissions>
 				),
 			},
 			{
 				path: 'user/recipes/',
 				element: (
-					<RequireAuth>
-						<UserRecipesPage />
-					</RequireAuth>
+					<RequirePermissions>
+						<RecipesUserPage />
+					</RequirePermissions>
 				),
 			},
 			{
-				path: 'user/store/',
+				path: 'user/storage/',
 				element: (
-					<RequireAuth>
-						<UserStorePage />
-					</RequireAuth>
+					<RequirePermissions>
+						<StorageUserPage />
+					</RequirePermissions>
+				),
+			},
+			{
+				path: 'user/products/',
+				element: (
+					<RequirePermissions>
+						<ProductsUserPage />
+					</RequirePermissions>
+				),
+			},
+			{
+				path: 'user/selected/',
+				element: (
+					<RequirePermissions>
+						<SelectedRecipesUserPage />
+					</RequirePermissions>
+				),
+			},
+			{
+				path: 'user/favorite/',
+				element: (
+					<RequirePermissions>
+						<FavoriteRecipesUserPage />
+					</RequirePermissions>
 				),
 			},
 		],

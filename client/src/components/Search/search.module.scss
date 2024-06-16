@@ -1,0 +1,34 @@
+.container {
+	padding: 8px;
+	border-radius: 8px;
+	display: flex;
+	align-items: center;
+	flex-direction: row;
+	gap: 8px;
+	border: 1px solid #919191;
+}
+.activeContainer {
+	border: 1px solid #26d312;
+	border-radius: 8px;
+}
+
+.input {
+	background: none;
+	border: none;
+	outline: none;
+	width: 100%;
+	height: 100%;
+}
+
+.cancelButton {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: transparent;
+	border-radius: 16px;
+	box-shadow: none;
+	border: 1px solid transparent;
+	&:focus {
+		background: rgba(145, 145, 145, 0.46);
+	}
+}

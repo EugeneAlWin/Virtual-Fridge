@@ -1,0 +1,6 @@
+export * from './getInfo'
+export * from './setInfo'
+export * from './getComposition'
+export * from './setComposition'
+export * from './addProductToStorage'
+export * from './removeProductFromStorage'

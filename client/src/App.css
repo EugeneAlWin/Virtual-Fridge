@@ -1,7 +1,21 @@
 #root {
-    max-width: 1680px;
-    min-height: 1000px;
-    margin: 0 auto;
-    padding: 2rem;
-    text-align: center;
+	margin: 0;
+	text-align: center;
+	width: 100%;
+	overflow: hidden;
+}
+* {
+	margin: 0;
+	padding: 0;
+	font-family: 'Inter', 'Roboto', sans-serif;
+	font-optical-sizing: auto;
+	font-style: normal;
+	font-variation-settings: 'slnt' 0;
+	box-sizing: border-box;
+	color: #919191;
+}
+.main {
+	background: #282626;
+	min-height: 100vh;
+	display: flex;
 }
