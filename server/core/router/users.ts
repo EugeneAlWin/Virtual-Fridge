@@ -1,6 +1,5 @@
 import cookie from '@elysiajs/cookie'
 import cors from '@elysiajs/cors'
-import { Roles } from '@prisma/client'
 import {
 	_delete,
 	create,
@@ -13,6 +12,7 @@ import {
 } from '@server/services/user'
 
 import { Elysia, t } from 'elysia'
+import { Roles } from '~shared/enums'
 
 export const users = (app: UserRouterType) =>
 	app

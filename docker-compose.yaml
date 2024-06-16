@@ -2,21 +2,40 @@ version: '3.8'
 
 services:
 
-  #web:
-  #  restart: always
-  #  build:
-  #    context: ./
-  #    dockerfile: Dockerfile
-  #  ports:
-  #   - '3000:3000'
-  #   - '3001:3001'
-  # networks:
-  #   - mynetwork
-  # depends_on:
-  #   - db
+  server:
+    restart: no
+    build:
+      context: ./
+      dockerfile: Dockerfile.server
+    environment:
+      - DATABASE_URL
+      - PORT
+      - JWT_ACCESS
+      - JWT_REFRESH
+    ports:
+      - '3000:3000'
+    networks:
+      - VF_NET
+    depends_on:
+      - db
+
+  static:
+    restart: no
+    build:
+      context: ./
+      dockerfile: Dockerfile.static
+    ports:
+      - '3005:3005'
+  #  client:
+  #    restart: no
+  #    build:
+  #      context: ./
+  #      dockerfile: Dockerfile.client
+  #    ports:
+  #      - '3001:3001'
+
   db:
     image: postgres
-    container_name: VF_DB
     restart: always
     environment:
       - POSTGRES_USER

@@ -10,8 +10,8 @@ import { useUpdateRecipe } from '@client/queries/recipes/useUpdateRecipe'
 import { recipeTypesConverter } from '@client/utils/converters/recipeTypes'
 import { unitsConverter } from '@client/utils/converters/units'
 import { regex } from '@client/utils/regex'
-import { RecipeTypes, Units } from '@prisma/client'
 import { useState } from 'react'
+import { RecipeTypes, Units } from '~shared/enums'
 
 export default function UpdateRecipeModal({
 	onCloseModal,

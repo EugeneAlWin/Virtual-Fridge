@@ -1,4 +1,4 @@
-import { RecipeTypes } from '@prisma/client'
+import { RecipeTypes } from '~shared/enums'
 
 export const recipeTypesConverter: Record<RecipeTypes, string> = {
 	[RecipeTypes.VEGETARIAN_DISHES]: 'Вегетарианское блюдо',

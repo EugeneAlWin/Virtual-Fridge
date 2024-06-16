@@ -1,4 +1,3 @@
-import { Units } from '@prisma/client'
 import {
 	_delete,
 	checkRefs,
@@ -9,6 +8,7 @@ import {
 	update,
 } from '@server/services/product'
 import { Elysia, t } from 'elysia'
+import { Units } from '~shared/enums'
 
 export const products = (app: ProductRouterType) =>
 	app

@@ -3,9 +3,9 @@ import { Input } from '@client/components/Input'
 import { useAuth } from '@client/queries/auth/useAuth'
 import { useRegistration } from '@client/queries/auth/useRegistration'
 import useVirtualStore from '@client/storage'
-import { Roles } from '@prisma/client'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Roles } from '~shared/enums'
 import styles from './authPage.module.scss'
 
 export const AuthPage = () => {

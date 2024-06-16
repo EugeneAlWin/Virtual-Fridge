@@ -1,7 +1,7 @@
 import Modal from '@client/components/Modal'
 import { unitsConverter } from '@client/utils/converters/units'
-import { Currencies, Units } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
+import { type Currencies, Units } from '~shared/enums'
 
 export default function ShowFullChecklistModal({
 	onCloseModal,
@@ -71,39 +71,6 @@ export default function ShowFullChecklistModal({
 						</table>
 					)}
 				</div>
-				{/*<div*/}
-				{/*	style={{*/}
-				{/*		padding: '15px',*/}
-				{/*		display: 'flex',*/}
-				{/*		gap: '8px',*/}
-				{/*		justifyContent: 'center',*/}
-				{/*	}}>*/}
-				{/*<Button*/}
-				{/*	disabled={*/}
-				{/*		!recipeInfo.title ||*/}
-				{/*		!regex.productName.test(recipeInfo.title)*/}
-				{/*	}*/}
-				{/*	text={'Сохранить'}*/}
-				{/*	action={async () =>*/}
-				{/*		mutateAsync({*/}
-				{/*			info: recipeInfo,*/}
-				{/*			composition: [...recipeComposition.values()].map(*/}
-				{/*				product => ({*/}
-				{/*					productId: product.id,*/}
-				{/*					quantity: product.quantity,*/}
-				{/*				})*/}
-				{/*			),*/}
-				{/*		})*/}
-				{/*	}*/}
-				{/*/>*/}
-				{/*<Button*/}
-				{/*	text={'Отмена'}*/}
-				{/*	style={{ borderColor: 'orangered' }}*/}
-				{/*	action={() =>*/}
-				{/*		setRecipeInfo({ ...initialState, composition: undefined })*/}
-				{/*	}*/}
-				{/*/>*/}
-				{/*</div>*/}
 			</div>
 		</Modal>
 	)

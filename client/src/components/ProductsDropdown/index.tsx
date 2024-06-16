@@ -1,7 +1,7 @@
 import { Search } from '@client/components/Search'
 import { useGetAllProducts } from '@client/queries/products/useGetAllProducts'
-import { Units } from '@prisma/client'
 import { Dispatch, SetStateAction } from 'react'
+import { Units } from '~shared/enums'
 import s from './productsDropdown.module.scss'
 
 export default function ProductsDropdown({

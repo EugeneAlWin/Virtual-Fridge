@@ -7,8 +7,8 @@ import Select from '@client/components/Select'
 import { useUpdateProduct } from '@client/queries/products/useUpdateProduct'
 import { unitsConverter } from '@client/utils/converters/units'
 import { regex } from '@client/utils/regex'
-import { Units } from '@prisma/client'
 import { useState } from 'react'
+import { Units } from '~shared/enums'
 
 export default function UpdateProductModal({
 	onCloseModal,

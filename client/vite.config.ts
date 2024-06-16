@@ -7,6 +7,9 @@ import { defineConfig } from 'vite'
 // https://vitejs.dev/config/
 export default defineConfig({
 	plugins: [react()],
+	build: { emptyOutDir: false, outDir: '../dist/client' },
+	preview: { port: 3001 },
+	server: { port: 3001 },
 	resolve: {
 		alias: [
 			{
@@ -18,6 +21,10 @@ export default defineConfig({
 				replacement: path.resolve(
 					path.join(__dirname, '..', '/server/static')
 				),
+			},
+			{
+				find: '~shared',
+				replacement: path.resolve(path.join(__dirname, '..', '/shared/')),
 			},
 		],
 	},

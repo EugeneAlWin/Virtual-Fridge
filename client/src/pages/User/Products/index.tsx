@@ -4,8 +4,8 @@ import ProductCard from '@client/components/ProductCard'
 import { Search } from '@client/components/Search'
 import { useDropProduct } from '@client/queries/products/useDropProduct'
 import { useGetAllProducts } from '@client/queries/products/useGetAllProducts'
-import { Units } from '@prisma/client'
 import { lazy, Suspense, useState } from 'react'
+import { Units } from '~shared/enums'
 
 const CreateProductModal = lazy(
 	() => import('@client/modals/products/CreateProductModal')

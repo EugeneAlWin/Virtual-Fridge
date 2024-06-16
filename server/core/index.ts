@@ -23,7 +23,7 @@ const app = new Elysia()
 
 await publicDBClient.$connect()
 
-app.listen(CONFIG.PORT, () =>
+app.listen(+CONFIG.PORT, () =>
 	console.log(`Server started on port ${CONFIG.PORT}`)
 )
 

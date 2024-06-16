@@ -4,8 +4,8 @@ import Modal from '@client/components/Modal'
 import ProductsDropdown from '@client/components/ProductsDropdown'
 import { useSetStorageComposition } from '@client/queries/storages/useSetStorageComposition'
 import { unitsConverter } from '@client/utils/converters/units'
-import { Units } from '@prisma/client'
 import { useState } from 'react'
+import { Units } from '~shared/enums'
 
 export default function UpdateStorageCompositionModal({
 	onCloseModal,

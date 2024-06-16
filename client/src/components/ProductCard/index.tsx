@@ -2,8 +2,8 @@ import noimage from '@client/assets/noimage.png'
 import Button from '@client/components/Button'
 import useVirtualStore from '@client/storage'
 import { unitsConverter } from '@client/utils/converters/units'
-import { Roles, Units } from '@prisma/client'
 import { EntityType } from '@static/types'
+import { Roles, Units } from '~shared/enums'
 import s from './productCard.module.scss'
 
 export default function ProductCard({

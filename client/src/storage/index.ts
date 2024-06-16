@@ -1,5 +1,5 @@
-import { Roles } from '@prisma/client'
 import { create } from 'zustand'
+import { Roles } from '~shared/enums'
 
 const useVirtualStore = create<{
 	userId: string | null

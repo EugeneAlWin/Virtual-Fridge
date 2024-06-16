@@ -4,8 +4,8 @@ import { Search } from '@client/components/Search'
 import SelectedRecipeCard from '@client/components/SelectedRecipeCard'
 import { useGetAllSelectedRecipes } from '@client/queries/recipes/useGetAllSelectedRecipes'
 import useVirtualStore from '@client/storage'
-import { RecipeTypes, Units } from '@prisma/client'
 import { lazy, Suspense, useState } from 'react'
+import { type RecipeTypes, Units } from '~shared/enums'
 
 const CreateRecipeModal = lazy(
 	() => import('@client/modals/recipes/CreateRecipeModal')

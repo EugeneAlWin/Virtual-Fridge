@@ -1,10 +1,5 @@
 #!/bin/sh
+cd /app || exit
 
-cd /app/server || exit
-npm run apply_migrations
-npm start &
-
-cd /app/client || exit
-
-npm run build
-npm run preview
+bun run apply_migrations
+bun run preview:server

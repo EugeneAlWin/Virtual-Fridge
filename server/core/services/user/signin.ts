@@ -1,6 +1,5 @@
 import { publicDBClient } from '@server/prismaClients'
 import TokensCore from '@shared/utils/tokensCore'
-import { CryptoHasher } from 'bun'
 import { NotFoundError } from 'elysia'
 
 export const signin = async ({
@@ -21,7 +20,7 @@ export const signin = async ({
 	if (user.isFrozen) throw new Error('Profile frozen')
 	if (
 		user.password !==
-		new CryptoHasher('sha512').update(password).digest('hex')
+		new Bun.CryptoHasher('sha512').update(password).digest('hex')
 	)
 		throw new Error('Wrong password')
 

@@ -3,8 +3,8 @@ import { Input } from '@client/components/Input'
 import Modal from '@client/components/Modal'
 import { useAddProductToStorage } from '@client/queries/storages/useAddProductToStorage'
 import useVirtualStore from '@client/storage'
-import { Units } from '@prisma/client'
 import { useState } from 'react'
+import { Units } from '~shared/enums'
 
 export default function AddProductToStorageModal({
 	onCloseModal,

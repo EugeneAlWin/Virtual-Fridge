@@ -1,5 +1,5 @@
-import { Roles } from '@prisma/client'
 import { publicDBClient } from '@server/prismaClients'
+import { Roles } from '~shared/enums'
 
 export const create = async ({
 	login,

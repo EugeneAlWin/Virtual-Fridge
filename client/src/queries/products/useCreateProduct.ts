@@ -1,9 +1,9 @@
 import { APIInstance, STATIC_SERVER } from '@client/queries/API'
 import queryClient from '@client/queries/queryClient'
-import { Units } from '@prisma/client'
 import { EntityType } from '@static/types'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
+import { Units } from '~shared/enums'
 
 export function useCreateProduct({ onSuccess, image }: ICreateProductProps) {
 	return useMutation({

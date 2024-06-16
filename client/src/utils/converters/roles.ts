@@ -1,4 +1,4 @@
-import { Roles } from '@prisma/client'
+import { Roles } from '~shared/enums'
 
 export const rolesConverter: Record<Roles, string> = {
 	[Roles.ADMIN]: 'Модератор',

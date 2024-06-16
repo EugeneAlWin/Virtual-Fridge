@@ -1,9 +1,9 @@
 import { APIInstance } from '@client/queries/API'
 import queryClient from '@client/queries/queryClient'
 import cuid2 from '@paralleldrive/cuid2'
-import { Roles } from '@prisma/client'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
+import { Roles } from '~shared/enums'
 
 export function useCreateUser({ onSuccess }: ICreateUserProps) {
 	return useMutation({

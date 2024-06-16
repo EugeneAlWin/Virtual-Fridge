@@ -1,7 +1,7 @@
-import { Roles } from '@prisma/client'
 import { publicDBClient } from '@server/prismaClients'
 import TokensCore from '@shared/utils/tokensCore'
 import { NotFoundError } from 'elysia'
+import { Roles } from '~shared/enums'
 
 export const signup = async ({
 	login,

@@ -1,0 +1,15 @@
+FROM oven/bun:alpine as build
+WORKDIR /app
+
+COPY package.json ./
+COPY bun.lockb ./
+COPY tsconfig.json ./
+COPY tsconfig.node.json ./
+
+RUN bun install --production
+
+COPY server/static ./server/static
+COPY server/shared ./server/shared
+
+RUN bun run build:static
+CMD ["bun", "run","preview:static" ]

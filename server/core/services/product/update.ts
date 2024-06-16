@@ -1,6 +1,6 @@
-import { Units } from '@prisma/client'
 import { publicDBClient } from '@server/prismaClients'
 import { NotFoundError } from 'elysia'
+import { Units } from '~shared/enums'
 
 export const update = async (product: IUpdate) => {
 	const productInfo = await publicDBClient.product.findUnique({

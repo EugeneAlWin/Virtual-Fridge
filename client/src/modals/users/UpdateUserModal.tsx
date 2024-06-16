@@ -5,8 +5,8 @@ import Modal from '@client/components/Modal'
 import Select from '@client/components/Select'
 import { useUpdateUser } from '@client/queries/users/useUpdateUser'
 import { rolesConverter } from '@client/utils/converters/roles'
-import { Roles } from '@prisma/client'
 import { useState } from 'react'
+import { Roles } from '~shared/enums'
 
 export default function UpdateUserModal({
 	onCloseModal,

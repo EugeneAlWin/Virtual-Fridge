@@ -7,8 +7,8 @@ import starIco from '@client/assets/star.svg'
 import usersIco from '@client/assets/users.svg'
 import { useLogout } from '@client/queries/auth/useLogout'
 import useVirtualStore from '@client/storage'
-import { Roles } from '@prisma/client'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Roles } from '~shared/enums'
 import s from './navbar.module.scss'
 
 export function NavBar() {

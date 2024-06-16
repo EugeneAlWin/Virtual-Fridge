@@ -4,8 +4,8 @@ import { Search } from '@client/components/Search'
 import UserCard from '@client/components/UserCard'
 import { useGetAllUsers } from '@client/queries/users/useGetAllUsers'
 import { useUpdateUser } from '@client/queries/users/useUpdateUser'
-import { Roles } from '@prisma/client'
 import { lazy, Suspense, useState } from 'react'
+import { Roles } from '~shared/enums'
 
 const UpdateUserModal = lazy(
 	() => import('@client/modals/users/UpdateUserModal')

@@ -4,9 +4,9 @@ import Modal from '@client/components/Modal'
 import { useUpdateChecklist } from '@client/queries/checklists/useUpdateChecklist'
 import useVirtualStore from '@client/storage'
 import { unitsConverter } from '@client/utils/converters/units'
-import { Currencies, Units } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
 import { useState } from 'react'
+import { Currencies, Units } from '~shared/enums'
 
 export default function UpdateChecklistModal({
 	onCloseModal,

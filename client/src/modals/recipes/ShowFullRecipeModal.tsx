@@ -4,8 +4,8 @@ import s from '@client/components/RecipeCard/recipeCard.module.scss'
 import Textarea from '@client/components/Textarea'
 import { recipeTypesConverter } from '@client/utils/converters/recipeTypes'
 import { unitsConverter } from '@client/utils/converters/units'
-import { RecipeTypes, Units } from '@prisma/client'
 import { EntityType } from '@static/types'
+import { RecipeTypes, Units } from '~shared/enums'
 
 export default function ShowFullRecipeModal({
 	onCloseModal,

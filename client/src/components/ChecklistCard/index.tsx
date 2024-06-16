@@ -1,6 +1,6 @@
 import Button from '@client/components/Button'
-import { Currencies, Units } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
+import { Currencies, Units } from '~shared/enums'
 import s from './checklistCard.module.scss'
 
 export default function ChecklistCard({

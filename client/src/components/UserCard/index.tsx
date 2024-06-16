@@ -1,5 +1,5 @@
 import Button from '@client/components/Button'
-import { Roles } from '@prisma/client'
+import { Roles } from '~shared/enums'
 import s from './userCard.module.scss'
 
 export default function UserCard({

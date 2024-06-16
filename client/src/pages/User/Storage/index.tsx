@@ -6,8 +6,8 @@ import { useDropProductFromStorage } from '@client/queries/storages/useDropProdu
 import { useGetStorageComposition } from '@client/queries/storages/useGetStorageComposition'
 import { useGetStorageInfo } from '@client/queries/storages/useGetStorageInfo'
 import useVirtualStore from '@client/storage'
-import { Units } from '@prisma/client'
 import { lazy, Suspense, useState } from 'react'
+import { Units } from '~shared/enums'
 
 const UpdateProductModal = lazy(
 	() => import('@client/modals/products/UpdateProductModal')

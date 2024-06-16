@@ -3,8 +3,8 @@ import Header from '@client/components/Header'
 import RecipeCard from '@client/components/RecipeCard'
 import { Search } from '@client/components/Search'
 import { useGetAllRecipes } from '@client/queries/recipes/useGetAllRecipes'
-import { RecipeTypes, Units } from '@prisma/client'
 import { lazy, Suspense, useState } from 'react'
+import { RecipeTypes, Units } from '~shared/enums'
 
 const CreateRecipeModal = lazy(
 	() => import('@client/modals/recipes/CreateRecipeModal')

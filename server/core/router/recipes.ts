@@ -1,4 +1,3 @@
-import { RecipeTypes } from '@prisma/client'
 import {
 	_delete,
 	addToFavorite,
@@ -16,6 +15,7 @@ import {
 	updateSelected,
 } from '@server/services/recipe'
 import { Elysia, t } from 'elysia'
+import { RecipeTypes } from '~shared/enums'
 
 export const recipes = (app: RecipeRouterType) =>
 	app

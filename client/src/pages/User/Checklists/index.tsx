@@ -4,9 +4,9 @@ import { useConfirmChecklist } from '@client/queries/checklists/useConfirmCheckl
 import { useUpdateChecklist } from '@client/queries/checklists/useDropChecklist'
 import { useGetAllChecklists } from '@client/queries/checklists/useGetAllChecklists'
 import useVirtualStore from '@client/storage'
-import { Currencies, Units } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
 import { lazy, Suspense, useState } from 'react'
+import { Currencies, Units } from '~shared/enums'
 
 const ShowFullChecklistModal = lazy(
 	() => import('@client/modals/checklists/ShowFullChecklistModal')

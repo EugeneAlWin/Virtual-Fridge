@@ -1,7 +1,7 @@
 import useVirtualStore from '@client/storage'
-import { Roles } from '@prisma/client'
 import { ReactNode } from 'react'
 import { Navigate } from 'react-router-dom'
+import { Roles } from '~shared/enums'
 
 export const RequirePermissions = ({
 	children,

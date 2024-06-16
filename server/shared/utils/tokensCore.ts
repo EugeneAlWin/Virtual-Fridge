@@ -1,6 +1,6 @@
-import { Roles } from '@prisma/client'
 import { CONFIG } from '@server/config'
 import { sign, verify } from 'jsonwebtoken'
+import { Roles } from '~shared/enums'
 
 export default class TokensCore {
 	static generateTokens({

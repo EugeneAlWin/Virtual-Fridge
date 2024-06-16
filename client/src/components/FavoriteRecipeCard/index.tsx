@@ -3,8 +3,8 @@ import Button from '@client/components/Button'
 import { useDropSelectedRecipe } from '@client/queries/recipes/useDropSelectedRecipe'
 import useVirtualStore from '@client/storage'
 import { recipeTypesConverter } from '@client/utils/converters/recipeTypes'
-import { RecipeTypes, Roles } from '@prisma/client'
 import { EntityType } from '@static/types'
+import { RecipeTypes, Roles } from '~shared/enums'
 import s from './recipeCard.module.scss'
 
 export default function FavoriteRecipeCard({

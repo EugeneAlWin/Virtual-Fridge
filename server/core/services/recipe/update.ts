@@ -1,7 +1,7 @@
-import { RecipeTypes } from '@prisma/client'
 import { publicDBClient } from '@server/prismaClients'
 import { NotFoundError } from 'elysia'
 import { filter, isTruthy } from 'remeda'
+import { RecipeTypes } from '~shared/enums'
 
 //TODO
 export const update = async (recipe: IUpdate) => {

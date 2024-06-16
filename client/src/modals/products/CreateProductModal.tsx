@@ -8,8 +8,8 @@ import { useCreateProduct } from '@client/queries/products/useCreateProduct'
 import useVirtualStore from '@client/storage'
 import { unitsConverter } from '@client/utils/converters/units'
 import { regex } from '@client/utils/regex'
-import { Units } from '@prisma/client'
 import { useState } from 'react'
+import { Units } from '~shared/enums'
 
 export default function CreateProductModal({
 	onCloseModal,
